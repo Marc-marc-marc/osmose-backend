@@ -156,6 +156,7 @@ class Test(TestPluginCommon):
                        ({"amenity":"car_repair"},    {"-": ["amenity"], "+": {"shop": "car_repair"}}),
                        ({"amenity":"nursery"},       None), # not supported, as 2 k=v are possible
                        ({"man_made":"water_tank"},   None), # not supported, as 2 k=v are needed
+                       ({"wood":"deciduous"},        {"-": ["wood"], "+": {"leaf_cycle": "deciduous"}}),
                       ]:
             err = a.node(None, d)
             self.check_err(err, d)
