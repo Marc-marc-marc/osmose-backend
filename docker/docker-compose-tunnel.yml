@@ -1,0 +1,53 @@
+version: '3.3'
+
+volumes:
+  pgdata:
+
+services:
+  postgis:
+    shm_size: 1g
+    image: postgis/postgis:13-3.1-alpine
+    volumes:
+      - type: bind
+        source: ./postgis-init.sh
+        target: /docker-entrypoint-initdb.d/postgis-init.sh
+      - pgdata:/var/lib/postgresql/data
+      ## Alternate, to keep the data outside of container
+      #- ./postgresql-data:/var/lib/postgresql/data
+      ## Alternate, with tmpfs database is only on memory, lost on stop. Save SSD lifetime.
+      #- type: tmpfs
+      #  target: /var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=zei8diu4ohSh
+    networks:
+      - osmose-backend-internal
+
+  backend:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    image: osm-fr/osmose_backend
+    depends_on:
+      - postgis
+    volumes:
+      - type: bind
+        source: ../osmose_config_password.py
+        target: /opt/osmose-backend/osmose_config_password.py
+        read_only: true
+      - type: bind
+        source: ./work
+        target: /data/work/osmose
+      - type: bind
+        source: ./work/hosts
+        target: /etc/hosts
+    environment:
+      - DB_HOST=postgis
+      - JUPYTER_RUNTIME_DIR=/tmp
+      #- SENTRY_DSN=
+    user: "1000:1000"
+    command: ./osmose_run.py --country=monaco --analyser=osmosis_highway_floating_islands
+    networks:
+      - osmose-backend-internal
+
+networks:
+  osmose-backend-internal:
