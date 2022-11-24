@@ -291,7 +291,7 @@ def execc(conf, logger, analysers, options, osmosis_manager):
                             update_finished = False
                             nb_iter = 0
                             was_on_timeout = False
-                            while not update_finished and nb_iter < 3:
+                            while not update_finished and nb_iter < 9:
                                 time.sleep(nb_iter * 15)
                                 nb_iter += 1
                                 logger.sub().sub().log("iteration=%d" % nb_iter)
