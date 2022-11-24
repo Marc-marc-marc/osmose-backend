@@ -33,6 +33,7 @@ class TagFix_Opening_Hours(Plugin):
 
     def init(self, logger):
         if not module_PyKOpeningHours:
+            logger.warn('module PyKOpeningHours did not load')
             return False
         Plugin.init(self, logger)
         self.errors[32501] = self.def_class(item = 3250, level = 3, tags = ['value', 'fix:chair'],
