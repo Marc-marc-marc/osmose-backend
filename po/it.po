@@ -18,14 +18,17 @@ msgstr ""
 "Project-Id-Version: Osmose\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-04-28 19:47+0200\n"
-"PO-Revision-Date: 2014-04-30 17:25+0000\n"
-"Last-Translator: frodrigo <fred.rodrigo@gmail.com>, 2019\n"
-"Language-Team: Italian (http://app.transifex.com/openstreetmap-france/osmose/language/it/)\n"
+"PO-Revision-Date: 2025-07-16 22:01+0000\n"
+"Last-Translator: Marco Ciotola <github@ciotola.dev>\n"
+"Language-Team: Italian <https://hosted.weblate.org/projects/osmose/backend/"
+"it/>\n"
+"Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: it\n"
-"Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
+"Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? 1 "
+": 2;\n"
+"X-Generator: Weblate 5.13-dev\n"
 
 #: ../analysers/analyser_merge_college_FR.py:31
 msgid "College not integrated"
@@ -411,7 +414,7 @@ msgstr "Area non chiusa"
 
 #: ../plugins/Structural_Useless_Relation.py:31
 msgid "1-member relation"
-msgstr "Relazione con un solo membro"
+msgstr "relazione con un solo membro"
 
 #: ../plugins/Structural_Waterway.py:30
 msgid "Closed waterway"
@@ -750,7 +753,7 @@ msgstr "Aggiorna scuola"
 #: ../plugins/Highway_Lanes.py:36
 msgid ""
 "Conflict between usage of *:lanes or *:lanes:(forward|backward|both_ways)"
-msgstr "Uso di *:lanes e *:lanes:(forward|backward|both_ways) in conflitto "
+msgstr "Uso di *:lanes e *:lanes:(forward|backward|both_ways) in conflitto"
 
 #: ../plugins/Highway_Lanes.py:41
 msgid "Conflict between lanes number"
@@ -758,7 +761,7 @@ msgstr "Numero di corsie in conflitto"
 
 #: ../plugins/Highway_Lanes.py:43
 msgid "Invalid usage of *:lanes:(backward|both_ways) on oneway highway"
-msgstr "Uso non valido di *:lanes:(backward|both_ways)  su strada a senso unico"
+msgstr "Uso non valido di *:lanes:(backward|both_ways) su strada a senso unico"
 
 #: ../plugins/Highway_Lanes.py:47
 msgid "Unknown turn lanes value"
@@ -1266,7 +1269,7 @@ msgstr "Trovata lettera araba in un nome Farsi"
 #: ../plugins/Name_MisspelledWordByRegex_Lang_fa.py:249
 #, python-brace-format
 msgid "In Farsi, the Arabic letter `{0}` should be replaced by `{1}`."
-msgstr "In Farsi la lettera araba '{0}' dovrebbe essere sostituita con '{1}'"
+msgstr "In Farsi, la lettera araba `{0}` dovrebbe essere sostituita con `{1}`."
 
 #: ../plugins/Colour.py:16
 msgid "Colour code should start with '#' followed by 3 or 6 digits"
@@ -1847,7 +1850,8 @@ msgstr "Etichetta ‘name’ mancante"
 msgid ""
 "The admin_centre `population` is greater than the relation\n"
 "`population`."
-msgstr "L'etichetta ‘population’ dell’‘admin_centre’ contiene un valore più grande di quello della ‘population’ della relazione."
+msgstr ""
+"‘population’ nell'‘admin_centre’ è maggiore di ‘population’ della relazione."
 
 #: ../analysers/analyser_osmosis_building_geodesie_FR.py:107
 msgid ""
@@ -3499,7 +3503,12 @@ msgstr "Aggiorna progressive chilometriche"
 msgid ""
 "Those milestones can't be on `*_link` ways. The position of the marker may be a little different than what is visible on the road.\n"
 "Sometimes, a small white line perpendicular to the road on the emergency stop strip or the left flared strip can be seen on satellite images or Mapillary's photos."
-msgstr "Quelle progressive chilometriche non possono stare su una strada \"_link\". La posizione del marcatore potrebbe essere leggermente diversa da quella visibile su strada. Talvolta, una piccola linea bianca è visibile sulla corsia di emergenza o a lato strada è visibile sulle foto satellitari o di Mapillary."
+msgstr ""
+"Quelle progressive chilometriche non possono stare su una strada \"_link\". "
+"La posizione del marcatore potrebbe essere leggermente diversa da quella "
+"visibile su strada.\n"
+"Talvolta, una piccola linea bianca è visibile sulla corsia di emergenza o a "
+"lato strada è visibile sulle foto satellitari o di Mapillary."
 
 #: ../analysers/analyser_merge_emergency_points_LU.py:31
 msgid "Emergency point not integrated"
