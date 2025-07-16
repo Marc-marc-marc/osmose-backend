@@ -5,7 +5,7 @@ PO:=$(wildcard *.po)
 
 .PRECIOUS: $(PO)
 
-all: osmose-backend.pot %.po josm_po
+all: osmose-backend.pot josm_po
 
 tmp.json: $(JSON) Makefile
 	for json in $(JSON); do cat $$json | jq -r '.[].title' | grep -v 'null' | sed -e 's/\(.*\)/_("\1")/'; done > $@
@@ -16,10 +16,6 @@ osmose-backend.pot: $(PYFILES) tmp.json
           --keyword=_ --keyword=N_ --keyword=T_ --keyword=T_f --keyword=tr \
           --force-po --omit-header --from-code=utf-8 \
           --output=$@ $(PYFILES) tmp.json
-
-%.po:
-	tx pull -a --minimum-perc=1
-	@sed -i.bak 's/^# 4004.*, 2017/# 4004, 2017/' ru.po  # redact email following request
 
 statistics:
 	@for i in $(PO); do \
