@@ -1,23 +1,23 @@
-# Portuguese translation for josm
-# Copyright (c) 2009 Rosetta Contributors and Canonical Ltd 2009
+# Norwegian Bokmal translation for josm
+# Copyright (c) 2007 Rosetta Contributors and Canonical Ltd 2007
 # This file is distributed under the same license as the josm package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2009.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2007.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: josm\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-07-16 07:13+0200\n"
-"PO-Revision-Date: 2025-06-14 19:05+0000\n"
-"Last-Translator: Dirk Stöcker <launchpad@dstoecker.de>\n"
-"Language-Team: Portuguese <pt@li.org>\n"
+"PO-Revision-Date: 2025-06-19 20:36+0000\n"
+"Last-Translator: Paal Martin <Unknown>\n"
+"Language-Team: Norwegian Bokmal <nb@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2025-07-16 07:32+0000\n"
+"X-Launchpad-Export-Date: 2025-07-16 07:12+0000\n"
 "X-Generator: Launchpad (build 2d6e9435c2df831e66deb7fcbe9f03f78dd14743)\n"
-"Language: pt\n"
+"Language: nb\n"
 
 #: ../core/resources/data/validator/combinations.mapcss:82
 #: ../core/resources/data/validator/combinations.mapcss:94
@@ -72,25 +72,24 @@ msgstr ""
 #: ../core/resources/data/validator/religion.mapcss:5
 #: ../core/resources/data/validator/wikipedia.mapcss:139
 msgid "missing tag"
-msgstr "falta etiqueta"
+msgstr "egenskap mangler"
 
 #: ../core/resources/data/validator/addresses.mapcss:3
 msgid "Even housenumber in odd address interpolation."
-msgstr "Número de porta PAR na interpolação de endereços."
+msgstr "Partallsnummer i oddetalls interpolering av adresser."
 
 #: ../core/resources/data/validator/addresses.mapcss:6
 msgid "Odd housenumber in even address interpolation."
-msgstr "Número de porta ÍMPAR na interpolação de endereços."
+msgstr "Oddetallsnummer i partalls interpolering av adresser."
 
 #: ../core/resources/data/validator/addresses.mapcss:9
 #, java-format
 msgid "Way with {0}. Tag each housenumber separately if possible."
-msgstr ""
-"Via com {0}. Etiquetar cada número de porta separadamente se possível."
+msgstr "Linje med {0}. Legg til hvert husnummer separat hvis mulig."
 
 #: ../core/resources/data/validator/addresses.mapcss:15
 msgid "End node without housenumber in address interpolation."
-msgstr "Nó final sem número de porta na interpolação de endereços."
+msgstr "Sluttnode uten husnummer i interpolering av adresser."
 
 #: ../core/resources/data/validator/addresses.mapcss:20
 #, java-format
@@ -98,8 +97,7 @@ msgid ""
 "Object has no {0}, however, it has {1} and {2} whose value looks like a "
 "housenumber."
 msgstr ""
-"O objeto não tem {0}, no entanto tem {1} e {2} cujos valores parecem um "
-"número de porta."
+"Objektet har ikke {0}, men {1} og {2} – disse verdiene ligner husnummer."
 
 #: ../core/resources/data/validator/addresses.mapcss:29
 #: ../core/resources/data/validator/combinations.mapcss:574
@@ -108,12 +106,12 @@ msgstr ""
 #: ../core/resources/data/validator/combinations.mapcss:618
 #, java-format
 msgid "Same value of {0} and {1}"
-msgstr "O mesmo valor de {0} e {1}"
+msgstr "{0} og {1} har samme verdi"
 
 #: ../core/resources/data/validator/addresses.mapcss:39
 #, java-format
 msgid "{0} without number"
-msgstr "{0} sem número"
+msgstr "{0} uten nummer"
 
 #: ../core/resources/data/validator/combinations.mapcss:81
 #: ../core/resources/data/validator/combinations.mapcss:93
@@ -135,18 +133,18 @@ msgstr "{0} sem número"
 #: ../core/resources/data/validator/territories.mapcss:33
 #, java-format
 msgid "{0} without {1}"
-msgstr "{0} sem {1}"
+msgstr "{0} uten {1}"
 
 #: ../core/resources/data/validator/combinations.mapcss:124
 #, java-format
 msgid "{0} without access tags such as {1}, {2}, or {3}."
-msgstr "{0} sem etiquetas de acesso como {1}, {2} ou {3}."
+msgstr "{0} uten access-merkelapper, som for eksempel {1}, {2}, och {3}."
 
 #: ../core/resources/data/validator/combinations.mapcss:125
 #: ../core/resources/data/validator/combinations.mapcss:141
 #: ../core/resources/data/validator/combinations.mapcss:146
 msgid "suspicious barrier"
-msgstr "barreira suspeita"
+msgstr "mistenkelig stengsel"
 
 #: ../core/resources/data/validator/combinations.mapcss:139
 #: ../core/resources/data/validator/combinations.mapcss:145
@@ -154,7 +152,7 @@ msgstr "barreira suspeita"
 msgid ""
 "Suspicious {0} on a connection of a small highway with a larger highway"
 msgstr ""
-"{0} suspeito numa ligação de uma pequena rodovia com uma rodovia maior"
+"Mistenkelig {0} på en forbindelse av en liten motorvei med en større motorvei"
 
 #: ../core/resources/data/validator/combinations.mapcss:154
 #: ../core/resources/data/validator/combinations.mapcss:245
@@ -164,21 +162,21 @@ msgstr ""
 #: ../core/resources/data/validator/combinations.mapcss:894
 #, java-format
 msgid "{0} without {1} or {2}"
-msgstr "{0} sem {1} ou {2}"
+msgstr "{0} uten {1} eller {2}"
 
 #: ../core/resources/data/validator/combinations.mapcss:161
 #: ../core/resources/data/validator/combinations.mapcss:290
 #: ../core/resources/data/validator/combinations.mapcss:296
 #, java-format
 msgid "{0} without {1}, {2} or {3}"
-msgstr "{0} sem {1}, {2} ou {3}"
+msgstr "{0} uten {1}, {2} eller {3}"
 
 #: ../core/resources/data/validator/combinations.mapcss:167
 #: ../core/resources/data/validator/combinations.mapcss:277
 #: ../core/resources/data/validator/combinations.mapcss:284
 #, java-format
 msgid "{0} without {1}, {2}, {3} or {4}"
-msgstr "{0} sem {1}, {2}, {3} ou {4}"
+msgstr "{0} uten {1}, {2}, {3} or {4}"
 
 #: ../core/resources/data/validator/combinations.mapcss:251
 #: ../core/resources/data/validator/combinations.mapcss:320
@@ -245,7 +243,7 @@ msgstr "{0} sem {1}, {2}, {3} ou {4}"
 #: ../core/resources/data/validator/numeric.mapcss:379
 #: ../core/resources/data/validator/relation.mapcss:72
 msgid "suspicious tag combination"
-msgstr "combinação de etiquetas suspeita"
+msgstr "mistenkelig kombinasjon av egenskaper"
 
 #: ../core/resources/data/validator/combinations.mapcss:319
 #: ../core/resources/data/validator/combinations.mapcss:331
@@ -283,35 +281,35 @@ msgstr "combinação de etiquetas suspeita"
 #: ../core/resources/data/validator/highway.mapcss:161
 #, java-format
 msgid "{0} together with {1}"
-msgstr "{0} junto com {1}"
+msgstr "{0} sammen med {1}"
 
 #: ../core/resources/data/validator/combinations.mapcss:379
 #: ../core/resources/data/validator/combinations.mapcss:386
 #, java-format
 msgid "{0} together with {1} and {2}"
-msgstr "{0} junto com {1} e {2}"
+msgstr "{0} sammen med {1} og {2}"
 
 #: ../core/resources/data/validator/combinations.mapcss:401
 #, java-format
 msgid "two objects, one with {0} and one with {1} + {2} + {3}"
-msgstr "dois objetos, um com {0} e um com {1} + {2} + {3}"
+msgstr "to objekter, en med {0} og en med {1} + {2} + {3}"
 
 #: ../core/resources/data/validator/combinations.mapcss:407
 #, java-format
 msgid "{0} on an inner multipolygon ring without further tags"
-msgstr "{0} num anel multipolígono interior sem outras etiquetas"
+msgstr "{0} på en indre multipolygon-ring uten flere egenskaper"
 
 #: ../core/resources/data/validator/combinations.mapcss:432
 #: ../core/resources/data/validator/combinations.mapcss:447
 #, java-format
 msgid "incomplete object: only {0}"
-msgstr "objeto incompleto: apenas {0}"
+msgstr "ufullstendig objekt: kun {0}"
 
 #: ../core/resources/data/validator/combinations.mapcss:441
 #: ../core/resources/data/validator/combinations.mapcss:453
 #, java-format
 msgid "incomplete object: only {0} and {1}"
-msgstr "objeto incompleto: apenas {0} e {1}"
+msgstr "ufullstendig objekt: kun {0} og {1}"
 
 #: ../core/resources/data/validator/combinations.mapcss:473
 #: ../core/resources/data/validator/combinations.mapcss:482
@@ -321,12 +319,12 @@ msgstr "objeto incompleto: apenas {0} e {1}"
 #: ../core/resources/data/validator/deprecated.mapcss:684
 #, java-format
 msgid "{0} together with {1} and conflicting values"
-msgstr "{0} junto com {1} e valores em conflito"
+msgstr "{0} sammen med {1} og verdier med konflikt"
 
 #: ../core/resources/data/validator/combinations.mapcss:509
 #, java-format
 msgid "{0} on suspicious object"
-msgstr "{0} sem etiquetas adicionais"
+msgstr "{0} på mistenkelig objekt"
 
 #: ../core/resources/data/validator/combinations.mapcss:515
 #, java-format
@@ -334,43 +332,43 @@ msgid ""
 "{0} together with {1}. The flow direction is defined by the way direction. "
 "Use {1} on {0} only in the rare case of a access restriction."
 msgstr ""
-"{0} juntamente com {1}. A direção do fluxo é definida pela direção da linha. "
-"Utilizar {1} em {0} apenas no caso raro de uma restrição de acesso."
+"{0} sammen med {1}. Linjas retning bestemmer flytretningen. Bruk {1} på {0} "
+"kun hvis adgang begrenses."
 
 #: ../core/resources/data/validator/combinations.mapcss:539
 msgid "natural water used for swimming pool"
-msgstr "etiqueta de água utilizada em piscina"
+msgstr "naturlig vann angitt for svømmebasseng"
 
 #: ../core/resources/data/validator/combinations.mapcss:546
 msgid "sport without physical feature"
-msgstr "etiqueta desporto sem nenhuma outra etiqueta física, por ex. campo"
+msgstr "sport uten fysisk objekt"
 
 #: ../core/resources/data/validator/combinations.mapcss:566
 #, java-format
 msgid "alternative name without {0}"
-msgstr "c/nome alternativo mas sem etiqueta {0}"
+msgstr "alternativt navn uten {0}"
 
 #: ../core/resources/data/validator/combinations.mapcss:581
 #, java-format
 msgid "incomplete usage of {0} on a way without {1}"
-msgstr "uso incompleto de {0} numa via sem {1}"
+msgstr "ufullstendig bruk av {0} på linje uten {1}"
 
 #: ../core/resources/data/validator/combinations.mapcss:595
 #: ../core/resources/data/validator/combinations.mapcss:610
 #: ../core/resources/data/validator/combinations.mapcss:625
 #, java-format
 msgid "Same value of {0}, {1} and {2}"
-msgstr "O mesmo valor de {0}, {1} e {2}"
+msgstr "{0}, {1} og {2} har samme verdi"
 
 #: ../core/resources/data/validator/combinations.mapcss:635
 #, java-format
 msgid "{0} and {1} together with {2} and conflicting values"
-msgstr "{0} e {1} junto com {2} e valores em conflito"
+msgstr "{0} og {1} sammen med {2} og verdier har konflikt"
 
 #: ../core/resources/data/validator/combinations.mapcss:657
 #, java-format
 msgid "{0} on a relation without {1}"
-msgstr "{0} numa relação sem {1}"
+msgstr "{0} på relasjon uten {1}"
 
 #: ../core/resources/data/validator/combinations.mapcss:662
 #, java-format
@@ -379,9 +377,9 @@ msgid ""
 "underground. Remove {1} or add a tunnel tag if applicable. Also check "
 "crossing bridges and their {1} tags."
 msgstr ""
-"Curso de água longo com {0} mas sem uma etiqueta que o defina como túnel ou "
-"subterrâneo. Remova {1} ou adicione uma etiqueta de túnel se aplicável. "
-"Verifique também pontes e as respetivas etiquetas {1}."
+"Lang vannvei med {0}, men uten egenskap som bestemmer om den er tunnel eller "
+"under bakken. Fjern {1} eller legg til egenskapen tunnel hvis det passer. "
+"Kontroller også kryssende bruer og deres {1}-egenskaper."
 
 #: ../core/resources/data/validator/combinations.mapcss:666
 #, java-format
@@ -390,108 +388,106 @@ msgid ""
 "underground. Remove {1} or add a tunnel tag if applicable. Also check "
 "crossing bridges and their {1} tags."
 msgstr ""
-"Curso de água curto com {0} mas sem uma etiqueta que o defina como túnel ou "
-"subterrâneo. Remova {1} ou adicione uma etiqueta de túnel se aplicável. "
-"Verifique também pontes e as respetivas etiquetas {1}."
+"Kort vannvei med {0}, men uten egenskap som bestemmer om den er tunnel eller "
+"under bakken. Fjern {1} eller legg til egenskapen tunnel hvis det passer. "
+"Kontroller også kryssende bruer og deres {1}-egenskaper."
 
 #: ../core/resources/data/validator/combinations.mapcss:691
 #, java-format
 msgid "possibly missing {0} tag"
-msgstr "possível falta da etiqueta {0}"
+msgstr "egenskapen {0} mangler muligens"
 
 #: ../core/resources/data/validator/combinations.mapcss:706
 #, java-format
 msgid "Different number of lanes in the keys {0} and {1}"
-msgstr "Números de vias de trânsito diferentes nas chaves {0} e {1}"
+msgstr "Forskjellig antall kjørefelt i nøklene {0} og {1}"
 
 #: ../core/resources/data/validator/combinations.mapcss:712
 #, java-format
 msgid "street with odd number of {0}, but without {1} and {2} or {3}"
-msgstr "rua com número ímpar de {0}, mas sem {1} e {2} ou {3}"
+msgstr "vei med odde antall {0}, men uten {1} og {2} eller {3}"
 
 #: ../core/resources/data/validator/combinations.mapcss:742
 #, java-format
 msgid "{0} together with {1}. Tag each hydrant separately."
-msgstr ""
-"{0} junto com {1}. Deve-se etiquetar as bocas de incêndio separadamente."
+msgstr "{0} sammen med {1}. Legg til hver hydrant separat."
 
 #: ../core/resources/data/validator/combinations.mapcss:747
 #, java-format
 msgid "{0} together with {1} on a node. Remove {0}."
-msgstr "{0} junto com {1} num nó. Remover {0}."
+msgstr "{0} sammen med {1} på node. Fjern {0}."
 
 #: ../core/resources/data/validator/combinations.mapcss:772
 #, java-format
 msgid ""
 "A linear object {0} without {1} has a tag indicating that it is an area."
 msgstr ""
-"Um objeto linear {0} sem {1} tem uma etiqueta que indica que é uma área."
+"Et lineært objekt {0} uten {1} har en egenskap som sier at det er et område."
 
 #: ../core/resources/data/validator/combinations.mapcss:784
 #: ../core/resources/data/validator/combinations.mapcss:1094
 #, java-format
 msgid "{0} together with {1}. Remove {1}."
-msgstr "{0} junto com {1}. Remova {1}."
+msgstr "{0} sammen med {1}. Fjern {1}."
 
 #: ../core/resources/data/validator/combinations.mapcss:793
 #, java-format
 msgid "Combined foot- and cycleway without {0}."
-msgstr "Via pedonal e ciclovia combinadas, mas sem {0}."
+msgstr "Kombinert gang- og sykkelvei uten {0}."
 
 #: ../core/resources/data/validator/combinations.mapcss:810
 #, java-format
 msgid "{0} without {1} and {2}"
-msgstr "{0} sem {1} e {2}"
+msgstr "{0} uten {1} og {2}"
 
 #: ../core/resources/data/validator/combinations.mapcss:823
 #, java-format
 msgid "{0} together with {1} but without {2}"
-msgstr "{0} junto com {1} mas sem {2}"
+msgstr "{0} sammen med {1} men uten {2}"
 
 #: ../core/resources/data/validator/combinations.mapcss:835
 #, java-format
 msgid "{0} together with {1} and conflicting values plus no {2}"
-msgstr "{0} juntamente com {1} e valores contraditórios e sem {2}"
+msgstr "{0} sammen med {1} og med ulike verdier og ingen {2}"
 
 #: ../core/resources/data/validator/combinations.mapcss:864
 #, java-format
 msgid "{0} together with {1}. Probably {2} is meant."
-msgstr "{0} juntamente com {1}. Provavelmente quer dizer {2}."
+msgstr "{0} sammen med {1}. Antakelig er det {2} som menes."
 
 #: ../core/resources/data/validator/combinations.mapcss:875
 #, java-format
 msgid ""
 "{0} together with {1}. Should be used on a minor highway type or a node"
 msgstr ""
-"{0} juntamente com {1}. Deve ser utilizado num tipo de rodovia secundária ou "
-"num nó"
+"{0} sammen med {1}. Bør brukes på barne (underordnet) veikategori eller node."
 
 #: ../core/resources/data/validator/combinations.mapcss:919
 #, java-format
 msgid "{0} together with {1}. Is the fixme fixed?"
-msgstr ""
-"{0} junto com {1}. O problema indicado na etiqueta \"fixme\" foi corrigido?"
+msgstr "{0} sammen med {1}. Er fiks-meg ordnet?"
 
 #: ../core/resources/data/validator/combinations.mapcss:931
 #, java-format
 msgid "Use {0} only as value of {1}"
-msgstr "Usar {0} apenas como valor de {1}"
+msgstr "Bruk {0} kun som verdi til {1}"
 
 #: ../core/resources/data/validator/combinations.mapcss:955
 #, java-format
 msgid "{0} together with {1} at right-hand traffic"
-msgstr "{0} juntamente com {1} no tráfego pela direita"
+msgstr "{0} sammen med {1} for høyretrafikk"
 
 #: ../core/resources/data/validator/combinations.mapcss:959
 #, java-format
 msgid "{0} together with {1} at left-hand traffic"
-msgstr "{0} juntamente com {1} no tráfego pela esquerda"
+msgstr "{0} sammen med {1} for venstretrafikk"
 
 #: ../core/resources/data/validator/combinations.mapcss:1013
 #: ../core/resources/data/validator/combinations.mapcss:1050
 #, java-format
 msgid "No grooming defined for {0} skiing, add {1}"
-msgstr "Sem preparação de pista definida para esqui {0}, adicionar {1}"
+msgstr ""
+"Ingen preparering angitt for nordisk skidsport ({0} skiing), legg til {1}"
 
 #: ../core/resources/data/validator/combinations.mapcss:1024
 #: ../core/resources/data/validator/combinations.mapcss:1031
@@ -499,17 +495,17 @@ msgstr "Sem preparação de pista definida para esqui {0}, adicionar {1}"
 #: ../core/resources/data/validator/combinations.mapcss:1044
 #, java-format
 msgid "No difficulty defined for skiing, add {0}"
-msgstr "Sem dificuldade definida para o esqui, adicionar {0}"
+msgstr "Ingen vanskelighetsgrad lagt til for skiløypa, legg til {0}"
 
 #: ../core/resources/data/validator/combinations.mapcss:1058
 #, java-format
 msgid "{0} is lower than {1} on {2}."
-msgstr "{0} é inferior a {1} em {2}."
+msgstr "{0} er lavere enn {1} på {2}."
 
 #: ../core/resources/data/validator/combinations.mapcss:1065
 #, java-format
 msgid "{0} is lower or equal to {1} on {2}"
-msgstr "{0} é inferior ou igual a {1} em {2}."
+msgstr "{0} er lavere enn eller samme som {1} på {2}"
 
 #: ../core/resources/data/validator/deprecated.mapcss:2
 #: ../core/resources/data/validator/deprecated.mapcss:12
@@ -787,7 +783,7 @@ msgstr "{0} é inferior ou igual a {1} em {2}."
 #: ../core/resources/data/validator/highway.mapcss:137
 #, java-format
 msgid "{0} is deprecated"
-msgstr "''{0}'' está em desuso"
+msgstr "{0} er foreldet"
 
 #: ../core/resources/data/validator/deprecated.mapcss:3
 #: ../core/resources/data/validator/deprecated.mapcss:14
@@ -1097,20 +1093,19 @@ msgstr "''{0}'' está em desuso"
 #: ../core/resources/data/validator/territories.mapcss:22
 #: ../core/resources/data/validator/wikipedia.mapcss:22
 msgid "deprecated tagging"
-msgstr "etiquetas em desuso"
+msgstr "foreldet egenskap"
 
 #: ../core/resources/data/validator/deprecated.mapcss:326
 #, java-format
 msgid "''{0}'' is meaningless, use more specific tags, e.g. ''{1}''"
-msgstr "''{0}'' é genérico, use etiquetas +específicas como ''{1}''"
+msgstr "«{0}» er meningsløst, bruk mer spesifikke egenskaper, f.eks. «{1}»"
 
 #: ../core/resources/data/validator/deprecated.mapcss:330
 #, java-format
 msgid ""
 "''{0}'' does not specify the official mode of transportation, use ''{1}'' "
 "for example"
-msgstr ""
-"''{0}'' não especifica o uso oficial de transporte, use por exemplo ''{1}''"
+msgstr "«{0}» angir ikke offisiell transportmåte, bruk f.eks. «{1}»"
 
 #: ../core/resources/data/validator/deprecated.mapcss:336
 #, java-format
@@ -1118,8 +1113,8 @@ msgid ""
 "{0}={1} is unspecific. Instead of ''{1}'' please give more information about "
 "what exactly should be fixed."
 msgstr ""
-"{0}={1} é genérico. Em vez de ''{1}'' descreva melhor o que deve ser "
-"corrigido."
+"{0}={1} er uspesifikt. I stedet for «{1}» bør det oppgis mer informasjon om "
+"nøyaktig hva som bør rettes."
 
 #: ../core/resources/data/validator/deprecated.mapcss:341
 #, java-format
@@ -1127,8 +1122,8 @@ msgid ""
 "Wrong usage of {0} tag. Remove {1}, because it is clear that the name is "
 "missing even without an additional tag."
 msgstr ""
-"Utilização errada da etiqueta {0}. Remova {1}, porque é claro que o nome "
-"está em falta mesmo sem uma etiqueta adicional."
+"Feil bruk av egenskapen {0}. Fjern {1} fordi det er opplagt at navnet "
+"mangler. Man trenger ikke en ekstra egenskap som sier det."
 
 #: ../core/resources/data/validator/deprecated.mapcss:350
 #, java-format
@@ -1136,65 +1131,63 @@ msgid ""
 "{0} is unspecific. Instead use the key fixme with the information what "
 "exactly should be fixed in the value of fixme."
 msgstr ""
-"{0} não é específico. Em vez disso use a chave fixme com a informação do que "
-"deve ser realmente corrigido no valor de fixme."
+"{0} er diffust. Bruk helst nøkkelen «fixme», og legg inn i verdien "
+"informasjon om nøyaktig hva som skal fikses."
 
 #: ../core/resources/data/validator/deprecated.mapcss:405
 #, java-format
 msgid "{0} is deprecated. Please use instead a multipolygon."
-msgstr "{0} está em desuso, em vez disso usar um polígono."
+msgstr "{0} er foreldet. Bruk multipolygon i stedet for."
 
 #: ../core/resources/data/validator/deprecated.mapcss:443
 #, java-format
 msgid ""
 "{0} is deprecated. Please specify interval by using opening_hours syntax"
-msgstr ""
-"{0} está em desuso. Especifique um intervalo na sintaxe opening_hours"
+msgstr "{0} er foreldet. Angi intervall med «opening_hours»"
 
 #: ../core/resources/data/validator/deprecated.mapcss:449
 #, java-format
 msgid ""
 "{0} is deprecated. Please delete this object and use a private layer instead"
 msgstr ""
-"{0} está em desuso. Por favor elimine este elemento e use uma camada privada "
-"(sem enviar para o OSM)"
+"{0} er foreldet. Slett dette objektet og bruk et privat lag i stedet for."
 
 #: ../core/resources/data/validator/deprecated.mapcss:491
 #, java-format
 msgid "{0}={1} is unspecific. Please replace ''{1}'' by a specific value."
-msgstr "{0}={1} é genérico. Substitua ''{1}'' por um valor específico."
+msgstr "{0}={1} er diffust. Vennligst erstatt «{1}» med en bestemt verdi."
 
 #: ../core/resources/data/validator/deprecated.mapcss:496
 #: ../core/resources/data/validator/deprecated.mapcss:2487
 #, java-format
 msgid "{0} should be replaced with {1}"
-msgstr "{0} deve ser substituído por {1}"
+msgstr "{0} bør erstattes med {1}"
 
 #: ../core/resources/data/validator/deprecated.mapcss:500
 #, java-format
 msgid "{0} = {1}; remove {0}"
-msgstr "{0} = {1}; remover {0}"
+msgstr "{0} = {1}; fjern {0}"
 
 #: ../core/resources/data/validator/deprecated.mapcss:505
 #, java-format
 msgid "{0} is unspecific"
-msgstr "{0} não é específico"
+msgstr "{0} er diffust"
 
 #: ../core/resources/data/validator/deprecated.mapcss:542
 #, java-format
 msgid "Unusual key {0}, maybe {1} or {2} is meant"
-msgstr "Chave incomum: {0}, talvez deva ser {1} ou {2}"
+msgstr "Uvanlig nøkkel {0}, kanskje menes {1} eller {2}"
 
 #: ../core/resources/data/validator/deprecated.mapcss:577
 #, java-format
 msgid "Unspecific tag {0}"
-msgstr "Etiqueta genérica {0}"
+msgstr "Uspesifikk egenskap {0}"
 
 #: ../core/resources/data/validator/deprecated.mapcss:582
 #: ../core/resources/data/validator/numeric.mapcss:579
 #, java-format
 msgid "Definition of {0} is unclear"
-msgstr "A definição de {0} é incerta"
+msgstr "Definisjonen til {0} er uklar"
 
 #: ../core/resources/data/validator/deprecated.mapcss:583
 #, java-format
@@ -1205,9 +1198,7 @@ msgstr "{0} + {1} + {2}"
 #, java-format
 msgid ""
 "{0} is not recommended. Use the Reverse Ways function from the Tools menu."
-msgstr ""
-"{0} não é recomendado. Utilize \"Inverter sentido da linha\" no menu "
-"Ferramentas."
+msgstr "{0} anbefales ikke. Bruk funksjonen «Snu linjer» fra verktøy-menyen."
 
 #: ../core/resources/data/validator/deprecated.mapcss:710
 #: ../core/resources/data/validator/deprecated.mapcss:1063
@@ -1230,11 +1221,11 @@ msgstr "{0}"
 
 #: ../core/resources/data/validator/deprecated.mapcss:711
 msgid "key with uncommon character"
-msgstr "chave com um caractere incomum"
+msgstr "nøkkel med uvanlig tegn"
 
 #: ../core/resources/data/validator/deprecated.mapcss:720
 msgid "uncommon short key"
-msgstr "chave curta incomum"
+msgstr "nøkkelen er uvanlig kort"
 
 #: ../core/resources/data/validator/deprecated.mapcss:751
 #: ../core/resources/data/validator/deprecated.mapcss:754
@@ -1242,8 +1233,8 @@ msgstr "chave curta incomum"
 msgid ""
 "{0} is inaccurate. Use separate tags for each specific type, e.g. {1} or {2}."
 msgstr ""
-"{0} é incorreto. Utilize etiquetas separadas para cada tipo específico, por "
-"exemplo, {1} ou {2}."
+"{0} er unøyaktig. Bruk separat egenskap for hver spesifikke type, f.eks. {1} "
+"eller {2}."
 
 #: ../core/resources/data/validator/deprecated.mapcss:793
 #: ../core/resources/data/validator/deprecated.mapcss:918
@@ -1257,21 +1248,21 @@ msgstr ""
 #: ../core/resources/data/validator/deprecated.mapcss:2162
 #, java-format
 msgid "{0} is deprecated for {1}"
-msgstr "{0} está em desuso a favor de {1}"
+msgstr "{0} er foreldet for {1}"
 
 #: ../core/resources/data/validator/deprecated.mapcss:1041
 #, java-format
 msgid "{0} is deprecated. Use the {1}: key prefix instead."
-msgstr "{0} está em desuso. Em vez disso use o prefixo \"{1}:\" na chave."
+msgstr "{0} er foreldet. Bruk nøkkelprefikset {1}: i stedet for."
 
 #: ../core/resources/data/validator/deprecated.mapcss:1064
 msgid "questionable key (ending with a number)"
-msgstr "chave questionável (termina com um número)"
+msgstr "mistenkelig nøkkel (slutter med et tall)"
 
 #: ../core/resources/data/validator/deprecated.mapcss:1135
 #, java-format
 msgid "The key {0} has an uncommon value."
-msgstr "A chave {0} tem um valor incomum."
+msgstr "Nøkkelen {0} har en uvanlig verdi."
 
 #: ../core/resources/data/validator/deprecated.mapcss:1241
 #: ../core/resources/data/validator/deprecated.mapcss:1247
@@ -1281,7 +1272,7 @@ msgstr "A chave {0} tem um valor incomum."
 #: ../core/resources/data/validator/deprecated.mapcss:1327
 #: ../core/resources/data/validator/deprecated.mapcss:1402
 msgid "misspelled value"
-msgstr "valor com erro ortográfico"
+msgstr "skrivefeil i verdi"
 
 #: ../core/resources/data/validator/deprecated.mapcss:1269
 #: ../core/resources/data/validator/deprecated.mapcss:1278
@@ -1291,13 +1282,13 @@ msgstr "valor com erro ortográfico"
 #: ../core/resources/data/validator/numeric.mapcss:558
 #, java-format
 msgid "wrong value: {0}"
-msgstr "valor errado: {0}"
+msgstr "feil verdi: {0}"
 
 #: ../core/resources/data/validator/deprecated.mapcss:1342
 #: ../core/resources/data/validator/deprecated.mapcss:1350
 #, java-format
 msgid "{0} is not a building type."
-msgstr "{0} não é um tipo de edifício."
+msgstr "{0} er ikke en bygningstype."
 
 #: ../core/resources/data/validator/deprecated.mapcss:2049
 #: ../core/resources/data/validator/highway.mapcss:179
@@ -1311,7 +1302,7 @@ msgstr "{0} não é um tipo de edifício."
 #: ../core/resources/data/validator/numeric.mapcss:566
 #, java-format
 msgid "unusual value of {0}"
-msgstr "valor incomum de {0}"
+msgstr "{0} har en uvanlig verdi"
 
 #: ../core/resources/data/validator/deprecated.mapcss:2435
 #, java-format
@@ -1319,14 +1310,13 @@ msgid ""
 "{0} as a tag on an object. Roles are specified in the relation members list "
 "instead."
 msgstr ""
-"{0} como uma etiqueta num objeto. Em vez disso, as funções são especificadas "
-"na lista de membros da relação."
+"{0}  som en merkelapp på et objekt men roller angis i stedet i relasjonens "
+"medlemsliste."
 
 #: ../core/resources/data/validator/deprecated.mapcss:2478
 #, java-format
 msgid "{0} with a temporary URL which may be outdated very soon"
-msgstr ""
-"{0} com um URL temporário que pode ficar desatualizado muito em breve"
+msgstr "{0} med en midlertidig URL som kan være utdatert veldig snart"
 
 #: ../core/resources/data/validator/deprecated.mapcss:2534
 #: ../core/resources/data/validator/deprecated.mapcss:2539
@@ -1334,88 +1324,88 @@ msgstr ""
 #: ../core/resources/data/validator/deprecated.mapcss:2549
 #, java-format
 msgid "{0} should be replaced by {1}"
-msgstr "{0} deve ser substituído por {1}"
+msgstr "{0} bør erstattes med {1}"
 
 #: ../core/resources/data/validator/geometry.mapcss:43
 #, java-format
 msgid "{0} on a node. Should be used on a way."
-msgstr "{0} num nó. Deve ser usado numa linha."
+msgstr "{0} på en node. Bør brukes på linje."
 
 #: ../core/resources/data/validator/geometry.mapcss:52
 #, java-format
 msgid "{0} on a node. Should be used on a way or relation."
-msgstr "{0} num nó. Deve ser usado numa linha ou relação."
+msgstr "{0} på en node. Bør brukes på en linje eller relasjon."
 
 #: ../core/resources/data/validator/geometry.mapcss:86
 #, java-format
 msgid "{0} on a node. Should be drawn as an area."
-msgstr "{0} num nó. Deve ser usado numa área."
+msgstr "{0} på en node. Bør tegnes som et område."
 
 #: ../core/resources/data/validator/geometry.mapcss:94
 #, java-format
 msgid "{0} on a node. Should be used in a relation"
-msgstr "{0} num nó. Deve ser usado numa relação"
+msgstr "{0} på en node. Bør brukes i en relasjon."
 
 #: ../core/resources/data/validator/geometry.mapcss:122
 #: ../core/resources/data/validator/geometry.mapcss:135
 #, java-format
 msgid "{0} on a way. Should be used on a node."
-msgstr "{0} numa linha. Deve ser usado num nó."
+msgstr "{0} på en linje. Bør brukes på en node."
 
 #: ../core/resources/data/validator/geometry.mapcss:143
 #, java-format
 msgid "{0} on a way. Should be used in a relation"
-msgstr "{0} numa linha. Deve ser usado numa relação"
+msgstr "{0} på en linje. Bør brukes på en relasjon."
 
 #: ../core/resources/data/validator/geometry.mapcss:148
 #, java-format
 msgid "{0} on a closed way. Should be used on an unclosed way."
-msgstr "{0} numa linha fechada. Deve ser usado numa linha não fechada."
+msgstr "{0} på en lukket linje. Bør brukes på en linje som ikke er lukket."
 
 #: ../core/resources/data/validator/geometry.mapcss:153
 #, java-format
 msgid "{0} on a relation"
-msgstr "{0} numa relação"
+msgstr "{0} på en relasjon"
 
 #: ../core/resources/data/validator/geometry.mapcss:170
 #: ../core/resources/data/validator/geometry.mapcss:173
 msgid "node connects highway and building"
-msgstr "nó ligado a uma estrada/rua e edifício"
+msgstr "node kobler sammen vei og bygning"
 
 #: ../core/resources/data/validator/geometry.mapcss:178
 msgid ""
 "Object at Position 0.00E 0.00N. There is nothing at this position except an "
 "already mapped weather buoy."
 msgstr ""
-"Objeto na posição 0.00E 0.00N. Não existe nada nesta posição exceto uma boia "
-"de meteorologia já mapeada."
+"Fant objekt på posisjonen 0.00 Ø, 0.00 N. Det er ingenting her, annet enn en "
+"værbøye som allerede er kartfestet."
 
 #: ../core/resources/data/validator/geometry.mapcss:184
 #: ../core/resources/data/validator/highway.mapcss:51
 #: ../core/resources/data/validator/highway.mapcss:56
 #, java-format
 msgid "{0} on a node"
-msgstr "{0} num nó"
+msgstr "{0} på en node"
 
 #: ../core/resources/data/validator/geometry.mapcss:191
 msgid "Building inside building"
-msgstr "Edifício dentro de edifício"
+msgstr "Bygning inne i en bygning"
 
 #: ../core/resources/data/validator/geometry.mapcss:197
 msgid "Overlapping buildings"
-msgstr "Edifícios sobrepostos"
+msgstr "Overlappende bygninger"
 
 #: ../core/resources/data/validator/geometry.mapcss:212
 msgid "Overlapping Water Areas"
-msgstr "Áreas de água que se sobrepõem"
+msgstr "Overlappende vannområder"
 
 #: ../core/resources/data/validator/geometry.mapcss:224
 msgid "Water area inside water area"
-msgstr "Área de água dentro de outra área de água"
+msgstr "Vannområde inni vannområde"
 
 #: ../core/resources/data/validator/geometry.mapcss:228
 msgid "Overlapping Areas"
-msgstr "Áreas sobrepostas"
+msgstr "Overlappende områder"
 
 #: ../core/resources/data/validator/geometry.mapcss:233
 #: ../core/resources/data/validator/geometry.mapcss:234
@@ -1431,70 +1421,70 @@ msgstr "Áreas sobrepostas"
 #: ../core/resources/data/validator/geometry.mapcss:265
 #, java-format
 msgid "{0} inside {1}"
-msgstr "{0} dentro de {1}"
+msgstr "{0} inne i {1}"
 
 #: ../core/resources/data/validator/geometry.mapcss:239
 msgid "Overlapping Identical Natural Areas"
-msgstr "Áreas naturais idênticas sobrepostas"
+msgstr "Overlappende identiske nautiske områder"
 
 #: ../core/resources/data/validator/geometry.mapcss:243
 msgid "Overlapping Identical Landuses"
-msgstr "Usos do solo sobrepostos"
+msgstr "Overlappende identiske bruk av land"
 
 #: ../core/resources/data/validator/geometry.mapcss:317
 msgid "isolated node which must be connected to a way"
-msgstr "nó isolado que deve estar ligado a uma linha"
+msgstr "isolert node som må kobles til linje"
 
 #: ../core/resources/data/validator/geometry.mapcss:326
 msgid "node connects waterway and bridge"
-msgstr "nó liga curso de água e ponte"
+msgstr "node kobler sammen vannvei og bru"
 
 #: ../core/resources/data/validator/geometry.mapcss:332
 #: ../core/resources/data/validator/geometry.mapcss:345
 #, java-format
 msgid "{0} node connected to a highway"
-msgstr "nó {0} ligado a uma via"
+msgstr "{0}-node koblet til vei"
 
 #: ../core/resources/data/validator/geometry.mapcss:351
 #, java-format
 msgid "{0} node connected to an underground object"
-msgstr "{0} nó conectado a um objeto subterrâneo"
+msgstr "{0}-node koblet til objekt under bakken"
 
 #: ../core/resources/data/validator/geometry.mapcss:356
 msgid "suspicious roundabout direction"
-msgstr "sentido da rotunda provavelmente errado"
+msgstr "mistenkelig rundkjøringsretning"
 
 #: ../core/resources/data/validator/geometry.mapcss:361
 #, java-format
 msgid "{0} on a large area"
-msgstr "{0} numa área grande"
+msgstr "{0} på stort område"
 
 #: ../core/resources/data/validator/geometry.mapcss:367
 #, java-format
 msgid "{0} on a small area"
-msgstr "{0} numa área pequena"
+msgstr "{0} på lite område"
 
 #: ../core/resources/data/validator/geometry.mapcss:374
 msgid "Too large building"
-msgstr "Edifício demasiado grande"
+msgstr "Bygningen er for stor"
 
 #: ../core/resources/data/validator/geometry.mapcss:379
 msgid ""
 "Waterway ends without a connection to another waterway or the direction of "
 "the waterway is wrong."
 msgstr ""
-"Curso de água termina sem uma ligação a outro curso de água ou a direção do "
-"curso de água está errada."
+"Vannveien slutter uten påkobling til annen vannvei, eller vannveiens retning "
+"er feil."
 
 #: ../core/resources/data/validator/geometry.mapcss:385
 #, java-format
 msgid "Coastline inside {1}"
-msgstr "Linha costeira dentro de {1}"
+msgstr "Kystlinje inni {1}"
 
 #: ../core/resources/data/validator/geometry.mapcss:392
 #, java-format
 msgid "{0} should be on the node where {1} and {2} intersect"
-msgstr "{0} deve estar no nó onde {1} e {2} se cruzam"
+msgstr "{0} bør være på noden der {1} og {2} krysser"
 
 #: ../core/resources/data/validator/geometry.mapcss:401
 #, java-format
@@ -1502,124 +1492,120 @@ msgid ""
 "{0} is the tag for the linear waterway. To tag the water area use {1} + {2} "
 "instead."
 msgstr ""
-"{0} é a etiqueta para o curso de água linear. Para áreas de água usar antes "
-"{1} + {2}."
+"{0} er egenskapen til en lineær vannvei. Bruk {1} + {2} som egenskap på "
+"vannområdet i stedet for."
 
 #: ../core/resources/data/validator/geometry.mapcss:415
 msgid "Ferry route is not connected to the road network or branches."
-msgstr ""
-"A rota de ferry não está ligada a uma rede de estradas ou outras rotas de "
-"ferry."
+msgstr "Ferjerute er ikke koblet til veinettverket ellet noen forgreininger."
 
 #: ../core/resources/data/validator/geometry.mapcss:423
 msgid "Ferry route is not connected to a ferry terminal or branches."
-msgstr ""
-"A rota de ferry não está ligada a um terminal de ferry ou outras rotas de "
-"ferry."
+msgstr "Ferjerute er ikke koblet til ferjeterminal eller noen forgreininger."
 
 #: ../core/resources/data/validator/geometry.mapcss:432
 #, java-format
 msgid "Railways connection node without {0} or {1}"
-msgstr "Nó de ligação dos caminhos-de-ferro sem {0} nem {1}"
+msgstr "Jernbaner møtes i samme node men uten {0} eller {1}"
 
 #: ../core/resources/data/validator/geometry.mapcss:438
 msgid "Node should be connected to two or more ways"
-msgstr "O nó deve estar ligado a duas ou mais linhas"
+msgstr "Node bør kobles til to eller flere strekninger"
 
 #: ../core/resources/data/validator/highway.mapcss:13
 msgid "abbreviated street name"
-msgstr "nome abreviado da rua"
+msgstr "forkortet veinavn"
 
 #: ../core/resources/data/validator/highway.mapcss:21
 msgid "wrong highway tag on a node"
-msgstr "etiqueta \"highway\" errada num nó"
+msgstr "feil veikategori-egenskap på node"
 
 #: ../core/resources/data/validator/highway.mapcss:44
 msgid "wrong crossing tag on a way"
-msgstr "etiqueta \"crossing\" errada numa linha"
+msgstr "feil kryss-egenskap på linje"
 
 #: ../core/resources/data/validator/highway.mapcss:62
 msgid "Unnamed unclassified highway"
-msgstr "Estrada sem classificação oficial que não tem nome"
+msgstr "Uklassifisert vei uten navn"
 
 #: ../core/resources/data/validator/highway.mapcss:73
 msgid "highway without a reference"
-msgstr "estrada sem etiqueta \"ref\" de referência"
+msgstr "vei uten referanse"
 
 #: ../core/resources/data/validator/highway.mapcss:83
 msgid "Unspecific highway type"
-msgstr "Tipo de rodovia não especificada"
+msgstr "Uspesifisert veikategori"
 
 #: ../core/resources/data/validator/highway.mapcss:110
 #: ../core/resources/data/validator/highway.mapcss:117
 #, java-format
 msgid "{0} is deprecated, use {1} instead. Also check similar tags like {2}"
 msgstr ""
-"{0} está em desuso, em vez disso usar {1}. Verificar também etiquetas "
-"semelhantes como {2}"
+"{0} er foreldet, bruk {1} i istedet for. Undersøk også lignende egenskaper, "
+"slik som {2}"
 
 #: ../core/resources/data/validator/highway.mapcss:150
 #, java-format
 msgid "pedestrian railway crossing without {0}"
-msgstr "passagem de peões ferroviária sem {0}"
+msgstr "jernbaneovergang for fotgjengere uten {0}"
 
 #: ../core/resources/data/validator/highway.mapcss:155
 #, java-format
 msgid "railway crossing without {0}"
-msgstr "passagem de nível ferroviária sem {0}"
+msgstr "jernbaneovergang uten {0}"
 
 #: ../core/resources/data/validator/highway.mapcss:193
 #, java-format
 msgid "{0} without right of way"
-msgstr "{0} sem direito de passagem"
+msgstr "{0} uten forkjørsrett"
 
 #: ../core/resources/data/validator/highway.mapcss:200
 #, java-format
 msgid "Area with {0} above {1} is invalid"
-msgstr "A área com {0} acima de {1} é inválida"
+msgstr "Areal med {0} over {1} er ugyldig"
 
 #: ../core/resources/data/validator/highway.mapcss:211
 #, java-format
 msgid "{0} with trailing number"
-msgstr "{0} termina com um número"
+msgstr "{0} med etterfølgende nummer"
 
 #: ../core/resources/data/validator/highway.mapcss:212
 msgid "questionable value (ending with a number)"
-msgstr "valor questionável (termina com um número)"
+msgstr "mistenkelig verdi (slutter med et tall)"
 
 #: ../core/resources/data/validator/multiple.mapcss:10
 #, java-format
 msgid "{0} with multiple values"
-msgstr "{0} com vários valores"
+msgstr "{0} med flere verdier"
 
 #: ../core/resources/data/validator/multiple.mapcss:38
 #, java-format
 msgid "empty value in semicolon-separated ''{0}''"
-msgstr "valor vazio em separação por ponto e vírgula ''{0}''"
+msgstr "tom verdi i semikolon-adskilt «{0}»"
 
 #: ../core/resources/data/validator/numeric.mapcss:4
 msgid "numerical key"
-msgstr "chave numérica"
+msgstr "numerisk nøkkel"
 
 #: ../core/resources/data/validator/numeric.mapcss:10
 #, java-format
 msgid "{0} value with + sign"
-msgstr "{0} valor com o símbolo +"
+msgstr "{0}-verdi med +-tegn"
 
 #: ../core/resources/data/validator/numeric.mapcss:19
 #, java-format
 msgid "{0} should be an integer value between -5 and 5"
-msgstr "{0} deve ser um número inteiro entre -5 e 5"
+msgstr "{0} bør være heltallsverdi mellom -5 og 5"
 
 #: ../core/resources/data/validator/numeric.mapcss:33
 #, java-format
 msgid "negative {0} value"
-msgstr "valor negativo {0}"
+msgstr "negativ {0} verdi"
 
 #: ../core/resources/data/validator/numeric.mapcss:45
 #, java-format
 msgid "{0} should have numbers only with optional .5 increments"
-msgstr "{0} deve ter apenas números com incrementos de .5 opcionalmente"
+msgstr "{0} bør ha kun tall med valgfrie økninger på 0.5"
 
 #: ../core/resources/data/validator/numeric.mapcss:71
 #: ../core/resources/data/validator/unnecessary.mapcss:33
@@ -1628,7 +1614,7 @@ msgstr "{0} deve ter apenas números com incrementos de .5 opcionalmente"
 #: ../core/resources/data/validator/unnecessary.mapcss:84
 #, java-format
 msgid "{0} is unnecessary for {1}"
-msgstr "{0} não é necessária em {1}"
+msgstr "{0} er ikke nødvendig for {1}"
 
 #: ../core/resources/data/validator/numeric.mapcss:72
 #: ../core/resources/data/validator/unnecessary.mapcss:8
@@ -1639,7 +1625,7 @@ msgstr "{0} não é necessária em {1}"
 #: ../core/resources/data/validator/unnecessary.mapcss:85
 #: ../core/resources/data/validator/unnecessary.mapcss:172
 msgid "unnecessary tag"
-msgstr "etiqueta desnecessária"
+msgstr "unødvendig egenskap"
 
 #: ../core/resources/data/validator/numeric.mapcss:96
 #, java-format
@@ -1647,21 +1633,21 @@ msgid ""
 "unusual value of {0}: use abbreviation for unit and space between value and "
 "unit"
 msgstr ""
-"valor invulgar de {0}: usar abreviação para a unidade e um espaço entre o "
-"valor e a unidade"
+"{0} har uvanlig verdi: forkort enhet, og sørg for at det er mellomrom mellom "
+"verdi og enhet"
 
 #: ../core/resources/data/validator/numeric.mapcss:144
 #, java-format
 msgid "unusual value of {0}: use '' for foot and \" for inches, no spaces"
 msgstr ""
-"valor invulgar de {0}: usar '' para pés e \" para polegadas, sem espaços"
+"{0} har en uvanlig verdi: bruk '' for fot og \" for tomme, ingen mellomrom"
 
 #: ../core/resources/data/validator/numeric.mapcss:190
 #: ../core/resources/data/validator/numeric.mapcss:483
 #, java-format
 msgid "unusual value of {0}: use . instead of , as decimal separator"
 msgstr ""
-"valor invulgar de {0}: usar antes . em vez de , como separador decimal"
+"{0} har uvanlig verdi: bruk punktum i stedet for komma som desimaltegn"
 
 #: ../core/resources/data/validator/numeric.mapcss:268
 #, java-format
@@ -1669,13 +1655,12 @@ msgid ""
 "unusual value of {0}: meters is default; only positive values; point is "
 "decimal separator; if units, put space then unit"
 msgstr ""
-"valor invulgar de {0}: metros é o predefinido; apenas valores positivos; o "
-"ponto é o separador decimal; no caso de indicar a unidade, colocar espaço e "
-"depois a unidade"
+"{0} har en uvanlig verdi: meter er standard; kun positive verdier; punktum "
+"er desimaltegn; dersom enhet finnes, bruk mellomrom før enheten"
 
 #: ../core/resources/data/validator/numeric.mapcss:292
 msgid "tonne"
-msgstr "toneladas"
+msgstr "tonn"
 
 #: ../core/resources/data/validator/numeric.mapcss:292
 #: ../core/resources/data/validator/numeric.mapcss:303
@@ -1685,58 +1670,55 @@ msgid ""
 "unusual value of {0}: {1} is default; only positive values; point is decimal "
 "separator; if units, put space then unit"
 msgstr ""
-"valor invulgar de {0}: {1} é o predefinido; apenas valores positivos; o "
-"ponto é o separador decimal; no caso de indicar a unidade, colocar espaço e "
-"depois a unidade"
+"{0} har en uvanlig verdi: {1} er standard; kun positive verdier; punktum er "
+"desimaltegn; dersom enhet finnes, bruk mellomrom før enheten"
 
 #: ../core/resources/data/validator/numeric.mapcss:303
 #: ../plugins/photoadjust/src/org/openstreetmap/josm/plugins/photoadjust/PhotoPropertyEditor.java:258
 msgid "km/h"
-msgstr "km/h"
+msgstr "km/t"
 
 #: ../core/resources/data/validator/numeric.mapcss:319
 msgid "kilometers"
-msgstr "quilómetros"
+msgstr "kilometer"
 
 #: ../core/resources/data/validator/numeric.mapcss:332
 msgid "voltage should be in volts with no units/delimiter/spaces"
-msgstr ""
-"a voltagem deve estar em volts sem unidades, delimitadores ou espaços"
+msgstr "spenning må oppgis i volt uten enhet, skilletegn eller mellomrom"
 
 #: ../core/resources/data/validator/numeric.mapcss:355
 #, java-format
 msgid "imprecise value of {0}"
-msgstr "valor impreciso de {0}"
+msgstr "upresis verdi i {0}"
 
 #: ../core/resources/data/validator/numeric.mapcss:356
 msgid "an integer value in millimeters, without unit"
-msgstr "um valor integral em milímetros, sem a unidade"
+msgstr "en heltallsverdi i millimeter, uten enhet"
 
 #: ../core/resources/data/validator/numeric.mapcss:380
 #, java-format
 msgid "unusual {0} value on narrow gauge railway"
-msgstr "valor invulgar de {0} numa ferrovia de bitola estreita"
+msgstr "uvanlig {0} verdi på en smalsporet jernvbane"
 
 #: ../core/resources/data/validator/numeric.mapcss:409
 #, java-format
 msgid "{0} must be a numeric value"
-msgstr "{0} tem de ser um número"
+msgstr "{0} må være numerisk"
 
 #: ../core/resources/data/validator/numeric.mapcss:419
 #, java-format
 msgid "{0} must be a positive integer number"
-msgstr "{0} tem de ser um número inteiro positivo"
+msgstr "{0} må være et positivt heltall"
 
 #: ../core/resources/data/validator/numeric.mapcss:471
 #: ../core/resources/data/validator/numeric.mapcss:494
 #, java-format
 msgid "{0} must be a numeric value, in meters and without units"
-msgstr ""
-"{0} tem de ser um valor numérico, em metros e sem a unidade de medida"
+msgstr "{0} må være numerisk, oppgis i meter og uten enhet"
 
 #: ../core/resources/data/validator/numeric.mapcss:507
 msgid "Unnecessary amount of decimal places"
-msgstr "Quantidade de casas decimais desnecessárias"
+msgstr "Unødvendig nøyaktig tall (fjern de minste desimalene)"
 
 #: ../core/resources/data/validator/numeric.mapcss:541
 #: ../core/resources/data/validator/numeric.mapcss:550
@@ -1744,7 +1726,7 @@ msgstr "Quantidade de casas decimais desnecessárias"
 #: ../core/resources/data/validator/territories.mapcss:29
 #: ../core/resources/data/validator/territories.mapcss:34
 msgid "Airport tagging"
-msgstr "Etiquetas em aeroportos"
+msgstr "Flyplass-egenskaper"
 
 #: ../core/resources/data/validator/numeric.mapcss:588
 #: ../core/resources/data/validator/numeric.mapcss:600
@@ -1757,186 +1739,177 @@ msgid ""
 "unusual value of {0}: set unit e.g. {1} or {2}; only positive values; point "
 "is decimal separator; space between value and unit"
 msgstr ""
-"valor invulgar de {0}: é necessário definir a unidade, por exemplo, {1} ou "
-"{2}; apenas valores positivos; o ponto é o separador decimal; deve haver um "
-"espaço entre o valor e a unidade"
+"{0} har uvanlig verdi: velg enhet f.eks. {1} eller {2}; kun positive tall; "
+"punktum er desimaltegn; bruk mellomrom mellom verdi og enhet"
 
 #: ../core/resources/data/validator/numeric.mapcss:660
 #, java-format
 msgid "Numeric name: {0}. Maybe {1} or {2} is meant."
-msgstr "Nome numérico: {0}. Talvez devesse ser {1} ou {2}."
+msgstr "Numerisk navn: {0}. Er det egentlig {1} eller {2} som menes?"
 
 #: ../core/resources/data/validator/numeric.mapcss:668
 #, java-format
 msgid "Unusually large value of {0}, possibly centimeter units are meant?"
-msgstr ""
-"Valor invulgarmente elevado de {0}, será que se trata de unidades "
-"centimétricas?"
+msgstr "Uvanlig høy verdi på {0}, kan enheten muligens være centimeter?"
 
 #: ../core/resources/data/validator/relation.mapcss:4
 msgid "relation without type"
-msgstr "relação sem a etiqueta \"type\" (tipo de relação)"
+msgstr "relasjon uten type"
 
 #: ../core/resources/data/validator/relation.mapcss:18
 #: ../core/resources/data/validator/relation.mapcss:37
 #, java-format
 msgid "{0} relation without {0} tag"
-msgstr "{0} relação sem a etiqueta {0}"
+msgstr "{0}-relasjon uten egenskapen {0}"
 
 #: ../core/resources/data/validator/relation.mapcss:66
 #, java-format
 msgid "way with {0} is part of a {1} route relation"
-msgstr "a linha com {0} faz parte de uma relação de rota {1}"
+msgstr "strekning med {0} er en del av en {1} ruterelasjon"
 
 #: ../core/resources/data/validator/relation.mapcss:71
 #, java-format
 msgid "{0} of {1} member and {0} relation differ"
-msgstr "{0} de {1} membros e {0} relação diferem"
+msgstr "{0} som {1} medlem og {0}-relasjon skiller seg ut"
 
 #: ../core/resources/data/validator/religion.mapcss:4
 msgid "religion without denomination"
-msgstr "religião sem denominação religiosa"
+msgstr "religion uten trosretning"
 
 #: ../core/resources/data/validator/religion.mapcss:12
 msgid "unknown christian denomination"
-msgstr "denominação cristã desconhecida"
+msgstr "ukjent kristen trosretning"
 
 #: ../core/resources/data/validator/religion.mapcss:19
 msgid "unknown muslim denomination"
-msgstr "denominação religiosa muçulmana desconhecida"
+msgstr "ukjent muslimsk trosretning"
 
 #: ../core/resources/data/validator/religion.mapcss:26
 msgid "unknown jewish denomination"
-msgstr "denominação religiosa judaica desconhecida"
+msgstr "ukjent jødisk trosretning"
 
 #: ../core/resources/data/validator/territories.mapcss:4
 msgid "street name contains ss"
-msgstr "nome da rua contém ss"
+msgstr "veinavn inneholder ss"
 
 #: ../core/resources/data/validator/territories.mapcss:13
 msgid "street name contains ß"
-msgstr "nome da estrada contém ß"
+msgstr "veinavn inneholder ß"
 
 #: ../core/resources/data/validator/territories.mapcss:20
 #, java-format
 msgid "{0} is deprecated in {1}"
-msgstr "{0} está em desuso em {1}"
+msgstr "{0} er foreldet i {1}"
 
 #: ../core/resources/data/validator/unnecessary.mapcss:7
 #, java-format
 msgid "{0} is unnecessary"
-msgstr "{0} não é necessária"
+msgstr "{0} er ikke nødvendig"
 
 #: ../core/resources/data/validator/unnecessary.mapcss:17
 #, java-format
 msgid "{0} is optional on {1}"
-msgstr "{0} é opcional em {1}"
+msgstr "{0} er frivillig på {1}"
 
 #: ../core/resources/data/validator/unnecessary.mapcss:63
 #, java-format
 msgid "{0} makes no sense"
-msgstr "{0} não faz sentido"
+msgstr "{0} er meningsløs"
 
 #: ../core/resources/data/validator/unnecessary.mapcss:72
 msgid "Nodes duplicating parent way tags"
-msgstr "Nós com etiquetas iguais às da da própria linha"
+msgstr ""
+"Noder dupliserer merkelapper (tags) på foreldre (overordnede)  strekninger"
 
 #: ../core/resources/data/validator/unnecessary.mapcss:77
 #, java-format
 msgid "{0} together with {1} and {2}. Remove {0}."
-msgstr "{0} junto com {1} e {2}. Remova {0}."
+msgstr "{0} sammen med {1} og {2}. Fjern {0}."
 
 #: ../core/resources/data/validator/unnecessary.mapcss:121
 #: ../core/resources/data/validator/unnecessary.mapcss:157
 msgid "descriptive name"
-msgstr "nome descritivo"
+msgstr "beskrivende navn"
 
 #: ../core/resources/data/validator/unnecessary.mapcss:171
 #, java-format
 msgid "{0} should not be uploaded"
-msgstr "{0} não deve ser enviado"
+msgstr "{0} bør ikke lastes opp"
 
 #: ../core/resources/data/validator/wikipedia.mapcss:5
 msgid ""
 "wikipedia tag has no language given, use ''wikipedia''=''language:page "
 "title''"
-msgstr ""
-"a etiqueta \"wikipedia\" não tem um idioma definido, use "
-"''wikipedia''=''idioma:página da wikipédia''"
+msgstr "Wikipedia-egenskap mangler språk. Bruk «wikipedia=språk:sidenavn»"
 
 #: ../core/resources/data/validator/wikipedia.mapcss:13
 msgid "wikipedia tag has an unknown language prefix"
-msgstr "etiqueta \"wikipedia\" com prefixo de idioma desconhecido"
+msgstr "wikipedia-egenskap har ukjent språkprefiks"
 
 #: ../core/resources/data/validator/wikipedia.mapcss:20
 msgid "wikipedia tag format is deprecated"
-msgstr "etiqueta \"wikipedia\" com formato em desuso"
+msgstr "formatet til wikipedia-egenskapen er foreldet"
 
 #: ../core/resources/data/validator/wikipedia.mapcss:21
 msgid "''wikipedia''=''language:page title''"
-msgstr "''wikipedia''=''língua:página''"
+msgstr "«wikipedia=språk:sidenavn»"
 
 #: ../core/resources/data/validator/wikipedia.mapcss:28
 #, java-format
 msgid "wikipedia ''{0}'' language is obsolete, use ''{1}'' instead"
-msgstr "idioma em wikipedia ''{0}'' em desuso, usar antes ''{1}''"
+msgstr "wikipedia-språket «{0}» er foreldet, bruk «{1}» i stedet for"
 
 #: ../core/resources/data/validator/wikipedia.mapcss:35
 #, java-format
 msgid "wikipedia ''{0}'' language is invalid, use ''{1}'' instead"
-msgstr "idioma em wikipedia ''{0}'' inválido, use antes ''{1}''"
+msgstr "wikipedia-språket «{0}» er ugyldig, bruk «{1}» i stedet for"
 
 #: ../core/resources/data/validator/wikipedia.mapcss:42
 #: ../core/resources/data/validator/wikipedia.mapcss:49
 #: ../core/resources/data/validator/wikipedia.mapcss:56
 #, java-format
 msgid "{0} tag should not have URL-encoded values like ''%27''"
-msgstr "a etiqueta {0} não deve ter valores codificados em URL como ''%27''"
+msgstr "egenskapen {0} kan ikke ha URL-kodede verdier slik som «%27»"
 
 #: ../core/resources/data/validator/wikipedia.mapcss:63
 msgid "wikipedia title should not start with a space after language code"
-msgstr ""
-"o título da página da Wikipédia não deve começar com um espaço em branco "
-"após o idioma"
+msgstr "wikipedia-tittel bør ikke starte med mellomrom etter språkkode"
 
 #: ../core/resources/data/validator/wikipedia.mapcss:70
 #, java-format
 msgid "wikipedia title should not have ''{0}'' prefix"
-msgstr "o nome da página da Wikipédia não deve ter o prefixo ''{0}''"
+msgstr "wikipedia-tittel bør ikke ha prefikset «{0}»"
 
 #: ../core/resources/data/validator/wikipedia.mapcss:80
 msgid "wikipedia page title should have first letter capitalized"
-msgstr "o nome da página da Wikipédia deve ter a primeiro letra em maiúscula"
+msgstr "wikipedia-sidenavn bør ha stor førstebokstav"
 
 #: ../core/resources/data/validator/wikipedia.mapcss:89
 msgid ""
 "wikipedia page title should have spaces instead of underscores (''_''→'' '')"
 msgstr ""
-"nome da página da Wikipédia deve ter espaços e não traços inferiores "
-"(''_''→'' '')"
+"wikipedia-sidenavn bør ha mellomrom i stedet for understreker («_» → « »)"
 
 #: ../core/resources/data/validator/wikipedia.mapcss:118
 msgid "wikipedia language seems to be duplicated, e.g. en:en:Foo"
-msgstr ""
-"prefixo do idioma da Wikipédia parece estar duplicado, por ex. "
-"\"pt:pt:Página\""
+msgstr "wikipedia-språket er kanskje duplisert, dvs. en:en:Foo"
 
 #: ../core/resources/data/validator/wikipedia.mapcss:127
 msgid "wikidata tag must be in Qnnnn format, where n is a digit"
-msgstr "a etiqueta wikidata tem de ser no formato Qxxxx onde x é um dígito"
+msgstr "wikipedia-egenskapen må ha format Qnnnn, der n er et siffer"
 
 #: ../core/resources/data/validator/wikipedia.mapcss:138
 msgid ""
 "wikipedia tag is set, but there is no wikidata tag. Wikipedia plugin might "
 "help with wikidata id lookups"
 msgstr ""
-"existe a etiqueta \"wikipedia\" mas não a etiqueta \"wikidata\". O módulo "
-"Wikipédia pode ajudar a procurar etiquetas wikidata"
+"Wikipedia-egenskapen er angitt, men mangler wikidata-egenskap. Wikipedia-"
+"tillegget kan hjelpe til med ID-oppslag i wikidata."
 
 #: ../core/resources/data/validator/wikipedia.mapcss:148
 #, java-format
 msgid "{0} value looks like a {1} value"
-msgstr "o valor {0} parecer ser um valor {1}"
+msgstr "verdien {0} ser ut som verdien {1}"
 
 #: ../core/resources/data/validator/wikipedia.mapcss:163
 #, java-format
@@ -1946,42 +1919,40 @@ msgid ""
 "''wikipedia:language=value'' only for additional articles that are not just "
 "other language variants of the main article."
 msgstr ""
-"A etiqueta ''{0}'' está definida, mas não a etiqueta ''{1}''. Certifique-se "
-"de que define ''wikipedia=language:value'' para o artigo principal e "
-"''wikipedia:language=value'' opcional apenas para artigos adicionais que não "
-"sejam apenas variantes linguísticas do artigo principal."
+"egenskapen «{0}» er angitt, men ikke «{1}». Sørg for å angi "
+"«wikipedia=språk:verdi» for hovedartikkelen, og valgfritt "
+"«wikipedia:språk=verdi» kun for tilleggsartikler som ikke bare er "
+"språkvarianter av hovedartikkelen."
 
 #: ../core/resources/styles/standard/elemstyles.mapcss:28
 msgid "Hide icons at low zoom"
-msgstr "Esconder ícones em aproximações de vista baixas"
+msgstr "Skjul ikoner ved lavt zoom-nivå"
 
 #: ../core/resources/styles/standard/elemstyles.mapcss:34
 msgid "Less obtrusive node symbols at low zoom"
-msgstr "Símbolos de nós menos obstrusivos em aproximações de vista baixas"
+msgstr "Nodesymboler er mindre framtredende ved lave zoom-nivåer"
 
 #: ../core/resources/styles/standard/elemstyles.mapcss:40
 msgid "Hide tagged waynodes at low zoom"
-msgstr "Ocultar nós das linhas etiquetados com pouco zoom"
+msgstr "Skjul veinoder med egenskaper ved lave zoom-nivåer"
 
 #: ../core/resources/styles/standard/elemstyles.mapcss:46
 msgid "Display street labels (at high zoom)"
-msgstr "Mostrar nomes das vias (em níveis de aproximação de vista altos)"
+msgstr "Vis påskrifter på veier (ved høye zoom-nivå)"
 
 #: ../core/resources/styles/standard/elemstyles.mapcss:52
 msgid "Use alternative turn restriction icon set"
-msgstr "Usar conjunto de ícones alternativo em restrições de viragem"
+msgstr "Bruk alternativt ikonsett for kryssrestriksjoner"
 
 #: ../core/resources/styles/standard/elemstyles.mapcss:58
 msgid "Display fill colour of areas with place=*"
-msgstr "Mostrar cor de preenchimento de áreas com place=*"
+msgstr "Fyll stedsomriss (place=*) med farge"
 
 #: ../core/resources/styles/standard/elemstyles.mapcss:64
 msgid "Areas are drawn with fill only around their inner edges"
-msgstr ""
-"As áreas são mostradas com cor de preenchimento apenas à volta das linhas de "
-"contorno"
+msgstr "Tegn områder med fyll kun rundt indre kant"
 
 #: ../core/resources/styles/standard/elemstyles.mapcss:70
 msgid "Display note=* annotation on nodes"
-msgstr "Mostrar a etiqueta note=* em nós"
+msgstr "Vis merknader, note=*, på noder"
 
