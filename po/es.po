@@ -25,14 +25,17 @@ msgstr ""
 "Project-Id-Version: Osmose\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-04-28 19:47+0200\n"
-"PO-Revision-Date: 2014-04-30 17:25+0000\n"
-"Last-Translator: Hugoren Martinako <aumpfbahn@gmail.com>, 2021,2025\n"
-"Language-Team: Spanish (http://app.transifex.com/openstreetmap-france/osmose/language/es/)\n"
+"PO-Revision-Date: 2025-07-17 08:36+0000\n"
+"Last-Translator: Franco <francobenedetti.59+weblate1@gmail.com>\n"
+"Language-Team: Spanish <https://hosted.weblate.org/projects/osmose/backend/"
+"es/>\n"
+"Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: es\n"
-"Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
+"Plural-Forms: nplurals=3; plural=(n == 1) ? 0 : ((n != 0 && n % 1000000 == 0)"
+" ? 1 : 2);\n"
+"X-Generator: Weblate 5.13-dev\n"
 
 #: ../analysers/analyser_merge_college_FR.py:31
 msgid "College not integrated"
@@ -5404,32 +5407,41 @@ msgid ""
 "Check if the value applies at all times. If so, remove the tag with `:conditional`.\n"
 "Otherwise, remove the tag without `:conditional`."
 msgstr ""
+"Comprueba si el valor se aplica en todo momento. En caso afirmativo, borra "
+"la etiqueta con `:conditional`.\n"
+"En caso contrario, borra la etiqueta sin `:conditional`."
 
 #: ../plugins/ConditionalRestrictions.py:84
 msgid ""
 "`bicycle=yes` together with `bicycle:conditional = yes @ (12:00-24:00)` "
 "means the same as just `bicycle=yes`."
 msgstr ""
+"`bicycle=yes` junto con `bicycle:conditional = yes @ (12:00-24:00)` "
+"significa lo mismo que sólo `bicycle=yes`."
 
 #: ../plugins/ConditionalRestrictions.py:224
 #, python-brace-format
 msgid "Tag `{0}` has the same value as `{1}`, without restrictions"
-msgstr ""
+msgstr "La etiqueta `{0}` tiene el mismo valor que `{1}`, sin restricciones"
 
 #: ../plugins/Highway_Lanes.py:258 ../plugins/Highway_Lanes.py:265
 #, python-brace-format
 msgid "{0}={1} is not a positive integer"
-msgstr ""
+msgstr "{0}={1} no es un entero positivo"
 
 #: ../plugins/Structural_Multipolygon.py:39
 msgid "Missing outer way with role `outer` for multipolygon"
-msgstr ""
+msgstr "Falta la vía exterior con rol `outer` para el multipolígono"
 
 #: ../plugins/Structural_Multipolygon.py:43
 msgid ""
 "Find the outer way, and add it to the relation with role `outer`. Multiple outer ways are also possible as long as they form one or more closed rings.\n"
 "The previous outer way may have been deleted, check the history."
 msgstr ""
+"Busca el camino exterior y agrégalo a la relación con el rol «outer». "
+"También son posibles múltiples vías externas siempre que formen uno o más "
+"anillos cerrados.\n"
+"La vía externa anterior puede haber sido borrada, comprueba el historial."
 
 #: ../plugins/TagFix_MultipleTag2.py:28 ../plugins/TagFix_MultipleTag2.py:212
 #: ../plugins/TagFix_MultipleTag2.py:541 ../plugins/TagFix_MultipleTag2.py:727
