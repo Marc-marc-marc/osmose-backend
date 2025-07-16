@@ -5447,7 +5447,7 @@ msgstr ""
 #: ../plugins/TagFix_MultipleTag2.py:541 ../plugins/TagFix_MultipleTag2.py:727
 #, python-brace-format
 msgid "{0} with {1}, likely this is a single pitch instead"
-msgstr "{0} con {1}, es probable que se trate de una única parcela."
+msgstr "{0} con {1}, es probable que se trate de una única parcela"
 
 #: ../plugins/TagFix_MultipleTag2.py:28
 msgid ""
@@ -5455,21 +5455,24 @@ msgid ""
 "common for a single pitch (`tourism=camp_pitch`) within a camping site. "
 "Possibly the two were interchanged?"
 msgstr ""
+"El camping tiene un nombre numérico. Los identificadores numéricos son mucho "
+"más comunes para una sola parcela (`tourism=camp_pitch`) dentro de un "
+"camping. ¿Es posible que se hayan intercambiado?"
 
 #: ../plugins/TagFix_MultipleTag2.py:31 ../plugins/TagFix_MultipleTag2.py:189
 #: ../plugins/TagFix_MultipleTag2.py:520 ../plugins/TagFix_MultipleTag2.py:706
 #, python-brace-format
 msgid "Fence with {0} tag, also add {1}"
-msgstr ""
+msgstr "Cerca con etiqueta {0}, agrega también {1}"
 
 #: ../plugins/TagFix_Opening_Hours.py:69
 #, python-brace-format
 msgid "The `{0}` value is invalid and could not be parsed"
-msgstr ""
+msgstr "El valor `{0}` es inválido y no pudo procesarse."
 
 #: ../analysers/analyser_merge_forest_compartment_FR.py:33
 msgid "Forest compartment not integrated"
-msgstr ""
+msgstr "Compartimento forestal no integrado"
 
 #: ../analysers/analyser_merge_forest_compartment_FR.py:34
 msgid ""
