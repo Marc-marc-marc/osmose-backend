@@ -5001,7 +5001,7 @@ msgstr "{0} junto con {1}, normalmente {1} se encuentra debajo de {2}. Etiquete 
 #: ../plugins/indoor.py:214
 #, python-brace-format
 msgid "`{0}` without `{1}` or `{2}`"
-msgstr "`0` sin `1` o `2`"
+msgstr "`{0}` sin `{1}` o `{2}`"
 
 #: ../plugins/indoor.py:21 ../plugins/indoor.py:78 ../plugins/indoor.py:182
 #: ../plugins/indoor.py:228
