@@ -5438,7 +5438,7 @@ msgid ""
 "Find the outer way, and add it to the relation with role `outer`. Multiple outer ways are also possible as long as they form one or more closed rings.\n"
 "The previous outer way may have been deleted, check the history."
 msgstr ""
-"Busca el camino exterior y agrégalo a la relación con el rol «outer». "
+"Busca el camino exterior y agrégalo a la relación con el rol `outer`. "
 "También son posibles múltiples vías externas siempre que formen uno o más "
 "anillos cerrados.\n"
 "La vía externa anterior puede haber sido borrada, comprueba el historial."
@@ -5447,7 +5447,7 @@ msgstr ""
 #: ../plugins/TagFix_MultipleTag2.py:541 ../plugins/TagFix_MultipleTag2.py:727
 #, python-brace-format
 msgid "{0} with {1}, likely this is a single pitch instead"
-msgstr ""
+msgstr "{0} con {1}, es probable que se trate de una única parcela."
 
 #: ../plugins/TagFix_MultipleTag2.py:28
 msgid ""
