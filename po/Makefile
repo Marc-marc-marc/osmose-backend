@@ -24,5 +24,11 @@ statistics:
 
 josm_po:
 	@for i in $(PO); do \
-	  sed -n '1,/^$$/p;/\.mapcss:[0-9]/,/^$$/p' josm/josm_trans/josm/$$i > josm/$$i; \
+          j="$$i"; \
+	  if [ "$$i" = "en_devel.po" ]; then \
+	    continue; \
+	  elif [ "$$i" = "nb_NO.po" ]; then \
+	    i="nb.po"; \
+	  fi; \
+	  sed -n '1,/^$$/p;/\.mapcss:[0-9]/,/^$$/p' josm/josm_trans/josm/$$i > josm/$$j; \
 	done
