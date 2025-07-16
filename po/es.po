@@ -1439,7 +1439,7 @@ msgstr "\"{0}\"=\"{1}\" inesperado caracter no imprimible ({2}, 0x{3:04x}) en el
 #, python-brace-format
 msgid "\"{0}\" unexpected symbol char ({1}, 0x{2:04x}) in key at position {3}"
 msgstr ""
-"\"{0}\" inesperado caracter simbólico ({1}, 0x{2:04x}) en la clave en "
+"\"{0}\" inesperado carácter simbólico ({1}, 0x{2:04x}) en la clave en "
 "posición {3}"
 
 #: ../plugins/Name_Script.py:145
@@ -1855,7 +1855,7 @@ msgstr "Falta rol `admin_centre`"
 
 #: ../analysers/analyser_osmosis_boundary_relation.py:126
 msgid "Missing `name`"
-msgstr "Falta  `name`"
+msgstr "Falta `name`"
 
 #: ../analysers/analyser_osmosis_boundary_relation.py:135
 msgid ""
@@ -2214,7 +2214,7 @@ msgstr "Debe coincidir con el nivel más alto de rutas conectadas, excepto `moto
 
 #: ../analysers/analyser_osmosis_roundabout_level.py:273
 msgid "Adjust the tag `highway=*` of the roundabout."
-msgstr "Ajuste la etiqueta `highway=*`  de la rotonda."
+msgstr "Ajuste la etiqueta `highway=*` de la rotonda."
 
 #: ../analysers/analyser_osmosis_roundabout_level.py:275
 msgid ""
@@ -5001,7 +5001,7 @@ msgstr "{0} junto con {1}, normalmente {1} se encuentra debajo de {2}. Etiquete 
 #: ../plugins/indoor.py:214
 #, python-brace-format
 msgid "`{0}` without `{1}` or `{2}`"
-msgstr "\"0\" sin \"1\" o \"2\""
+msgstr "`0` sin `1` o `2`"
 
 #: ../plugins/indoor.py:21 ../plugins/indoor.py:78 ../plugins/indoor.py:182
 #: ../plugins/indoor.py:228
