@@ -4427,7 +4427,7 @@ msgstr ""
 "Après avoir vérifié les photos aériennes, ajoutez des nœuds ou déplacez les "
 "nœuds existants."
 
-#: ../plugins/TagFix_DuplicateValue.py:156
+#: ../plugins/TagFix_DuplicateValue.py:157
 #, python-brace-format
 msgid "Duplicated values {key}={val}"
 msgstr "Valeurs dupliquées {key}={val}"
@@ -5418,7 +5418,7 @@ msgid ""
 "item."
 msgstr ""
 
-#: ../plugins/TagFix_DuplicateValue.py:168
+#: ../plugins/TagFix_DuplicateValue.py:169
 #, python-brace-format
 msgid "Similar values {v1} and {v2} in {key}={val}"
 msgstr ""

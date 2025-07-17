@@ -4424,7 +4424,7 @@ msgid "After checking orthophotos, add nodes or move existing nodes."
 msgstr ""
 "Nach Prüfung der Luftbilder, ergänze oder verschiebe vorhandene Knoten."
 
-#: ../plugins/TagFix_DuplicateValue.py:156
+#: ../plugins/TagFix_DuplicateValue.py:157
 #, python-brace-format
 msgid "Duplicated values {key}={val}"
 msgstr "Doppelte Werte {key}={val}"
@@ -5496,7 +5496,7 @@ msgstr ""
 "Stelle sicher, dass sich die Interpretation des Tags nicht ändert, wenn du "
 "einen Eintrag löschst."
 
-#: ../plugins/TagFix_DuplicateValue.py:168
+#: ../plugins/TagFix_DuplicateValue.py:169
 #, python-brace-format
 msgid "Similar values {v1} and {v2} in {key}={val}"
 msgstr ""

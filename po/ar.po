@@ -4250,7 +4250,7 @@ msgstr ""
 msgid "After checking orthophotos, add nodes or move existing nodes."
 msgstr "بعد التحقق من الصور الجوية، أضف عقدًا أو انقل العقد الموجودة."
 
-#: ../plugins/TagFix_DuplicateValue.py:156
+#: ../plugins/TagFix_DuplicateValue.py:157
 #, python-brace-format
 msgid "Duplicated values {key}={val}"
 msgstr "قيم مكررة {key}={val}"
@@ -5315,7 +5315,7 @@ msgstr ""
 "\n"
 "تأكد من أن تفسير الوسم لا يتغير عند حذف عنصر واحد."
 
-#: ../plugins/TagFix_DuplicateValue.py:168
+#: ../plugins/TagFix_DuplicateValue.py:169
 #, python-brace-format
 msgid "Similar values {v1} and {v2} in {key}={val}"
 msgstr "قيم متشابهة {v1} و {v2} في {key}={val}"

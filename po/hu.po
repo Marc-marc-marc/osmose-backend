@@ -4395,7 +4395,7 @@ msgstr ""
 "Az ortofotók ellenőrzését követően adjon hozzá még pontokat vagy helyezze át "
 "a meglévőket."
 
-#: ../plugins/TagFix_DuplicateValue.py:156
+#: ../plugins/TagFix_DuplicateValue.py:157
 #, python-brace-format
 msgid "Duplicated values {key}={val}"
 msgstr "Duplikált `{key}={val}` értékek"
@@ -5506,7 +5506,7 @@ msgstr ""
 "Figyeljen arra, hogy ne változzék meg a címke értelme, amikor töröl egy "
 "tételt."
 
-#: ../plugins/TagFix_DuplicateValue.py:168
+#: ../plugins/TagFix_DuplicateValue.py:169
 #, python-brace-format
 msgid "Similar values {v1} and {v2} in {key}={val}"
 msgstr "`{v1}` és `{v2}` nagyon hasonló értékek `{key}={val}` címkében"
