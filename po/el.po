@@ -10,10 +10,10 @@ msgstr ""
 "Project-Id-Version: Osmose\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-04-28 19:47+0200\n"
-"PO-Revision-Date: 2025-07-15 03:38+0000\n"
+"PO-Revision-Date: 2025-07-19 02:03+0000\n"
 "Last-Translator: Jim Kats <jim-kats@hotmail.com>\n"
-"Language-Team: Greek <https://hosted.weblate.org/projects/osmose/backend/el/"
-">\n"
+"Language-Team: Greek <https://hosted.weblate.org/projects/osmose/backend/el/>"
+"\n"
 "Language: el\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -3629,7 +3629,7 @@ msgstr ""
 
 #: tmp.json:3
 msgid "fire hydrant"
-msgstr ""
+msgstr "πυροσβεστικός κρουνός"
 
 #: tmp.json:4
 msgid "traffic light"
