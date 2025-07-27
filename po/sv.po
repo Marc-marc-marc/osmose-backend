@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-04-28 19:47+0200\n"
-"PO-Revision-Date: 2025-07-27 00:26+0000\n"
+"PO-Revision-Date: 2025-07-28 11:02+0000\n"
 "Last-Translator: Jacob <jacob@carlbacker.se>\n"
 "Language-Team: Swedish <https://hosted.weblate.org/projects/osmose/backend/"
 "sv/>\n"
@@ -94,7 +94,7 @@ msgstr "Ogiltig roll"
 
 #: ../analysers/analyser_osmosis_highway_broken_level_continuity.py:110
 msgid "Broken highway level continuity"
-msgstr "Trasig 'level'-kontinuitet för väg"
+msgstr "Trasig nivå-kontinuitet för väg"
 
 msgid "Merge building (triangle)"
 msgstr "Sammanslå byggnad (triangel)"
@@ -637,7 +637,7 @@ msgstr ""
 
 #: ../plugins/TagFix_MultipleTag2.py:26 ../plugins/TagFix_MultipleTag2.py:434
 msgid "Waterway with `level`"
-msgstr "Vattendrag med 'level'-tagg"
+msgstr "Vattendrag med `level`-tagg"
 
 #: ../plugins/TagRemove_Roundabout.py:39
 msgid "Unnecessary tag oneway"
@@ -1986,7 +1986,7 @@ msgid ""
 msgstr ""
 "![](https://wiki.openstreetmap.org/w/images/b/b5/Osmose-eg-error-1110.png)\n"
 "\n"
-"'highway=trunk_link' kopplar till 'highway=primary'."
+"`highway=trunk_link` kopplar till `highway=primary`."
 
 #: ../analysers/analyser_osmosis_highway_link.py:146
 msgid ""
@@ -2977,7 +2977,7 @@ msgstr ""
 #: ../plugins/TagFix_Area.py:43
 #, python-brace-format
 msgid "Remove the `{0}` tag."
-msgstr "Ta bort taggen '{0}'."
+msgstr "Ta bort taggen `{0}`."
 
 #: ../plugins/TagFix_Area.py:33
 msgid "Untagged area object"
@@ -3098,12 +3098,12 @@ msgstr ""
 #: ../plugins/TagFix_BadValue.py:134 ../plugins/TagFix_MultipleValue.py:99
 #, python-brace-format
 msgid "Concerns tag: `{0}`"
-msgstr "Gäller tagg: '{0}'"
+msgstr "Gäller tagg: `{0}`"
 
 #: ../plugins/Name_Punctuation.py:39
 #, python-brace-format
 msgid "Unexpected character: `{0}`"
-msgstr "Oväntat tecken: '{0}'"
+msgstr "Oväntat tecken: `{0}`"
 
 #: ../plugins/Name_UpperCase.py:41
 msgid ""
@@ -3230,7 +3230,7 @@ msgstr ""
 #: ../plugins/Number.py:136
 #, python-brace-format
 msgid "`{0}` is really slow"
-msgstr ""
+msgstr "`{0}` är väldigt långsamt"
 
 #: ../analysers/analyser_osmosis_building_overlaps.py:167
 #: ../analysers/analyser_osmosis_building_overlaps.py:183
@@ -3622,91 +3622,91 @@ msgstr "Historiskt monument: {0}"
 
 #: tmp.json:1
 msgid "bicycle parking"
-msgstr ""
+msgstr "cykelparkering"
 
 #: tmp.json:2
 msgid "surveillance camera"
-msgstr ""
+msgstr "övervakningskamera"
 
 #: tmp.json:3
 msgid "fire hydrant"
-msgstr ""
+msgstr "brandpost"
 
 #: tmp.json:4
 msgid "traffic light"
-msgstr ""
+msgstr "trafiksignal"
 
 #: tmp.json:5
 msgid "phone booth"
-msgstr ""
+msgstr "telefonkiosk"
 
 #: tmp.json:6 tmp.json:33
 msgid "max speed limit 5"
-msgstr ""
+msgstr "hastighetsgräns 5"
 
 #: tmp.json:7 tmp.json:34
 msgid "max speed limit 10"
-msgstr ""
+msgstr "hastighetsgräns 10"
 
 #: tmp.json:8 tmp.json:35
 msgid "max speed limit 15"
-msgstr ""
+msgstr "hastighetsgräns 15"
 
 #: tmp.json:9 tmp.json:36
 msgid "max speed limit 20"
-msgstr ""
+msgstr "hastighetsgräns 20"
 
 #: tmp.json:10 tmp.json:38
 msgid "max speed limit 30"
-msgstr ""
+msgstr "hastighetsgräns 30"
 
 #: tmp.json:11 tmp.json:39
 msgid "max speed limit 35"
-msgstr ""
+msgstr "hastighetsgräns 35"
 
 #: tmp.json:12 tmp.json:40
 msgid "max speed limit 40"
-msgstr ""
+msgstr "hastighetsgräns 40"
 
 #: tmp.json:13 tmp.json:41
 msgid "max speed limit 45"
-msgstr ""
+msgstr "hastighetsgräns 45"
 
 #: tmp.json:14 tmp.json:42
 msgid "max speed limit 50"
-msgstr ""
+msgstr "hastighetsgräns 50"
 
 #: tmp.json:15 tmp.json:44
 msgid "max speed limit 60"
-msgstr ""
+msgstr "hastighetsgräns 60"
 
 #: tmp.json:16 tmp.json:46
 msgid "max speed limit 70"
-msgstr ""
+msgstr "hastighetsgräns 70"
 
 #: tmp.json:17 tmp.json:48
 msgid "max speed limit 80"
-msgstr ""
+msgstr "hastighetsgräns 80"
 
 #: tmp.json:18 tmp.json:49
 msgid "max speed limit 90"
-msgstr ""
+msgstr "hastighetsgräns 90"
 
 #: tmp.json:19 tmp.json:50
 msgid "max speed limit 100"
-msgstr ""
+msgstr "hastighetsgräns 100"
 
 #: tmp.json:20 tmp.json:51
 msgid "max speed limit 110"
-msgstr ""
+msgstr "hastighetsgräns 110"
 
 #: tmp.json:21 tmp.json:52
 msgid "max speed limit 120"
-msgstr ""
+msgstr "hastighetsgräns 120"
 
 #: tmp.json:22
 msgid "max speed limit 130"
-msgstr ""
+msgstr "hastighetsgräns 130"
 
 #: tmp.json:23
 msgid "max height limit"
@@ -3746,19 +3746,19 @@ msgstr "stopp"
 
 #: tmp.json:37
 msgid "max speed limit 25"
-msgstr ""
+msgstr "hastighetsgräns 25"
 
 #: tmp.json:43
 msgid "max speed limit 55"
-msgstr ""
+msgstr "hastighetsgräns 55"
 
 #: tmp.json:45
 msgid "max speed limit 65"
-msgstr ""
+msgstr "hastighetsgräns 65"
 
 #: tmp.json:47
 msgid "max speed limit 75"
-msgstr ""
+msgstr "hastighetsgräns 75"
 
 #: tmp.json:54
 msgid "Tourism office"
@@ -3915,7 +3915,7 @@ msgstr ""
 
 #: ../plugins/Cuisine_Guess.py:39
 msgid "Suggestion of `cuisine` value"
-msgstr ""
+msgstr "Förslag till värde för `cuisine`"
 
 #: ../plugins/Cuisine_Guess.py:61
 #, python-brace-format
@@ -4777,7 +4777,7 @@ msgstr ""
 
 #: ../analysers/analyser_osmosis_highway_area_access.py:175
 msgid "Inconsistent `motor_vehicle` values."
-msgstr "Inkonsekventa värden för 'motor_vehicle'."
+msgstr "Inkonsekventa värden för `motor_vehicle`."
 
 #: ../analysers/analyser_osmosis_highway_area_access.py:179
 msgid "Inconsistent access values between barrier and highway."
@@ -4841,7 +4841,7 @@ msgstr ""
 #: ../analysers/analyser_osmosis_building_in_polygon.py:88
 #, python-brace-format
 msgid "`{0}` inside `{1}`"
-msgstr "'{0}' inuti '{1}'"
+msgstr "`{0}` inuti `{1}`"
 
 #: ../analysers/analyser_osmosis_polygon_small.py:68
 msgid ""
@@ -5006,7 +5006,7 @@ msgstr ""
 #: ../plugins/indoor.py:232
 #, python-brace-format
 msgid "`{0}` without `{1}`"
-msgstr "'{0}' utan '{1}'"
+msgstr "`{0}` utan `{1}`"
 
 #: ../plugins/TagFix_MultipleTag2.py:27
 msgid ""
@@ -5131,7 +5131,7 @@ msgstr ""
 #: ../analysers/analyser_osmosis_polygon_intersects.py:229
 #, python-brace-format
 msgid "`{0}` intersects `{1}`"
-msgstr "'{0}' korsar '{1}'"
+msgstr "`{0}` korsar `{1}`"
 
 #: ../analysers/analyser_osmosis_polygon_intersects.py:201
 msgid ""
@@ -5265,7 +5265,7 @@ msgstr ""
 
 #: ../analysers/analyser_osmosis_way_angle.py:90
 msgid "Suspicious angle in way"
-msgstr ""
+msgstr "Misstänkt vinkel på väg"
 
 #: ../analysers/analyser_osmosis_way_angle.py:92
 msgid ""
@@ -5385,23 +5385,25 @@ msgstr "Ogiltig URL"
 
 #: ../plugins/Website.py:53
 msgid "Tracking parameter in URL"
-msgstr ""
+msgstr "Spårningsparameter i URL"
 
 #: ../plugins/Website.py:54
 msgid ""
 "Strip the tracking parameter from the URL. Verify that the URL still works "
 "afterwards."
 msgstr ""
+"Rensa bort spårningsparametern från URL-strängen. Kontrollera sen att URL:en "
+"fungerar som förväntat efteråt."
 
 #: ../plugins/Website.py:89
 #, python-brace-format
 msgid "Bad URL in `{0}`: {1}"
-msgstr ""
+msgstr "Felaktig URL i `{0}`: {1}"
 
 #: ../plugins/Website.py:97
 #, python-brace-format
 msgid "Tracking parameter in `{0}`"
-msgstr ""
+msgstr "Spårningsparameter i `{0}`"
 
 #: ../analysers/analyser_merge_bicycle_parking_FR_brest.py:32
 #: ../analysers/analyser_merge_bicycle_parking_FR_lyon.py:32
@@ -5670,7 +5672,7 @@ msgstr ""
 #: ../plugins/Bicycle.py:27 ../plugins/Bicycle.py:225
 #, python-brace-format
 msgid "Uncommon value of {0}"
-msgstr ""
+msgstr "Ovanligt värde för {0}"
 
 #: ../plugins/Capacity.py:36
 msgid ""
@@ -5726,11 +5728,11 @@ msgstr ""
 
 #: ../plugins/TagFix_BadKey.py:42 ../plugins/TagFix_BadKey.py:45
 msgid "Key with uncommon character"
-msgstr ""
+msgstr "Nyckel med ovanligt tecken"
 
 #: ../plugins/TagFix_BadKey.py:48
 msgid "Key suffix with uncommon character"
-msgstr ""
+msgstr "Nyckel-suffix med ovanligt tecken"
 
 #: ../plugins/TagFix_Housenumber.py:43
 msgid ""
@@ -5873,7 +5875,7 @@ msgstr ""
 
 #: ../plugins/TagFix_Maxspeed_AT.py:63
 msgid "Invalid speed limit value"
-msgstr ""
+msgstr "Ogiltigt värde för hastighetsgräns"
 
 #: ../plugins/TagFix_Maxspeed_AT.py:65
 msgid ""
@@ -5899,7 +5901,7 @@ msgstr ""
 
 #: ../plugins/TagFix_Maxspeed_AT.py:75
 msgid "Low speed limit value"
-msgstr ""
+msgstr "Låg hastighetsgräns"
 
 #: ../plugins/TagFix_Maxspeed_AT.py:77
 msgid ""
@@ -5928,7 +5930,7 @@ msgstr ""
 
 #: ../plugins/TagFix_Maxspeed_AT.py:89
 msgid "Invalid speed limit type"
-msgstr ""
+msgstr "Ogiltig typ för hastighetsgräns"
 
 #: ../plugins/TagFix_Maxspeed_AT.py:91
 msgid ""
@@ -5953,7 +5955,7 @@ msgstr ""
 
 #: ../plugins/TagFix_Maxspeed_AT.py:102
 msgid "Multiple speed limit types"
-msgstr ""
+msgstr "Flera typer av hastighetsgräns"
 
 #: ../plugins/TagFix_Maxspeed_AT.py:104
 msgid ""
@@ -5995,17 +5997,17 @@ msgstr ""
 #: ../plugins/TagFix_Maxspeed_AT.py:149
 #, python-brace-format
 msgid "Invalid maxspeed: `{0}`"
-msgstr "Ogiltig hastighetsgräns: '{0}'"
+msgstr "Ogiltig hastighetsgräns: `{0}`"
 
 #: ../plugins/TagFix_Maxspeed_AT.py:156
 #, python-brace-format
 msgid "Low maxspeed: `{0}`"
-msgstr "Låg hastighetsgräns: '{0}'"
+msgstr "Låg hastighetsgräns: `{0}`"
 
 #: ../plugins/TagFix_Maxspeed_AT.py:165
 #, python-brace-format
 msgid "Invalid maxspeed:type: `{0}`"
-msgstr "Ogiltig maxspeed:type: '{0}'"
+msgstr "Ogiltig maxspeed:type: `{0}`"
 
 #: ../plugins/TagFix_Maxspeed_AT.py:176
 #, python-brace-format
@@ -6015,7 +6017,7 @@ msgstr ""
 #: ../plugins/TagFix_Maxspeed_AT.py:183
 #, python-brace-format
 msgid "Invalid source:maxspeed: `{0}`"
-msgstr "Ogiltig source:maxspeed: '{0}'"
+msgstr "Ogiltig source:maxspeed: `{0}`"
 
 #: ../plugins/TagFix_Maxspeed_AT.py:190
 #, python-brace-format
