@@ -12,7 +12,7 @@ msgstr ""
 "Project-Id-Version: Osmose\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-04-28 19:47+0200\n"
-"PO-Revision-Date: 2025-07-31 15:46+0000\n"
+"PO-Revision-Date: 2025-08-01 20:01+0000\n"
 "Last-Translator: Babos Gábor <gabor.babos@gmail.com>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/osmose/backend/"
 "hu/>\n"
@@ -2168,7 +2168,8 @@ msgid ""
 "The length of the bridge makes it deserve a more detailed tag than\n"
 "`bridge=yes`."
 msgstr ""
-"Hossza miatt a híd egy részletesebb címkét is megérdemel, mint a `bridge=yes`"
+"Hossza miatt ez a híd egy részletesebb címkét is megérdemel, mint a "
+"`bridge=yes`"
 
 #: ../analysers/analyser_osmosis_highway_vs_building.py:461
 msgid ""
@@ -2792,7 +2793,7 @@ msgstr "Távolítsa el a karaktert."
 msgid ""
 "A symbol is used instead of a letter from the appropriate\n"
 "alphabet."
-msgstr "A megfelelő ábécé betűje helyett szimbólum található"
+msgstr "A megfelelő ábécé betűje helyett szimbólum található."
 
 #: ../plugins/Name_Script.py:60
 msgid ""
@@ -2895,7 +2896,7 @@ msgstr ""
 
 #: ../plugins/Structural_Multipolygon.py:37
 msgid "Members must be ways."
-msgstr "Tagok csak vonalak lehetnek"
+msgstr "Csak vonal lehet tag."
 
 #: ../plugins/Structural_Multipolygon.py:41
 msgid "At least one outer ring must be present."
@@ -3061,7 +3062,7 @@ msgstr ""
 
 #: ../plugins/TagFix_Tree_Lang_fr.py:75
 msgid "Specify the language for the tag `species`: `species:en=oak`"
-msgstr "Adja meg a `species` címke nyelvét, pl. `species:hu=Tölgy`."
+msgstr "Adja meg a `species` címke nyelvét, pl. `species:hu=Tölgy`"
 
 #: ../plugins/TagFix_Vatin.py:38
 msgid "Invalid value format of tag `ref:vatin`"
@@ -3784,8 +3785,7 @@ msgstr ""
 #: ../plugins/TagFix_Note_Lang_fr.py:94 ../plugins/TagFix_Note_Lang_fr.py:98
 #, python-format, python-brace-format
 msgid "note tag needs FIXME: \"{0}\""
-msgstr ""
-"Ezt a `note` címkét ki kell egészíteni egy fixme előtaggal: „FIXME {0}”"
+msgstr "Ezt a `note` címkét ki kell egészíteni egy fixme címkével: „FIXME {0}”"
 
 #: ../plugins/TagFix_Note_Lang_fr.py:104
 #, python-format, python-brace-format
@@ -4103,8 +4103,8 @@ msgid ""
 "turn it to a public_transport=stop_position"
 msgstr ""
 "Módosítsa a kapcsolatban a szerepet [platform]-ra (peron), vagy illessze a "
-"stop objektumot a vonalhoz, és alakítsa át `public_transport=stop_position` "
-"címkéjűvé."
+"stop objektumot a vonalhoz, és címkézze át a következőre: "
+"`public_transport=stop_position`"
 
 #: ../analysers/analyser_osmosis_way_approximate.py:167
 #, python-brace-format
@@ -4438,8 +4438,8 @@ msgid ""
 "A bus `public_transport=stop_position` without close "
 "`public_transport=platform` nor `highway=bus_stop`."
 msgstr ""
-"`public_transport=stop_position` buszmegálló, de nincs a közelében "
-"`public_transport=platform` vagy `highway=bus_stop`"
+"A `public_transport=stop_position` buszmegálló, de nincs a közelében "
+"`public_transport=platform` vagy `highway=bus_stop`."
 
 #: tmp.json:53
 msgid "cycling infrastructure"
@@ -4636,7 +4636,7 @@ msgid ""
 "parking."
 msgstr ""
 "A `parking:lane:[oldal]` címke értéke olyan parkolási feltételt tartalmaz, "
-"amely tiltja a parkolást"
+"amely tiltja a parkolást."
 
 #: ../plugins/Highway_Parking_Lane.py:68
 msgid ""
@@ -4865,7 +4865,7 @@ msgstr ""
 "Kombinált korlátozások címkézése: `érték @ (feltétel1 AND feltétel2)`\n"
 "Ha a feltétel `;` pontosvesszőt tartalmaz, akkor zárójelbe kell tenni, "
 "vagyis: \n"
-"`érték @ (dátum;dátum)`"
+"`érték @ (dátum;dátum)`."
 
 #: ../plugins/ConditionalRestrictions.py:64
 msgid "Expired conditional"
@@ -5254,7 +5254,7 @@ msgstr ""
 
 #: ../plugins/TagFix_Access.py:59
 msgid "Transport mode in access value"
-msgstr "Közlekedési mód a használatot jelző `access` címke értékében."
+msgstr "Közlekedési mód van a használatot jelző `access` címke értékében"
 
 #: ../plugins/TagFix_Access.py:60
 msgid ""
@@ -5287,7 +5287,7 @@ msgid ""
 "\"{2}\" instead"
 msgstr ""
 "A(z) `{1}` kulcshoz tartozó `{0}` használatra vonatkozó `access` érték egy "
-"közlekedési mód. Fontolja meg inkább ennek a használatát: `{2}`."
+"közlekedési mód. Fontolja meg inkább ennek a használatát: `{2}`"
 
 #: ../plugins/TagFix_Access.py:118
 #, python-brace-format
@@ -5470,8 +5470,7 @@ msgstr "Ennek a beltéri objektumnak zárt és érvényes sokszögnek kellene le
 
 #: ../plugins/indoor.py:21 ../plugins/indoor.py:135
 msgid "This indoor feature should have a level"
-msgstr ""
-"Meg kell adni, hogy ez a beltéri objektum melyik szinten van (`level`)."
+msgstr "Meg kell adni, hogy ez a beltéri objektum melyik szinten van (`level`)"
 
 #: ../plugins/indoor.py:22 ../plugins/indoor.py:157
 msgid "This indoor shop should probably be inside a room"
@@ -5672,7 +5671,7 @@ msgstr ""
 #: ../analysers/analyser_osmosis_polygon_small.py:136
 #, python-brace-format
 msgid "{0} with an area of {1} m2"
-msgstr "{0} mindössze {1} m2 területen?"
+msgstr "{0} tényleg mindössze {1} m2 területű?"
 
 #: ../plugins/Highway_Parking_Lane.py:42 ../plugins/Highway_Parking_Lane.py:49
 #: ../plugins/Highway_Parking_Lane.py:53 ../plugins/Highway_Parking_Lane.py:60
@@ -6158,7 +6157,7 @@ msgstr ""
 #: ../analysers/analyser_osmosis_way_angle.py:103
 #, python-brace-format
 msgid "railway={0} with suspicious angle {1}°"
-msgstr "Gyanúsan éles szögben ({1}°) megtörő `railway={0}`"
+msgstr "Gyanúsan éles szögben ({1}°) megtörő `railway={0}` vasúti sín"
 
 #: ../plugins/ConditionalRestrictions.py:73
 msgid ""
@@ -6210,7 +6209,7 @@ msgid ""
 "Power substation is not known by the operator or misses substation=* value"
 msgstr ""
 "A szolgáltató nem ismeri ezt a villamos alállomást vagy hiányzik róla a "
-"`substation=*` címke."
+"`substation=*` címke"
 
 #: ../analysers/analyser_osmosis_highway_vs_building.py:457
 msgid ""
@@ -6276,7 +6275,7 @@ msgid ""
 "picnic table"
 msgstr ""
 "`{0}` és `{1}` együtt szerepelnek egy objektumon. Ritka, hogy egy "
-"piknikezőhely csupán egyetlen piknikezőasztalból álljon."
+"piknikezőhely csupán egyetlen piknikezőasztalból álljon"
 
 #: ../plugins/TagFix_MultipleTag2.py:512
 #, python-brace-format
@@ -6312,7 +6311,7 @@ msgstr "Hibás URL a `{0}` címkében: {1}"
 #: ../plugins/Website.py:97
 #, python-brace-format
 msgid "Tracking parameter in `{0}`"
-msgstr "Nyomkövető paraméter a `{0}` címkében"
+msgstr "Nyomkövető paraméter van a `{0}` címkében"
 
 #: ../analysers/analyser_merge_bicycle_parking_FR_brest.py:32
 #: ../analysers/analyser_merge_bicycle_parking_FR_lyon.py:32
@@ -6399,7 +6398,7 @@ msgstr ""
 
 #: ../plugins/ConditionalRestrictions.py:80
 msgid "Equal conditional and unconditional tag value"
-msgstr "Azonos a feltételes és a feltétel nélküli címkeérték."
+msgstr "Azonos a feltételes és a feltétel nélküli címkeérték"
 
 #: ../plugins/ConditionalRestrictions.py:81
 msgid ""
@@ -6709,7 +6708,7 @@ msgstr "Bizonyára előfordulnak téves hibajelzések (fals pozitív) is."
 
 #: ../plugins/TagFix_BadKey.py:42 ../plugins/TagFix_BadKey.py:45
 msgid "Key with uncommon character"
-msgstr "Szokatlan karakter a kulcsban."
+msgstr "Szokatlan karakter van a kulcsban"
 
 #: ../plugins/TagFix_BadKey.py:48
 msgid "Key suffix with uncommon character"
@@ -6830,15 +6829,15 @@ msgstr ""
 
 #: ../analysers/analyser_merge_advertising_board_FR_brest.py:31
 msgid "Advertising board not integrated"
-msgstr ""
+msgstr "Hirdetőtábla: nincs a térképen"
 
 #: ../analysers/analyser_merge_advertising_board_FR_brest.py:33
 msgid "Advertising board integration suggestion"
-msgstr ""
+msgstr "Hirdetőtábla: kiegészítései javaslat"
 
 #: ../analysers/analyser_merge_advertising_board_FR_brest.py:35
 msgid "Advertising board update"
-msgstr ""
+msgstr "Hirdetőtábla: frissítendő"
 
 #: ../analysers/analyser_merge_public_transport_FR_rla.py:64
 #: ../analysers/analyser_merge_public_transport_FR_sillages.py:62
@@ -6860,13 +6859,15 @@ msgstr ""
 
 #: ../plugins/TagFix_Maxspeed_AT.py:51
 msgid "Speed limit type without speed limit"
-msgstr ""
+msgstr "Sebességkorlátozás-fajta tényleges sebességkorlátozás nélkül"
 
 #: ../plugins/TagFix_Maxspeed_AT.py:53
 msgid ""
 "A speed limit type is given in `maxspeed:type` or `source:maxspeed`, but no "
 "speed limit is set in `maxspeed`."
 msgstr ""
+"A sebességkorlátozás típusa ugyan meg van adva egy `maxspeed:type` vagy a "
+"`source:maxspeed` kulcsú címkében, de hiányzik a `maxspeed` címke."
 
 #: ../plugins/TagFix_Maxspeed_AT.py:55
 msgid ""
@@ -6875,6 +6876,10 @@ msgid ""
 "see [Implicit maxspeed values](https://wiki.openstreetmap.org/wiki/Key:"
 "maxspeed#Implicit_maxspeed_values)."
 msgstr ""
+"Adjon meg egy `maxspeed` címkét, valamint egy `maxspeed:type` vagy "
+"`source:maxspeed` címkét.\n"
+"Felhasználható értékek: [Implicit maxspeed values](https://"
+"wiki.openstreetmap.org/wiki/Key:maxspeed#Implicit_maxspeed_values)."
 
 #: ../plugins/TagFix_Maxspeed_AT.py:58
 msgid ""
@@ -6883,6 +6888,10 @@ msgid ""
 "Always check `highway`, all other tags related to speed and verify on the "
 "ground."
 msgstr ""
+"Ne csupán a típusnak megfelelő `maxspeed` értéket adja hozzá. A típus hibás "
+"is lehet!\n"
+"Mindig ellenőrizze a `highway` címkéhez kapcsolódó összes többi sebességgel "
+"kapcsolatos címkét, és nézze meg a helyszínt a terepen."
 
 #: ../plugins/TagFix_Maxspeed_AT.py:63
 msgid "Invalid speed limit value"
@@ -6893,6 +6902,9 @@ msgid ""
 "The speed limit in `maxspeed` must be either numeric or `walk`. Do not "
 "specify a unit, km/h is the default."
 msgstr ""
+"A `maxspeed` kulcshoz tartozó értéknek vagy numerikusnak, vagy `walk`-nak "
+"(lépésben) kell lennie. Ne adjon meg mértékegységet (a km/h az "
+"alapértelmezett)."
 
 #: ../plugins/TagFix_Maxspeed_AT.py:67
 msgid ""
@@ -6901,6 +6913,10 @@ msgid ""
 "see [Implicit maxspeed values](https://wiki.openstreetmap.org/wiki/Key:"
 "maxspeed#Implicit_maxspeed_values)."
 msgstr ""
+"Adjon meg egy `maxspeed` címkét, és adja meg a fajtáját egy `maxspeed:type` "
+"vagy `source:maxspeed` címkével.\n"
+"Felhasználható értékek: [Implicit maxspeed values](https://"
+"wiki.openstreetmap.org/wiki/Key:maxspeed#Implicit_maxspeed_values)."
 
 #: ../plugins/TagFix_Maxspeed_AT.py:70
 msgid ""
@@ -6909,6 +6925,10 @@ msgid ""
 "Always check `highway`, all other tags related to speed and verify on the "
 "ground."
 msgstr ""
+"Ha a `maxspeed`-ben be is van állítva egy sebességkorlátozás-fajta (pl. "
+"`AT:*`), ne feltételezze, hogy az helyes!\n"
+"Mindig ellenőrizze a `highway` címkéhez kapcsolódó összes többi sebességgel "
+"kapcsolatos címkét, és nézze meg a helyszínt a terepen."
 
 #: ../plugins/TagFix_Maxspeed_AT.py:75
 msgid "Low speed limit value"
@@ -6919,6 +6939,8 @@ msgid ""
 "The speed limit in `maxspeed` is very low and no type is given in `maxspeed:"
 "type` or `source:maxspeed`."
 msgstr ""
+"A `maxspeed`-ben nagyon alacsony a sebességkorlátozás, és nincs megadva "
+"`maxspeed:type` vagy `source:maxspeed`."
 
 #: ../plugins/TagFix_Maxspeed_AT.py:79
 msgid ""
@@ -6930,6 +6952,14 @@ msgid ""
 "speed is signposted,\n"
 "set `maxspeed` to the speed, `maxspeed:type=sign`."
 msgstr ""
+"Sétálóutcában és lakó-pihenő övezetben (kivéve a közös használatú övezeteket)"
+" az alapértelmezett sebesség a gyalogos sebesség (lépésben), ezért nem kell "
+"konkrét sebességkorlátozást vagy sebességkorlátozás-fajtát beállítani.\n"
+"Ha a gyalogos sebességet jelzőtábla jelzi, adjon meg `maxspeed=walk`, "
+"`maxspeed:type=sign` és `traffic_sign=AT:54[táblaszöveg]` vagy "
+"traffic_sign=AT:..,54[táblaszöveg]` címkéket.\n"
+"Ha az alacsony sebességet jelzőtábla jelzi, állítsa be a `maxspeed` értéket "
+"a sebességre és adjon hozzá egy `maxspeed:type=sign` címkét."
 
 #: ../plugins/TagFix_Maxspeed_AT.py:84 ../plugins/TagFix_Maxspeed_AT.py:110
 #: ../plugins/TagFix_Maxspeed_AT.py:122
@@ -6938,6 +6968,9 @@ msgid ""
 "Always check `highway`, all other tags related to speed and verify on the "
 "ground."
 msgstr ""
+"Ne feltételezze, hogy az adatok helyesek!\n"
+"Mindig ellenőrizze a `highway` címkéhez kapcsolódó összes többi sebességgel "
+"kapcsolatos címkét, és nézze meg a helyszínt a terepen."
 
 #: ../plugins/TagFix_Maxspeed_AT.py:89
 msgid "Invalid speed limit type"
@@ -6947,6 +6980,8 @@ msgstr "Érvénytelen sebességkorlátozás-fajta"
 msgid ""
 "The speed limit type in `maxspeed:type` or `source:maxspeed` is not valid."
 msgstr ""
+"Érvénytelen sebességkorlátozásfajta a `maxspeed:type` vagy `source:maxspeed` "
+"címkében."
 
 #: ../plugins/TagFix_Maxspeed_AT.py:93
 msgid ""
@@ -6954,6 +6989,9 @@ msgid ""
 "see [Implicit maxspeed values](https://wiki.openstreetmap.org/wiki/Key:"
 "maxspeed#Implicit_maxspeed_values)."
 msgstr ""
+"Adja meg a megfelelő sebességkorlátozás-fajtát.\n"
+"Felhasználható értékek: [Implicit maxspeed values](https://"
+"wiki.openstreetmap.org/wiki/Key:maxspeed#Implicit_maxspeed_values)."
 
 #: ../plugins/TagFix_Maxspeed_AT.py:96
 msgid ""
@@ -6963,6 +7001,11 @@ msgid ""
 "Always check `highway`, all other tags related to speed and verify on the "
 "ground."
 msgstr ""
+"Ha a sebességkorlátozás típusa `zone`, akkor ne csak „AT:zone”-ra "
+"változtassa, hanem egy konkrétabb értékre.\n"
+"Ne feltételezze, hogy az adatok helyesek!\n"
+"Mindig ellenőrizze a `highway` címkéhez kapcsolódó összes többi sebességgel "
+"kapcsolatos címkét, és nézze meg a helyszínt a terepen."
 
 #: ../plugins/TagFix_Maxspeed_AT.py:102
 msgid "Multiple speed limit types"
@@ -6974,6 +7017,9 @@ msgid ""
 "and data consumers\n"
 "if the values are different."
 msgstr ""
+"Egyaránt be van állítva `maxspeed:type` és a `source:maxspeed`. Ha az "
+"értékeik különböznek, összezavarhatják a térképezőket és az "
+"adatfelhasználókat."
 
 #: ../plugins/TagFix_Maxspeed_AT.py:107
 msgid ""
@@ -6981,16 +7027,22 @@ msgid ""
 "see [Implicit maxspeed values](https://wiki.openstreetmap.org/wiki/Key:"
 "maxspeed#Implicit_maxspeed_values)."
 msgstr ""
+"Vagy `maxspeed:type` vagy `source:maxspeed címkét adjon meg.\n"
+"Felhasználható értékek: [Implicit maxspeed values](https://"
+"wiki.openstreetmap.org/wiki/Key:maxspeed#Implicit_maxspeed_values)."
 
 #: ../plugins/TagFix_Maxspeed_AT.py:115
 msgid "Speed limit and type mismatch"
-msgstr ""
+msgstr "Ellentmondás a sebességkorlátozás és típusa között"
 
 #: ../plugins/TagFix_Maxspeed_AT.py:117
 msgid ""
 "The speed limit in `maxspeed` is not consistent with the speed limit type in "
 "`maxspeed:type` or `source:maxspeed`."
 msgstr ""
+"A `maxspeed` címkében megadott sebességkorlátozás nem felel meg a "
+"`maxspeed:type`-ban vagy a `source:maxspeed`-ben megadott sebességkorlátozás-"
+"fajtának."
 
 #: ../plugins/TagFix_Maxspeed_AT.py:119
 msgid ""
@@ -6999,26 +7051,30 @@ msgid ""
 "see [Implicit maxspeed values](https://wiki.openstreetmap.org/wiki/Key:"
 "maxspeed#Implicit_maxspeed_values)."
 msgstr ""
+"Állítson be megfelelően `maxspeed`, `maxspeed:type` vagy `source:maxspeed` "
+"címkéket\n"
+"Felhasználható értékek: [Implicit maxspeed values](https://"
+"wiki.openstreetmap.org/wiki/Key:maxspeed#Implicit_maxspeed_values)."
 
 #: ../plugins/TagFix_Maxspeed_AT.py:141
 #, python-brace-format
 msgid "`source:maxspeed` or `maxspeed:type` = `{0}` without maxspeed"
-msgstr ""
+msgstr "`source:maxspeed` vagy `maxspeed:type`=`{0}` címke `maxspeed` nélkül"
 
 #: ../plugins/TagFix_Maxspeed_AT.py:149
 #, python-brace-format
 msgid "Invalid maxspeed: `{0}`"
-msgstr ""
+msgstr "Érvénytelen `maxspeed` érték: `{0}`"
 
 #: ../plugins/TagFix_Maxspeed_AT.py:156
 #, python-brace-format
 msgid "Low maxspeed: `{0}`"
-msgstr ""
+msgstr "Túl alacsony `maxspeed` érték: `{0}`"
 
 #: ../plugins/TagFix_Maxspeed_AT.py:165
 #, python-brace-format
 msgid "Invalid maxspeed:type: `{0}`"
-msgstr ""
+msgstr "Érvénytelen `maxspeed:type` érték: `{0}`"
 
 #: ../plugins/TagFix_Maxspeed_AT.py:176
 #, python-brace-format
@@ -7028,9 +7084,9 @@ msgstr "Egymásnak ellentmondó sebességkorlátozás-fajták: `{0}` <> `{1}`"
 #: ../plugins/TagFix_Maxspeed_AT.py:183
 #, python-brace-format
 msgid "Invalid source:maxspeed: `{0}`"
-msgstr ""
+msgstr "Érvénytelen `source:maxspeed` érték: `{0}`"
 
 #: ../plugins/TagFix_Maxspeed_AT.py:190
 #, python-brace-format
 msgid "maxspeed and type mismatch: `{0}`<>`{1}`"
-msgstr ""
+msgstr "Ellentmondás a sebességkorlátozás és típusa között: `{0}`<>`{1}`"
