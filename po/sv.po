@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-04-28 19:47+0200\n"
-"PO-Revision-Date: 2025-07-28 11:02+0000\n"
+"PO-Revision-Date: 2025-08-08 21:02+0000\n"
 "Last-Translator: Jacob <jacob@carlbacker.se>\n"
 "Language-Team: Swedish <https://hosted.weblate.org/projects/osmose/backend/"
 "sv/>\n"
@@ -133,11 +133,11 @@ msgstr "Ej ansluten cykelväg"
 
 #: ../analysers/analyser_osmosis_highway_features.py:78
 msgid "Missing way on level crossing"
-msgstr ""
+msgstr "Plankorsning saknar väg"
 
 #: ../analysers/analyser_osmosis_highway_features.py:82
 msgid "Lone highway or barrier node"
-msgstr ""
+msgstr "Ensam nod för väg eller väghinder"
 
 #: ../analysers/analyser_osmosis_building_geodesie_FR.py:105
 msgid "Geodesic mark without building"
@@ -166,15 +166,15 @@ msgstr "Träd överlappar byggnad"
 
 #: ../analysers/analyser_osmosis_highway_vs_building.py:466
 msgid "Tree and highway too close"
-msgstr ""
+msgstr "Träd och väg väldigt nära"
 
 #: ../analysers/analyser_osmosis_natural_swimming-pool.py:85
 msgid "Swimming-pool, reservoir, pond as natural=water"
-msgstr ""
+msgstr "Simbassäng, reservoar, damm med natural=water"
 
 #: ../analysers/analyser_osmosis_node_like_way.py:80
 msgid "Way node tagged like way"
-msgstr ""
+msgstr "Vägnod taggad som väg"
 
 #: ../analysers/analyser_osmosis_orphan_nodes_cluster.py:56
 msgid "Orphan nodes cluster"
@@ -186,7 +186,7 @@ msgstr "Ogiltig polygon"
 
 #: ../analysers/analyser_osmosis_powerline.py:661
 msgid "Lone power tower or pole"
-msgstr ""
+msgstr "Ensam nod för kraftledningsmast/stolpe"
 
 #: ../analysers/analyser_osmosis_powerline.py:686
 msgid "Connection between different voltages"
@@ -198,7 +198,7 @@ msgstr ""
 
 #: ../analysers/analyser_osmosis_powerline.py:700
 msgid "Missing power tower or pole"
-msgstr ""
+msgstr "Kraftledningsmast/stolpe saknas"
 
 #: ../analysers/analyser_osmosis_relation_associatedStreet.py:622
 msgid "No street role"
@@ -214,7 +214,7 @@ msgstr ""
 
 #: ../analysers/analyser_osmosis_relation_associatedStreet.py:638
 msgid "Number twice in the street"
-msgstr ""
+msgstr "Nummer två gånger på gatan"
 
 #: ../analysers/analyser_osmosis_relation_associatedStreet.py:640
 msgid "Many street names"
@@ -250,7 +250,7 @@ msgstr ""
 
 #: ../analysers/analyser_osmosis_relation_restriction.py:371
 msgid "Restriction relation, bad member type"
-msgstr ""
+msgstr "Restriktionsrelation, medlem felaktig typ"
 
 #: ../analysers/analyser_osmosis_relation_restriction.py:373
 msgid "Unconnected restriction relation ways"
@@ -299,7 +299,7 @@ msgstr ""
 
 #: ../plugins/Administrative_INSEE_Name.py:33
 msgid "Place node without name tag"
-msgstr ""
+msgstr "Platsnod utan namn"
 
 #: ../plugins/Administrative_INSEE_Name.py:59
 msgid "INSEE code cannot be found in INSEE database"
@@ -375,7 +375,7 @@ msgstr ""
 
 #: ../plugins/Source.py:36
 msgid "Illegal or incomplete source tag"
-msgstr ""
+msgstr "Olaglig eller ofullständig source-tagg"
 
 #: ../plugins/Source.py:45
 msgid "Missing source tag"
@@ -395,7 +395,7 @@ msgstr "Otillräcklig medlem för multipolygon"
 
 #: ../plugins/Structural_Multipolygon.py:46
 msgid "This multipolygon is a simple polygon"
-msgstr ""
+msgstr "Multipolygon är en vanlig polygon"
 
 #: ../plugins/Structural_UnclosedArea.py:30
 msgid "Unclosed area"
@@ -478,11 +478,11 @@ msgstr "Inte en Wikipedia URL"
 
 #: ../plugins/TagFix_Wikipedia.py:49
 msgid "Wikipedia URL instead of article title"
-msgstr ""
+msgstr "Wikipedia URL istället för artikeltiteln"
 
 #: ../plugins/TagFix_Wikipedia.py:55
 msgid "Missing Wikipedia language before article title"
-msgstr ""
+msgstr "Språkkod saknas före Wikipedia-titeln"
 
 #: ../plugins/TagFix_Wikipedia.py:63
 msgid "Use human Wikipedia page title"
@@ -511,11 +511,11 @@ msgstr ""
 
 #: ../plugins/TagRemove_NameIsRef_FR.py:34
 msgid "Highway reference in name tag"
-msgstr ""
+msgstr "Vägreferensnummer i namn"
 
 #: ../plugins/TagRemove_OpenSeaMap.py:33
 msgid "OpenSeaMap import, very approximative position."
-msgstr ""
+msgstr "OpenSeaMap import, väldigt ungefärlig position."
 
 #: ../plugins/TagRemove_Roundabout.py:31
 #: ../plugins/TagRemove_Roundabout_Ref.py:33
@@ -528,7 +528,7 @@ msgstr ""
 
 #: ../analysers/analyser_osmosis_relation_associatedStreet.py:647
 msgid "Tag \"addr:city\" not matching a city"
-msgstr ""
+msgstr "Tagg \"addr:city\" motsvarar inte en stad"
 
 #: ../plugins/TagFix_MultipleTag_FR.py:47
 msgid "FANTOIR object type not match OSM feature"
@@ -549,11 +549,11 @@ msgstr ""
 
 #: ../plugins/Name_Spaces.py:45
 msgid "Name begins with a space"
-msgstr ""
+msgstr "Namn börjar med mellanslag"
 
 #: ../plugins/Name_Spaces.py:43
 msgid "Name ends with a space"
-msgstr ""
+msgstr "Namn slutar med mellanslag"
 
 #: ../plugins/Name_Spaces.py:41
 msgid "Name contains successive spaces"
@@ -571,7 +571,7 @@ msgstr ""
 
 #: ../plugins/TagFix_MultipleTag2.py:359
 msgid "Use tag \"toll\" instead of \"fee\""
-msgstr ""
+msgstr "Använd taggen \"toll\" istället för \"fee\""
 
 #: ../plugins/TagFix_Wikipedia.py:112
 #, python-format, python-brace-format
@@ -589,7 +589,7 @@ msgstr ""
 
 #: ../plugins/TagRemove_Layer.py:31
 msgid "Landuse feature not on ground"
-msgstr ""
+msgstr "Landanvändning ej på marknivå"
 
 #: ../plugins/TagRemove_Layer.py:33
 msgid "Natural feature underground"
@@ -601,11 +601,11 @@ msgstr ""
 
 #: ../plugins/Name_Local_JP.py:36 ../plugins/Name_Local.py:44
 msgid "Local language name without default name"
-msgstr ""
+msgstr "Namn på lokalt språk utan standardnamn"
 
 #: ../plugins/Name_Local_JP.py:38 ../plugins/Name_Local.py:46
 msgid "Language name without default name"
-msgstr ""
+msgstr "Namn med språk utan standard namn"
 
 #: ../analysers/analyser_merge_library_FR_aquitaine.py:31
 msgid "Library not integrated"
@@ -621,15 +621,15 @@ msgstr "Flerspråkighet matchar inte"
 
 #: ../plugins/TagRemove_Layer.py:35
 msgid "Highway underground and no tunnel"
-msgstr ""
+msgstr "Väg under marknivå utan tunnel"
 
 #: ../plugins/TagRemove_Layer.py:37
 msgid "Long Highway underground and no tunnel"
-msgstr ""
+msgstr "Lång väg under marknivå utan tunnel"
 
 #: ../plugins/TagRemove_Layer.py:39
 msgid "Highway above ground and no bridge"
-msgstr ""
+msgstr "Väg ovan marknivå utan bro"
 
 #: ../plugins/TagRemove_Layer.py:41
 msgid "Long Highway above ground and no bridge"
@@ -721,11 +721,11 @@ msgstr "Naptan import, kräver undersökning i fält."
 
 #: ../analysers/analyser_osmosis_highway_vs_building.py:467
 msgid "Highway intersecting small water piece"
-msgstr ""
+msgstr "Väg korsar litet vattendrag"
 
 #: ../analysers/analyser_osmosis_highway_vs_building.py:468
 msgid "Highway intersecting large water piece"
-msgstr ""
+msgstr "Väg korsar större vattendrag"
 
 #: ../analysers/analyser_merge_heritage_FR_merimee.py:53
 msgid "Historical monument update"
@@ -770,19 +770,19 @@ msgstr ""
 
 #: ../analysers/analyser_osmosis_duplicated_geotag.py:286
 msgid "Duplicated way geometry and tags"
-msgstr ""
+msgstr "Duplicerad linje, geometri och taggar"
 
 #: ../analysers/analyser_osmosis_duplicated_geotag.py:290
 msgid "Duplicated way geometry but different tags"
-msgstr ""
+msgstr "Duplicerad linjegeometri, olika taggar"
 
 #: ../analysers/analyser_osmosis_duplicated_geotag.py:294
 msgid "Duplicated node geometry and tags"
-msgstr ""
+msgstr "Duplicerad nod, geometri och taggar"
 
 #: ../analysers/analyser_osmosis_duplicated_geotag.py:296
 msgid "Duplicated node geometry but different tags"
-msgstr ""
+msgstr "Duplicerad nodgeometri, olika taggar"
 
 #: ../analysers/analyser_osmosis_highway_traffic_signals.py:173
 msgid "Possible missing highway=traffic_signals nearby"
@@ -817,7 +817,7 @@ msgstr "Ogiltigt värde för addr:housenumber"
 #: ../plugins/Administrative_INSEE_Name.py:99
 #, python-format, python-brace-format
 msgid "Node with place={0} without name"
-msgstr ""
+msgstr "Nod med place={0} utan namn"
 
 #: ../plugins/Name_Saint_FR.py:53
 msgid "Missing hyphen after \"Saint(e)\""
@@ -826,7 +826,7 @@ msgstr ""
 #: ../plugins/Name_Toponymy_FR.py:156
 #, python-format, python-brace-format
 msgid "Missing capital letter for: {0}"
-msgstr ""
+msgstr "Saknas stor bokstav för: {0}"
 
 #: ../plugins/Source_FR.py:38
 msgid "Source tag contains AAAA"
@@ -877,17 +877,17 @@ msgstr ""
 #: ../plugins/TagFix_Note_Lang_fr.py:108
 #, python-format, python-brace-format
 msgid "Use start_date tag for \"{0}\""
-msgstr ""
+msgstr "Använd start_date tagg för \"{0}\""
 
 #: ../plugins/TagFix_Note_Lang_fr.py:112 ../plugins/TagFix_Note_Lang_fr.py:115
 #, python-format, python-brace-format
 msgid "Use opening_hours tag for \"{0}\""
-msgstr ""
+msgstr "Använd opening_hours tagg för \"{0}\""
 
 #: ../plugins/TagFix_Note_Lang_fr.py:120
 #, python-format, python-brace-format
 msgid "Use construction tag for \"{0}\""
-msgstr ""
+msgstr "Använd construction-tagg för \"{0}\""
 
 #: ../plugins/TagFix_Note_Lang_fr.py:124 ../plugins/TagFix_Note_Lang_fr.py:127
 #, python-format, python-brace-format
@@ -987,7 +987,7 @@ msgstr "Dubblett Wikipedia-tagg"
 #: ../plugins/TagRemove_Roundabout_Ref.py:41
 #, python-format, python-brace-format
 msgid "Should not contain tag ref={0}"
-msgstr ""
+msgstr "Borde inte innehålla tagg ref={0}"
 
 #: ../analysers/analyser_osmosis_highway_name_close.py:87
 msgid "Close similar name"
@@ -1113,7 +1113,7 @@ msgstr "El-objekt korsar byggnad"
 
 #: ../analysers/analyser_osmosis_highway_vs_building.py:470
 msgid "Power object and highway too close"
-msgstr ""
+msgstr "El-objekt och väg för nära varandra"
 
 #: ../analysers/analyser_osmosis_highway_vs_building.py:472
 msgid "Highway overlaps"
@@ -1178,23 +1178,23 @@ msgstr ""
 #: ../plugins/TagFix_MultipleTag2.py:584 ../plugins/TagFix_MultipleTag2.py:772
 #, python-brace-format
 msgid "{0} without {1}"
-msgstr ""
+msgstr "{0} utan {1}"
 
 #: ../plugins/Bicycle.py:23 ../plugins/Bicycle.py:24 ../plugins/Bicycle.py:108
 #: ../plugins/Bicycle.py:140
 #, python-brace-format
 msgid "{0} with {1}"
-msgstr ""
+msgstr "{0} med {1}"
 
 #: ../plugins/Bicycle.py:26 ../plugins/Bicycle.py:54
 #, python-brace-format
 msgid "{0} with {1} and {2}"
-msgstr ""
+msgstr "{0} med {1} och {2}"
 
 #: ../plugins/Bicycle.py:25 ../plugins/Bicycle.py:89
 #, python-brace-format
 msgid "{0} is preferred to {1}"
-msgstr ""
+msgstr "{0} är att föredra framför {1}"
 
 #: ../analysers/analyser_merge_police_FR_gn.py:32
 msgid "Police/\"Gendarmerie\" not integrated"
@@ -1211,7 +1211,7 @@ msgstr ""
 #: ../analysers/analyser_osmosis_parking_highway.py:108
 #: ../analysers/analyser_osmosis_parking_highway.py:111
 msgid "Missing access way to parking"
-msgstr ""
+msgstr "Tillfartsväg saknas till parkering"
 
 #: ../plugins/TagFix_MultipleTag2.py:27 ../plugins/TagFix_MultipleTag2.py:92
 #: ../plugins/TagFix_MultipleTag2.py:324 ../plugins/TagFix_MultipleTag2.py:634
@@ -1264,7 +1264,7 @@ msgstr ""
 
 #: ../plugins/Website.py:47
 msgid "The URL contains a space"
-msgstr ""
+msgstr "URL innehåller mellanslag"
 
 #: ../plugins/Website.py:49
 msgid "The URL does not have a valid scheme"
@@ -1451,11 +1451,11 @@ msgstr ""
 
 #: ../plugins/Phone.py:63
 msgid "Prohibited char in phone number"
-msgstr ""
+msgstr "Otillåtet tecken i telefonnummer"
 
 #: ../plugins/Phone.py:65
 msgid "Bad separator for multiple values"
-msgstr ""
+msgstr "Felaktigt skiljetecken för flera värden"
 
 #: ../plugins/TagFix_Maxspeed.py:130
 #, python-brace-format
@@ -1996,7 +1996,7 @@ msgstr ""
 
 #: ../analysers/analyser_osmosis_highway_noexit.py:89
 msgid "Noexit on node with exit"
-msgstr ""
+msgstr "Noexit på nod med en annan utväg"
 
 #: ../analysers/analyser_osmosis_highway_noexit.py:91
 msgid "Noexit on way with multiple exits"
@@ -3347,7 +3347,7 @@ msgstr ""
 #: ../plugins/TagFix_Destination.py:73
 #, python-brace-format
 msgid "{0} contains a pipe character"
-msgstr ""
+msgstr "{0} innehåller lodstreck (pipe)"
 
 #: ../plugins/TagFix_Pharmacy.py:33
 msgid "In the country all pharmacies deliver drugs under prescription"
@@ -3601,7 +3601,7 @@ msgstr ""
 
 #: ../plugins/TagRemove_Layer.py:43
 msgid "Waterway/water underground and no tunnel"
-msgstr ""
+msgstr "Vatten/vattendrag under marknivå utan tunnel"
 
 #: ../plugins/TagRemove_Layer.py:45
 msgid "Long Waterway/water underground and no tunnel"
@@ -3890,7 +3890,7 @@ msgstr ""
 #: ../plugins/Capacity.py:79 ../plugins/Capacity.py:135
 #, python-brace-format
 msgid "\"{0}\" value \"{1}\" is negative"
-msgstr ""
+msgstr "\"{0}\"-värdet \"{1}\" är negativt"
 
 #: ../plugins/Capacity.py:105 ../plugins/Capacity.py:141
 #, python-brace-format
@@ -4571,7 +4571,7 @@ msgstr ""
 
 #: ../plugins/TagFix_Access.py:59
 msgid "Transport mode in access value"
-msgstr ""
+msgstr "Transportslag i access-taggens värde"
 
 #: ../plugins/TagFix_Access.py:60
 msgid ""
@@ -4657,7 +4657,7 @@ msgstr ""
 
 #: ../analysers/analyser_osmosis_roundabout.py:107
 msgid "Roundabout without right of way"
-msgstr ""
+msgstr "Cirkulationsplats utan förkörsrätt"
 
 #: ../analysers/analyser_osmosis_roundabout.py:109
 msgid ""
@@ -4925,7 +4925,7 @@ msgstr ""
 
 #: ../plugins/Highway_Parking_Lane.py:95
 msgid "Use `parking:left`, `parking:right` or `parking:both`."
-msgstr ""
+msgstr "Använd `parking:left`, `parking:right` eller `parking:both`."
 
 #: ../plugins/Highway_Parking_Lane.py:98
 msgid ""
@@ -5000,7 +5000,7 @@ msgstr ""
 #: ../plugins/indoor.py:218
 #, python-brace-format
 msgid "`{0}` without `{1}` or `{2}`"
-msgstr ""
+msgstr "`{0}` utan `{1}` eller `{2}`"
 
 #: ../plugins/indoor.py:25 ../plugins/indoor.py:82 ../plugins/indoor.py:186
 #: ../plugins/indoor.py:232
