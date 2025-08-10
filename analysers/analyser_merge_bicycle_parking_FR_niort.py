@@ -21,7 +21,7 @@
 ###########################################################################
 
 from modules.OsmoseTranslation import T_
-from .Analyser_Merge import Analyser_Merge_Point, SourceDataGouv, SHP, LoadGeomCentroid, Conflate, Select, Mapping
+from .Analyser_Merge import Analyser_Merge_Point, SourceDataGouv, GeoJSON, Load_XY, Conflate, Select, Mapping
 
 class Analyser_Merge_Bicycle_Parking_FR_Niort(Analyser_Merge_Point):
     def __init__(self, config, logger = None):
@@ -31,13 +31,12 @@ class Analyser_Merge_Bicycle_Parking_FR_Niort(Analyser_Merge_Point):
         self.init(
             "https://www.data.gouv.fr/fr/datasets/parking-a-velos/",
             "Emplacement des parkings à vélos sur la commune de Niort",
-            SHP(
+            GeoJSON(
                 SourceDataGouv(
                     attribution="data.gouv.fr:Ville de Niort",
                     dataset="653da2bc403f62ddb14090d9",
-                    resource="b2de6887-070e-4ea6-ae3a-b1c32e1bc656"),
-                zip="Parking_%C3%A0_v%C3%A9los.shp"),
-            LoadGeomCentroid(),
+                    resource="b1dee3d6-e07c-46cb-b7e4-1e4f1f13d1d6")),
+            Load_XY("geom_x", "geom_y"),
             Conflate(
                 select = Select(
                     types = ["nodes", "ways"],
