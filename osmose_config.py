@@ -355,7 +355,6 @@ france_departement("bretagne/ille_et_vilaine", 7465, "FR-35", include=include_br
     # Rennes
     'merge_public_equipment_FR_rennes_toilets',
     'merge_public_transport_FR_star',
-    'merge_defibrillators_FR_montfort',
     'merge_defibrillators_FR_saintmalo',
 ])
 france_departement("bretagne/finistere", 102430, "FR-29", include=include_bretagne + [
