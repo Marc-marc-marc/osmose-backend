@@ -33,15 +33,15 @@ class Analyser_Merge_Recycling_FR_ampm(Analyser_Merge_Point):
             title = T_('{0} recycling, integration suggestion', 'AMPM'))
 
         self.init(
-            "https://data.ampmetropole.fr/explore/dataset/point-dapport-volontaire-mamp/",
-            "Points d'apport volontaire - Aix-Marseille-Provence",
+            "https://data.ampmetropole.fr/explore/dataset/ol-pav-harmonise",
+            "Points d'apport volontaire",
             CSV(SourceOpenDataSoft(
                 attribution="Métropole Aix-Marseille Provence",
-                url="https://data.ampmetropole.fr/explore/dataset/point-dapport-volontaire-mamp")),
+                url="https://data.ampmetropole.fr/explore/dataset/ol-pav-harmonise")),
             Load_XY("geo_point_2d", "geo_point_2d",
                 xFunction = lambda x: x and x.split(',')[1],
                 yFunction = lambda y: y and y.split(',')[0],
-                select = {"flux_lib": ["Verre", "Biflux", "Textile"]}),
+                select = {"Type de flux": ["Verre", "Biflux", "Textile"]}),
             Conflate(
                 select = Select(
                     types = ["nodes", "ways"],
@@ -53,10 +53,10 @@ class Analyser_Merge_Recycling_FR_ampm(Analyser_Merge_Point):
                         "recycling_type": "container"},
                     static2 = {"source": self.source},
                     mapping1 = {
-                        "recycling:glass_bottles": lambda fields: "yes" if fields["flux_lib"] == "Verre" else None,
-                        "recycling:paper": lambda fields: "yes" if fields["flux_lib"] == "Biflux" else None,
-                        "recycling:plastic": lambda fields: "yes" if fields["flux_lib"] == "Biflux" else None,
-                        "recycling:packaging": lambda fields: "yes" if fields["flux_lib"] == "Biflux" else None,
-                        "recycling:clothes": lambda fields: "yes" if fields["flux_lib"] == "Textile" else None,
-                        "location": lambda fields: "underground" if fields["type_lib"] == "Enterré" else None,},
-                    text = lambda tags, fields: {"en": "{0} - {1}".format(fields["flux_lib"], fields["adresse"])} )))
+                        "recycling:glass_bottles": lambda fields: "yes" if fields["Type de flux"] == "Verre" else None,
+                        "recycling:paper": lambda fields: "yes" if fields["Type de flux"] == "Biflux" else None,
+                        "recycling:plastic": lambda fields: "yes" if fields["Type de flux"] == "Biflux" else None,
+                        "recycling:packaging": lambda fields: "yes" if fields["Type de flux"] == "Biflux" else None,
+                        "recycling:clothes": lambda fields: "yes" if fields["Type de flux"] == "Textile" else None,
+                        "location": lambda fields: "underground" if fields["Type de colonne"] == "Enterré" else None,},
+                    text = lambda tags, fields: {"en": "{0} - {1}".format(fields["Type de flux"], fields["adresse"])} )))
