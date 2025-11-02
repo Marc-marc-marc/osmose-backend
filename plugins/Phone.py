@@ -140,6 +140,39 @@ class Phone(Plugin):
                 err.append({"class": 30925, "subclass": stablehash64(tag), "text": T_("Not allowed char \"{0}\" in phone number tag \"{1}\"", phone_test, tag)})
                 continue
 
+            # Detection and correction of invalid prefixes (e.g., "-", "-+")
+            if phone.startswith('-'):
+                # Case 1: Prefix "-+" (e.g., "-+32...")
+                if phone.startswith('-+'):
+                    phone_stripped = phone[2:]
+                    if phone_stripped.startswith(self.code + " "):
+                        err.append({"class": 30924, "subclass": stablehash64(tag), "text": T_("Bad international prefix"), "fix": {tag: "+" + phone_stripped}})
+                        continue
+                    elif self.InternationalPrefix and self.InternationalPrefix.match(phone_stripped):
+                        err.append({"class": 30924, "subclass": stablehash64(tag), "text": T_("Bad international prefix"), "fix": {tag: "+" + phone_stripped}})
+                        continue
+                    elif self.MissingInternationalPrefix and self.MissingInternationalPrefix.match(phone_stripped):
+                        err.append({"class": 30924, "subclass": stablehash64(tag), "text": T_("Bad international prefix"), "fix": {tag: "+" + self.code + " " + phone_stripped}})
+                        continue
+                # Case 2: Prefix "-" before an international prefix (e.g., "-32...")
+                elif len(phone) > 1 and phone[1:].startswith(self.code):
+                    phone_stripped = phone[1:]
+                    if phone_stripped.startswith(self.code + " "):
+                        err.append({"class": 30924, "subclass": stablehash64(tag), "text": T_("Bad international prefix"), "fix": {tag: "+" + phone_stripped}})
+                        continue
+                    elif self.InternationalPrefix and self.InternationalPrefix.match(phone_stripped):
+                        err.append({"class": 30924, "subclass": stablehash64(tag), "text": T_("Bad international prefix"), "fix": {tag: "+" + phone_stripped}})
+                        continue
+                # Case 3: Prefix "-" before a local prefix (e.g., "-0...")
+                elif len(phone) > 1 and phone[1:].startswith(self.local_prefix):
+                    phone_stripped = phone[1:]
+                    if self.MissingInternationalPrefix and self.MissingInternationalPrefix.match(phone_stripped):
+                        err.append({"class": 30924, "subclass": stablehash64(tag), "text": T_("Bad international prefix"), "fix": {tag: "+" + self.code + " " + phone_stripped.replace(self.local_prefix, '', 1)}})
+                        continue
+                # If the number remains invalid, report an error without proposing a fix
+                err.append({"class": 30924, "subclass": stablehash64(tag), "text": T_("Invalid phone number")})
+                continue
+
             # Before local prefix
             if self.InternationalPrefix:
                 r = self.InternationalPrefix.match(phone)
@@ -344,11 +377,14 @@ class Test(TestPluginCommon):
             ("+32 1307", "1307"),
             ("021231212", "+32 21231212"),
             ("-021231212", "+32 21231212"),
+            ("-32 2 123 12 12", "+32 2 123 12 12"),
+            ("-+32 2 123 12 12", "+32 2 123 12 12"),
             ("02 123 12 12", "+32 2 123 12 12"),
         ):
             # Check the bad number's error and fix
             err = p.node(None, {"phone": bad})
             self.check_err(err, ("phone='{0}'".format(bad)))
+            self.assertIn("fix", err[0], f"No fix proposed for phone number: {bad}")
             self.assertEqual(err[0]["fix"]["phone"], good)
 
             # The correct number does not need fixing
