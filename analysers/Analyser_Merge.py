@@ -541,7 +541,7 @@ class SourceIGN(Source):
         if len(str(dep_code)) == 2:
             dep_code = f"0{dep_code}"
         match = re.search(
-            fr"https://data.geopf.fr/telechargement/download/BDTOPO/BDTOPO_3-3_TOUSTHEMES_GPKG_[A-Z0-9]+_D{dep_code}_[-0-9]+/BDTOPO_3-3_TOUSTHEMES_GPKG_[A-Z0-9]+_D{dep_code}_([-0-9]+).7z",
+            fr"https://data.geopf.fr/telechargement/download/BDTOPO/BDTOPO_3-[0-9]+_TOUSTHEMES_GPKG_[A-Z0-9]+_D{dep_code}_[-0-9]+/BDTOPO_3-[0-9]+_TOUSTHEMES_GPKG_[A-Z0-9]+_D{dep_code}_([-0-9]+).7z",
             response.text
         )
         url, date = match[0], match[1]
