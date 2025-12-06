@@ -1,0 +1,650 @@
+/* Disclaimer: 
+This document only serves to contain test cases to evaluate
+the parsing and evaluation of mapcss files, and is therefore
+not supposed to be used in JOSM for validation of OSM data */
+
+
+node[x=0] {
+  throwWarning: "test #1740";
+  assertMatch: "node x=0";
+  assertNoMatch: "node x=1";
+  assertNoMatch: "node x=1.0";
+  assertNoMatch: "node x=Osmose";
+  -osmoseTags: list("fix:survey");
+  -osmoseItemClassLevel: "4030/98:0/2";
+}
+node[x!=0] {
+  throwWarning: "test #1740";
+  assertMatch: "node x=1";
+  assertMatch: "node x=1.0";
+  assertMatch: "node x=Osmose";
+  assertNoMatch: "node x=0";
+}
+
+
+way[x~=C1] {
+  throwWarning: "test #1610";
+  assertMatch: "way x=C1";
+  assertMatch: "way x=C00;C1;C22";
+  assertMatch: "way x=\"C00; C1; C22\"";
+  assertNoMatch: "way x=C12";
+}
+
+
+way:righthandtraffic[x=y][z?] {
+  throwWarning: tr("test #1603 - {0}{1}", "{1.tag}", "{2.tag}");
+  -osmoseAssertMatchWithContext:list("way x=y z=yes", "inside=NL");
+}
+way[x=y][z?]:righthandtraffic {
+  throwWarning: tr("test #1603 - {0}{1}", "{0.tag}", "{1.tag}");
+  -osmoseAssertMatchWithContext:list("way x=y z=yes", "inside=NL");
+}
+
+
+*[parking][amenity!~/^(parking|motorcycle_parking)$/] {
+  throwWarning: tr("test #994 - {0}{1}", "{0.key}", "{1.tag}");
+  assertMatch: "node parking=yes amenity=osmose";
+  assertNoMatch: "node parking=yes amenity=parking";
+}
+
+
+*[a][!c],
+*[b][!/d/] {
+  throwWarning: tr("test #328 - {0}{1}", "{0.key}", "{1.key}");
+  assertMatch: "way a=b";
+  assertMatch: "way b=c";
+  assertNoMatch: "way a=b c=d";
+  assertNoMatch: "way b=a d=c";
+}
+
+
+*[/abc/=~/def/] {
+  assertMatch: "relation xabcx=xdefx";
+  assertMatch: "relation abc=def";
+  assertNoMatch: "relation abc=ghi";
+  assertNoMatch: "relation ABC=DEF";
+  throwWarning: "test commit 373d1ff9bacf8126508bbf3e37467df2bdf17fbd"
+}
+
+
+*[addr:street =~ /(?i).*Straße.*/][inside("LI,CH")] {
+  -osmoseAssertMatchWithContext:list("node addr:street=Neuestraßebahn", "inside=LI");
+  -osmoseAssertNoMatchWithContext:list("node addr:street=Neuestraßebahn", "inside=FR");
+  throwWarning: tr("test #327");
+}
+
+
+way:righthandtraffic {
+  throwWarning: tr("test righthandtraffic");
+  -osmoseAssertMatchWithContext:list("way", "driving_side=right");
+  -osmoseAssertNoMatchWithContext:list("way", "driving_side=left");
+}
+way!:righthandtraffic {
+  throwWarning: tr("test lefthandtraffic");
+  -osmoseAssertMatchWithContext:list("way", "driving_side=left");
+  -osmoseAssertNoMatchWithContext:list("way", "driving_side=right");
+}
+
+
+way[count(uniq_list(tag_regex("abc"))) == 2] {
+  throwWarning: "test";
+  assertMatch: "way abc=def abcdef=ghi abcd=ghi";
+  assertMatch: "way abc=def abcdef=ghi";
+  assertNoMatch: "way abc=def def=def";
+  assertNoMatch: "way abc=def abcdef=def";
+}
+way[count(uniq_list(tag_regex("abc"))) == 2.0] {
+  throwWarning: "test";
+  assertMatch: "way abc=def abcdef=ghi abcd=ghi";
+  assertMatch: "way abc=def abcdef=ghi";
+  assertNoMatch: "way abc=def def=def";
+  assertNoMatch: "way abc=def abcdef=def";
+}
+
+
+way[oneway?] {
+  throwWarning: tr("test {0}", "{0.tag}");
+  assertMatch: "way oneway=1";
+  assertMatch: "way oneway=yes";
+  assertNoMatch: "way oneway=no";
+  assertNoMatch: "way oneway=4.0";
+  assertNoMatch: "way x=y";
+}
+way[oneway?!] {
+  throwWarning: tr("test {0}", "{0.tag}");
+  assertMatch: "way oneway=0";
+  assertMatch: "way oneway=no";
+  assertNoMatch: "way oneway=yes";
+  assertNoMatch: "way x=y";
+}
+
+
+way[name*=Trigger][tag("building")=="chapel"||tag("amenity")=="place_of_worship"][x] {
+  assertMatch: "way amenity=place_of_worship name=OsmoseRuleTrigger x=yes";
+  assertMatch: "way building=chapel name=OsmoseRuleTrigger x=yes";
+  assertMatch: "way amenity=place_of_worship building=chapel name=OsmoseRuleTrigger x=yes";
+  assertNoMatch: "way amenity=place_of_worship name=Westminster x=yes";
+  throwWarning: tr("test #1303, #1742 {0}", "{2.key}");
+}
+way[name*=Trigger][tag("building")=="chapel"&&tag("amenity")=="place_of_worship"][x] {
+  assertMatch: "way amenity=place_of_worship building=chapel name=OsmoseRuleTrigger x=yes";
+  assertNoMatch: "way amenity=place_of_worship building=chapel name=Westminster x=yes";
+  assertNoMatch: "way amenity=place_of_worship name=OsmoseRuleTrigger x=yes";
+  assertNoMatch: "way building=chapel name=OsmoseRuleTrigger x=yes";
+  throwWarning: tr("test #1303 {0}", "{2.key}");
+}
+
+
+way[inside(FR)][x] {
+  throwWarning: tr("test #1742 - {0}", "{1.tag}");
+  -osmoseAssertMatchWithContext:list("way x=y", "inside=FR");
+}
+
+
+*[a][a=*b] {
+  throwError: "test";
+  assertMatch: "node a=x b=x";
+  assertNoMatch: "node a=x b=y";
+  assertNoMatch: "node a=x";
+}
+
+
+
+
+way[x] {
+  -osmoseItemClassLevel: "4/97:2/1";
+  -osmoseTags: list("osmose_rules");
+  -osmoseTrap: tr("Don't do this!");
+  -osmoseExample: "Look at me, I haven't lost my apostrophe";
+  -osmoseDetail: tr("More {0}.", "`info`");
+  -osmoseFix: "This may fix it.";
+  -osmoseResource: "https://wiki.openstreetmap.org/wiki/Useful_Page";
+  fixAdd: "y=z";
+  fixRemove: "x";
+  throwOther: tr("test");
+  group: tr("test");
+  assertMatch: "way x=yes";
+  assertNoMatch: "way y=yes";
+}
+/* same as above (except class) but inverted sequence */
+way[x] {
+  assertNoMatch: "way y=yes";
+  assertMatch: "way x=yes";
+  group: tr("test");
+  throwOther: tr("test");
+  fixRemove: "x";
+  fixAdd: "y=z";
+  -osmoseResource: "https://wiki.openstreetmap.org/wiki/Useful_Page";
+  -osmoseFix: "This may fix it.";
+  -osmoseDetail: tr("More {0}.", "`info`");
+  -osmoseExample: "Look at me, I haven't lost my apostrophe";
+  -osmoseTrap: tr("Don't do this!");
+  -osmoseTags: list("osmose_rules");
+  -osmoseItemClassLevel: "4/99:2/1";
+}
+
+
+node[lit][eval(number_of_tags()) = 1] {
+  throwWarning: "test";
+  assertMatch: "node lit=yes";
+  assertNoMatch: "node abc=def lit=yes";
+}
+node[lit][number_of_tags() == 1] {
+  throwWarning: "test";
+  assertMatch: "node lit=yes";
+  assertNoMatch: "node abc=def lit=yes";
+}
+
+way[maxspeed > 5000] {
+  throwWarning: tr("test {0}{1}", "text", "{0.key}");
+  assertMatch: "way maxspeed=10000";
+  assertNoMatch: "way maxspeed=5000";
+  assertNoMatch: "way maxspeed=default";
+  assertNoMatch: "way";
+}
+way[tag(a) > tag(b)] {
+  throwWarning: "test";
+  assertMatch: "way a=1 b=0";
+  assertNoMatch: "way a=0 b=1";
+  assertNoMatch: "way a=0 b=yes";
+}
+
+way[x] {
+  set a;
+  set b;
+  throwWarning: "test";
+  assertMatch: "way x=y";
+}
+
+node[a][b][tag("a") > tag("b")] {
+  throwError: tr("test #1882 - {0}-{1}", "{0.tag}", "{1.tag}");
+  assertNoMatch: "node a=3  b=6";
+  assertNoMatch: "node a=X  b=Y";
+  assertNoMatch: "node a=3a b=6a";
+  assertNoMatch: "node a=3a b=6";
+  assertNoMatch: "node a=3  b=6a";
+  assertMatch:   "node b=3  a=6";
+  assertMatch:   "node b=3  a=12.0";
+  assertMatch:   "node b=3  a=12";
+  assertMatch:   "node b=-5 a=6";
+  assertNoMatch: "node b=X  a=Y";
+  assertNoMatch: "node b=3a a=6a";
+  assertNoMatch: "node b=3a a=6";
+  assertNoMatch: "node b=3  a=6a";
+  assertNoMatch: "node a=3.0  b=6a";
+  assertMatch:   "node b=3.0  a=6.0";
+  assertMatch:   "node b=3.0  a=12";
+}
+
+node[a][b][tag("a") >= tag("b")] {
+  throwError: tr("test #1882 - {0}-{1}", "{0.tag}", "{1.tag}");
+  assertNoMatch: "node a=3  b=6";
+  assertNoMatch: "node a=X  b=Y";
+  assertNoMatch: "node a=3a b=6a";
+  assertNoMatch: "node a=3a b=6";
+  assertNoMatch: "node a=3  b=6a";
+  assertMatch:   "node b=3  a=6";
+  assertMatch:   "node b=3  a=12.0";
+  assertMatch:   "node b=3  a=12";
+  assertMatch:   "node b=-5 a=6";
+  assertNoMatch: "node b=X  a=Y";
+  assertNoMatch: "node b=3a a=6a";
+  assertNoMatch: "node b=3a a=6";
+  assertNoMatch: "node b=3  a=6a";
+  assertNoMatch: "node a=3.0  b=6a";
+  assertMatch:   "node b=3.0  a=6.0";
+  assertMatch:   "node b=3.0  a=12";
+}
+
+node[a][b][tag("b") < tag("a")] {
+  throwError: tr("test #1882 - {0}-{1}", "{0.tag}", "{1.tag}");
+  assertNoMatch: "node a=3  b=6";
+  assertNoMatch: "node a=X  b=Y";
+  assertNoMatch: "node a=3a b=6a";
+  assertNoMatch: "node a=3a b=6";
+  assertNoMatch: "node a=3  b=6a";
+  assertMatch:   "node b=3  a=6";
+  assertMatch:   "node b=3  a=12.0";
+  assertMatch:   "node b=3  a=12";
+  assertMatch:   "node b=-5 a=6";
+  assertNoMatch: "node b=X  a=Y";
+  assertNoMatch: "node b=3a a=6a";
+  assertNoMatch: "node b=3a a=6";
+  assertNoMatch: "node b=3  a=6a";
+  assertNoMatch: "node a=3.0  b=6a";
+  assertMatch:   "node b=3.0  a=6.0";
+  assertMatch:   "node b=3.0  a=12";
+}
+
+node[a][b][tag("b") <= tag("a")] {
+  throwError: tr("test #1882 - {0}-{1}", "{0.tag}", "{1.tag}");
+  assertNoMatch: "node a=3  b=6";
+  assertNoMatch: "node a=X  b=Y";
+  assertNoMatch: "node a=3a b=6a";
+  assertNoMatch: "node a=3a b=6";
+  assertNoMatch: "node a=3  b=6a";
+  assertMatch:   "node b=3  a=6";
+  assertMatch:   "node b=3  a=12.0";
+  assertMatch:   "node b=3  a=12";
+  assertMatch:   "node b=-5 a=6";
+  assertNoMatch: "node b=X  a=Y";
+  assertNoMatch: "node b=3a a=6a";
+  assertNoMatch: "node b=3a a=6";
+  assertNoMatch: "node b=3  a=6a";
+  assertNoMatch: "node a=3.0  b=6a";
+  assertMatch:   "node b=3.0  a=6.0";
+  assertMatch:   "node b=3.0  a=12";
+}
+
+node[a > 2] {
+  throwError: tr("test #1882 - {0}", "{0.tag}");
+  assertMatch: "node a=3";
+  assertMatch: "node a=3.0";
+  assertNoMatch: "node a=X";
+  assertNoMatch: "node a=-5";
+  assertNoMatch: "node a=1";
+  assertNoMatch: "node a=1.0";
+}
+
+node[a > 2.0] {
+  throwError: tr("test #1882 - {0}", "{0.tag}");
+  assertMatch: "node a=3";
+  assertMatch: "node a=3.0";
+  assertNoMatch: "node a=X";
+  assertNoMatch: "node a=-5";
+  assertNoMatch: "node a=1";
+  assertNoMatch: "node a=1.0";
+}
+
+node[a][count(split("n", tag("a"))) > 2] {
+  throwError: tr("test #1882 - {0}", "{0.tag}");
+  assertMatch: "node a=ananas";
+  assertNoMatch: "node a=X";
+}
+
+node[a][count(split("n", tag("a"))) > 2.0] {
+  throwError: tr("test #1882 - {0}", "{0.tag}");
+  assertMatch: "node a=ananas";
+  assertNoMatch: "node a=X";
+}
+
+node[a][b][count(split("n", tag("a"))) > tag(b)] {
+  throwError: tr("test #1882 - {0}-{1}", "{0.tag}", "{1.tag}");
+  assertMatch: "node a=ananas b=2";
+  assertMatch: "node a=ananas b=2.0";
+  assertNoMatch: "node a=X b=2";
+  assertNoMatch: "node a=X b=2.0";
+}
+
+area[building] {
+  throwWarning: tr("test area rule {0}", "{0.tag}");
+  assertMatch: "way building=yes";
+  assertMatch: "way area=yes building=yes";
+  assertNoMatch: "way area=no building=yes";
+  assertNoMatch: "way x=yes";
+  assertMatch: "relation type=multipolygon building=yes";
+  assertNoMatch: "relation building=yes";
+  assertNoMatch: "relation type=multipolygon x=yes";
+}
+
+area[building]:closed:closed2,
+area[landuse]:closed2 {
+  throwWarning: tr("test area rule {0}", "{0.tag}");
+  assertNoMatch: "way area=no building=yes";
+  assertNoMatch: "way area=no landuse=yes";
+  assertMatch: "relation type=multipolygon building=yes";
+  assertMatch: "relation type=multipolygon landuse=yes";
+  assertNoMatch: "relation building=yes";
+  assertNoMatch: "relation landuse=yes";
+  assertNoMatch: "relation type=multipolygon x=yes";
+}
+
+area[building]!:closed {
+  throwWarning: tr("test area rule {0}", "{0.tag}");
+  assertNoMatch: "relation type=multipolygon building=yes";
+  assertNoMatch: "relation type=other building=yes";
+}
+
+way[y],
+area[building=yes],
+node[x] {
+  throwWarning: tr("test area rule {0}", "{0.tag}");
+  assertMatch: "way y=z";
+  assertMatch: "node x=z";
+  assertNoMatch: "relation x=z y=z";
+  assertNoMatch: "node building=yes";
+  assertMatch: "way building=yes";
+  assertNoMatch: "way area=no building=yes";
+  assertMatch: "relation type=multipolygon building=yes";
+  assertNoMatch: "relation building=yes";
+}
+
+node[x]!:closed,
+relation[y]:closed,
+relation[z]!:closed2 {
+  throwWarning: tr("test closed rewrite {0}", "{0.tag}");
+  assertMatch: "node x=yes";
+  assertMatch: "relation type=multipolygon y=yes";
+  assertNoMatch: "relation type=other y=yes";
+  assertNoMatch: "relation type=multipolygon z=yes";
+  assertMatch: "relation type=other z=yes";
+}
+
+
+node[any(tag("x"), "") == any(tag("y"), "hello")],
+node[a] {
+  throwWarning: tr("test any {0} {1}", any(tag("b"), ""), any(tag("c"), tag("d"), ""));
+  assertMatch: "node a=1 b=2 c=3 d=four";
+  assertMatch: "node a=1 b=2 d=four";
+  assertMatch: "node a=1";
+  assertMatch: "node x=hello";
+  assertMatch: "node x=hello y=hello";
+  assertNoMatch: "node x=hello y=world";
+  assertNoMatch: "node x=bye y=world";
+  assertNoMatch: "node y=world";
+  assertNoMatch: "node unknownkey=yes";
+}
+
+node[any(tag("x"), tag("y"))] {
+  throwWarning: "test";
+  assertMatch: "node x=yes";
+  assertMatch: "node y=yes";
+  assertNoMatch: "node z=yes";
+}
+
+relation[tag(x)==parent_tag(x)] { /*parent_tag not implemented, but blacklisted, should be skipped*/
+  throwWarning: "test";
+  assertMatch: "relation a=b c=d";
+}
+
+node[x][substring(tag(x), 1) == "bcde"][substring(tag(x), 1, 3) = "bc"] {
+  throwWarning: "test";
+  assertMatch: "node x=abcde";
+}
+
+node[a][concat(tag("a"), "bc", tag("d")) == "1bc"] {
+  throwWarning: tr("test concat {0}", concat(tag("b"), tag("c")));
+  assertNoMatch: "node a=1 b=2 c=c d=d";
+  assertMatch: "node a=1 b=2 c=c";
+  assertMatch: "node a=1 b=2";
+  assertMatch: "node a=1";
+}
+
+@supports (min-josm-version: 12345) {
+  node[x] {
+    throwWarning: tr("I support supports {0}", "{0.tag}");
+    -osmoseItemClassLevel: "4/96:0/3";
+    assertMatch: "node x=2";
+  }
+}
+@supports not ((min-josm-version: 12345) and ((random-key) or (user-agent: josm))) {
+  node[x] {
+    throwWarning: tr("I support supports {0}", "{0.tag}");
+    -osmoseItemClassLevel: "4/96:1/3";
+    assertMatch: "node x=2";
+    set .supportsSet;
+  }
+  node[y] {
+    throwWarning: "I should be dropped!"; 
+    /* no -osmoseItemClassLevel so we don't know if this rule is safe for Osmose */
+    assertNoMatch: "node y=2";
+    set .thisSetShouldNotBeDefined;
+  }
+}
+
+node[URL_decode("M%C3%A1rio Leopoldo Pereira da C%C3%A2mara") == "Mário Leopoldo Pereira da Câmara"] {
+  throwWarning: "test";
+  assertMatch: "node x=abcde";
+}
+
+
+way[x] > node[x] {throwWarning: "I should be dropped!"; assertNoMatch: "way x=1"; assertNoMatch: "node x=1";}
+node[x] < way[x] {throwWarning: "I should be dropped!"; assertNoMatch: "way x=1"; assertNoMatch: "node x=1";}
+way[x] >[index!=4] node[x] {throwWarning: "I should be dropped!"; assertNoMatch: "way x=1"; assertNoMatch: "node x=1";}
+node[x] <[index!=4] way[x] {throwWarning: "I should be dropped!"; assertNoMatch: "way x=1"; assertNoMatch: "node x=1";}
+
+
+node[get(regexp_match("^a(b(c))?d", tag("x")), 1) = "bc"] {
+  throwWarning: "test regexp_match";
+  assertMatch: "node x=abcd";
+  assertNoMatch: "node x=ad";
+}
+node[get(regexp_match("^a(b(c))?d", tag("x")), 1+1) = "c"] {
+  throwWarning: "test regexp_match";
+  assertMatch: "node x=abcd";
+  assertNoMatch: "node x=ad";
+}
+node[get(regexp_match("^a(b(c))?(d)", tag("x")), 1+1+1) = "d"] {
+  throwWarning: "test regexp_match";
+  assertMatch: "node x=abcd";
+  assertMatch: "node x=ad";
+  assertNoMatch: "node x=abc";
+}
+node[get(regexp_match("^a(b(c)?)(d+)", tag("x")), 2*1+1) = "dd"] {
+  throwWarning: "test regexp_match";
+  assertMatch: "node x=abcdd";
+  assertMatch: "node x=abdd";
+  assertNoMatch: "node x=add";
+  assertNoMatch: "node x=abc";
+}
+node[get(regexp_match("^a(bc)?d", tag("x")), 5 - 4) = "bc"] {
+  throwWarning: "test regexp_match";
+  assertMatch: "node x=abcd";
+  assertNoMatch: "node x=ad";
+  assertNoMatch: "node x=x";
+  assertNoMatch: "node y=z";
+}
+node[get(regexp_match("^a(bc)?d", tag("x")), 0) = tag("x")] {
+  throwWarning: "test regexp_match";
+  assertMatch: "node x=abcd";
+  assertMatch: "node x=ad";
+  assertNoMatch: "node x=abc";
+}
+node[get(regexp_match("^a(bc)+(d)", tag("x")), 2) = "d"] {
+  throwWarning: "test regexp_match";
+  assertMatch: "node x=abcd";
+  assertMatch: "node x=abcbcbcd";
+}
+node[get(regexp_match("^a(b.)+(d)", tag("x")), 1) = "be"] {
+  throwWarning: "test regexp_match";
+  assertMatch: "node x=abcbdbed";
+}
+node[get(regexp_match("^abcd", tag("x")), 0) = "abcd"] {
+  throwWarning: "test regexp_match";
+  assertMatch: "node x=abcd";
+}
+node[get(regexp_match("^a(b(c+)?)(d)", tag("x")), 0) = "abccd"][get(regexp_match("^a(b(c+)?)(d)", tag("x")), 1) = "bcc"][get(regexp_match("^a(b(c+)?)(d)", tag("x")), 2) = "cc"][get(regexp_match("^a(b(c+)?)(d)", tag("x")), 3) = "d"] {
+  throwWarning: "test regexp_match";
+  assertMatch: "node x=abccd";
+}
+node[any(regexp_match("abcd", tag("x")), "no match") != "no match"] {
+  throwWarning: "test regexp_match";
+  assertMatch: "node x=abcd";
+  assertNoMatch: "node x=abcdabcd";
+}
+
+node[x!="a\\b"] {
+  throwWarning: tr("test #2236 - {0} {1}", "{0.key}", "{0.value}");
+  assertMatch: "node x=25";
+}
+node[x="a\\b"] {
+  throwWarning: tr("test #2236 - {0} {1}", "{0.key}", "{0.value}");
+  assertNoMatch: "node x=a\\x08";
+  assertNoMatch: "node x=a\\\\x08";
+}
+node[/\d/] {
+  throwWarning: tr("test #2236 - {0} {1}", "{0.key}", "{0.value}");
+  assertMatch: "node x2=25";
+  assertNoMatch: "node d=25";
+}
+node[x=~/\d/] {
+  throwWarning: tr("test #2236 - {0} {1}", "{0.key}", "{0.value}");
+  assertMatch: "node x=25";
+  assertNoMatch: "node x=d";
+}
+node[x!~/\d/] {
+  throwWarning: tr("test #2236 - {0} {1}", "{0.key}", "{0.value}");
+  assertNoMatch: "node x=25";
+  assertMatch: "node x=d";
+}
+node[x!~/It's\sworking/] {
+  throwWarning: tr("test #2236 - {0} {1}", "{0.key}", "{0.value}");
+  assertMatch: "node x=\"It\\\\'s working\"";
+  assertNoMatch: "node x=\"It's working\"";
+}
+
+node[to_int("-3") + to_short("4") * to_long("2") = 5] {
+  throwWarning: "test";
+  assertMatch: "node x=y";
+}
+
+node[to_float("3.14e1") = 31.4][to_double("3.1415e1") = 31.415] {
+  throwWarning: "test";
+  assertMatch: "node x=y";
+}
+
+node[tag_length][siunit_length(tag(tag_length)) == "1.2"] {
+  throwWarning: tr("test unit conversion {0} -> {1}", "{0.value}", siunit_length(tag(tag_length)));
+  assertMatch: "node tag_length=1.2";
+}
+node[tag_length][siunit_length(tag(tag_length)) == tag(b)] {
+  throwWarning: tr("test unit conversion {0} -> {1}", "{0.value}", siunit_length(tag(tag_length)));
+  assertMatch: "node tag_length=\"  1,3 m \" b=1.3"; /* JOSM permits spaces and converts all , to . */
+  assertMatch: "node tag_length=\"1 300 m\"  b=1300.0"; /* JOSM permits spaces and converts all , to . */
+  assertMatch: "node tag_length=1.4m         b=1.4";
+  assertMatch: "node tag_length=1.4meter     b=1.4";
+  assertMatch: "node tag_length=150cm        b=1.5";
+  assertMatch: "node tag_length=1600.0mm     b=1.6";
+  assertMatch: "node tag_length=1.7km        b=1700.0";
+  assertMatch: "node tag_length=1.7kilometer b=1700.0";
+  assertMatch: "node tag_length=-1.8km       b=-1800.0";
+  assertMatch: "node tag_length=10ft         b=3.048";
+  assertMatch: "node tag_length=20'          b=6.096";
+  assertMatch: "node tag_length=100in        b=2.54";
+  assertMatch: "node tag_length=200\"        b=5.08";
+  assertMatch: "node tag_length=1nmi         b=1852.0";
+  assertMatch: "node tag_length=1mi          b=1609.344";
+  assertMatch: "node tag_length=\"10ft 1in\" b=3.0734";
+  assertMatch: "node tag_length=20'2\"       b=6.1468";
+  assertMatch: "node tag_length=-20'2\"      b=-6.1468";
+}
+node[any(siunit_length(tag(x)), "no result") == "no result"] {
+  throwWarning: "test";
+  assertMatch: "node x=Hello";
+  assertMatch: "node x=\"23 elephants\"";
+  assertMatch: "node x=4-5m";
+  assertMatch: "node x=5m*3";
+  assertMatch: "node x=1.3.5";
+}
+
+
+node[x][inside("FX,NL")] {
+  throwWarning: "test";
+  -osmoseAssertMatchWithContext:list("node x=1", "inside=NL");
+  -osmoseAssertMatchWithContext:list("node x=1", "inside=FR-02");
+  -osmoseAssertNoMatchWithContext:list("node x=1", "inside=FR");
+  -osmoseAssertNoMatchWithContext:list("node x=1", "inside=FR-GP");
+  -osmoseAssertNoMatchWithContext:list("node x=1", "inside=DE");
+}
+node[x][inside("FX,NL,FR-GF")] {
+  throwWarning: "test";
+  -osmoseAssertMatchWithContext:list("node x=1", "inside=NL");
+  -osmoseAssertMatchWithContext:list("node x=1", "inside=FR-02");
+  -osmoseAssertMatchWithContext:list("node x=1", "inside=FR-GF");
+  -osmoseAssertNoMatchWithContext:list("node x=1", "inside=FR");
+  -osmoseAssertNoMatchWithContext:list("node x=1", "inside=FR-GP");
+  -osmoseAssertNoMatchWithContext:list("node x=1", "inside=DE");
+}
+node[x][inside("FX,NL,FR")] {
+  throwWarning: "test";
+  -osmoseAssertMatchWithContext:list("node x=1", "inside=NL");
+  -osmoseAssertMatchWithContext:list("node x=1", "inside=FR-02");
+  -osmoseAssertMatchWithContext:list("node x=1", "inside=FR-GF");
+  -osmoseAssertMatchWithContext:list("node x=1", "inside=FR");
+  -osmoseAssertMatchWithContext:list("node x=1", "inside=FR-GP");
+  -osmoseAssertNoMatchWithContext:list("node x=1", "inside=DE");
+}
+node[x][inside("NL,FX,DE")][outside("FR-02")] {
+  throwWarning: "test";
+  -osmoseAssertMatchWithContext:list("node x=1", "inside=NL");
+  -osmoseAssertMatchWithContext:list("node x=1", "inside=DE");
+  -osmoseAssertMatchWithContext:list("node x=1", "inside=FR-12");
+  -osmoseAssertNoMatchWithContext:list("node x=1", "inside=FR-02");
+  -osmoseAssertNoMatchWithContext:list("node x=1", "inside=FR-GF");
+  -osmoseAssertNoMatchWithContext:list("node x=1", "inside=FR");
+  -osmoseAssertNoMatchWithContext:list("node x=1", "inside=FR-GP");
+}
+node[x][inside("FR")][outside("FX")] {
+  throwWarning: "test";
+  -osmoseAssertMatchWithContext:list("node x=1", "inside=FR-GF");
+  -osmoseAssertNoMatchWithContext:list("node x=1", "inside=FR-02");
+}
+
+
+node[x][join_list("-", trim_list(split(";", tag("x")))) = "a-b-c"] {
+  throwWarning: "test";
+  assertMatch: "node x=a;b;c";
+  assertMatch: "node x=;a;;b;;c;";
+  assertMatch: "node x=\"a;  b; ; c\"";
+  assertNoMatch: "node x=a;b;0;c";
+}

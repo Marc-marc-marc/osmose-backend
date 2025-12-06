@@ -44,8 +44,11 @@ SELECT
     is_polygon,
     tags->'highway' LIKE '%_link' AS is_link,
     (tags?'junction' AND tags->'junction' = 'roundabout') AS is_roundabout,
-    (tags?'oneway' AND tags->'oneway' IN ('yes', 'true', '1', '-1')) AS is_oneway,
-    (tags?'area' AND tags->'area' != 'no') AS is_area,
+    ((tags->'highway' = 'motorway' AND NOT tags?'oneway') OR (tags?'oneway' AND tags->'oneway' IN ('yes', 'true', '1', '-1'))) AS is_oneway,
+    CASE
+      WHEN tags?'area' THEN tags->'area' != 'no'
+      ELSE (is_polygon AND tags->'highway' = 'pedestrian')
+    END AS is_area,
     tags->'highway' IN ('planned', 'proposed', 'construction') AS is_construction,
     CASE tags->'highway'
         WHEN 'motorway' THEN 1
@@ -107,37 +110,157 @@ WHERE
 ANALYZE {0}.highway_ends;
 """
 
+    # Multipolygons table is not complete. It does not contain multipolygons across extract border,
+    # (some) invalid ones, and some where ST_BuildArea fails to build the full polygon with all inners
+    sql_create_multipolygons = """
+DO $$
+DECLARE
+    mp RECORD;
+BEGIN
+    DROP TABLE IF EXISTS {0}.multipolygons;
+    CREATE UNLOGGED TABLE {0}.multipolygons (
+        id bigint,
+        tags hstore,
+        poly geometry(Geometry, 4326) NOT NULL,
+        poly_proj geometry(Geometry, {1}) NOT NULL,
+        is_valid boolean NOT NULL
+    );
+
+    FOR mp in (
+        SELECT
+            relations.id,
+            relations.tags,
+            ST_LineMerge(ST_Collect(ways.linestring)) AS linestrings
+        FROM
+            relations
+            JOIN relation_members ON
+                relation_members.relation_id = relations.id AND
+                relation_members.member_type = 'W' AND
+                relation_members.member_role IN ('outer', 'inner', '')
+            LEFT JOIN ways ON
+                ways.id = relation_members.member_id
+        WHERE
+            relations.tags->'type' = 'multipolygon'
+        GROUP BY
+            relations.id
+        HAVING
+            -- Ensure all ways are downloaded; may be false at extract borders
+            -- If false, calculations like ST_Area would give invalid results
+            bool_and(ways.id IS NOT NULL) AND
+            -- Avoid dealing with very large multi-polygons
+            ST_NPoints(ST_Collect(ways.linestring)) < 100000
+    ) LOOP
+        BEGIN
+            IF ST_BuildArea(mp.linestrings) IS NOT NULL AND NOT ST_IsEmpty(ST_BuildArea(mp.linestrings))
+            -- Ensure no linestrings are dropped by ST_BuildArea, which would result in e.g. missing inners (see #2169)
+            AND ST_CoveredBy(ST_Points(mp.linestrings), ST_Points(ST_BuildArea(mp.linestrings))) THEN
+                WITH
+                unary AS (
+                    SELECT
+                        id, tags,
+                        (ST_Dump(poly)).geom AS poly
+                    FROM (VALUES (
+                        mp.id,
+                        mp.tags,
+                        ST_BuildArea(mp.linestrings)
+                    )) AS t(id, tags, poly)
+                ),
+                simplified AS (
+                    SELECT
+                        id, tags,
+                        ST_BuildArea(ST_Collect(
+                            ST_ExteriorRing(poly),
+                            (SELECT ST_Union(ST_MakePolygon(ST_InteriorRingN(poly, n))) FROM generate_series(1, ST_NumInteriorRings(poly)) AS t(n)) -- ST_MakePolygon is needed to union touching inner rings #2169
+                        )) AS poly
+                    FROM
+                        unary
+                ),
+                multi AS (
+                    SELECT
+                        id, tags,
+                        ST_CollectionHomogenize(ST_Collect(poly)) AS poly
+                    FROM
+                        simplified
+                    GROUP BY
+                        id, tags
+                )
+                INSERT INTO
+                    {0}.multipolygons
+                SELECT
+                    *,
+                    ST_Transform(poly, {1}) AS poly_proj,
+                    ST_IsValid(poly) AND ST_IsValid(ST_Transform(poly, {1})) AS is_valid -- see #2058 sometimes poly is considered valid but poly_proj not
+                FROM
+                    multi;
+            END IF;
+        EXCEPTION WHEN OTHERS THEN
+            RAISE NOTICE 'multipolygon fails: %', mp.id;
+        END;
+    END LOOP;
+END;
+$$ LANGUAGE 'plpgsql';
+
+CREATE INDEX idx_multipolygons_poly ON {0}.multipolygons USING GIST(poly);
+CREATE INDEX idx_multipolygons_poly_proj ON {0}.multipolygons USING gist(poly_proj);
+CREATE INDEX idx_multipolygons_tags ON {0}.multipolygons USING gist (tags);
+ANALYZE {0}.multipolygons;
+"""
+
+    sql_create_polygons = """
+CREATE UNLOGGED TABLE {0}.polygons AS
+SELECT
+    'R' AS type,
+    id,
+    tags,
+    poly,
+    poly_proj
+FROM
+    {0}.multipolygons
+WHERE
+    is_valid
+UNION ALL
+SELECT
+    'W' AS type,
+    id,
+    tags,
+    ST_MakePolygon(linestring) AS poly,
+    ST_MakePolygon(ST_Transform(linestring, {1})) AS poly_proj
+FROM
+    ways
+WHERE
+    tags != ''::hstore AND
+    is_polygon AND
+    ST_IsValid(ST_MakePolygon(ST_Transform(linestring, {1})))
+;
+
+CREATE INDEX idx_polygons ON {0}.polygons USING gist(poly);
+CREATE INDEX idx_polygons_proj ON {0}.polygons USING gist(poly_proj);
+CREATE INDEX idx_polygons_tags ON {0}.polygons USING gist(tags);
+ANALYZE {0}.polygons;
+"""
+
     sql_create_buildings = """
 CREATE UNLOGGED TABLE {0}.buildings AS
 SELECT
-    *,
-    CASE WHEN polygon_proj IS NOT NULL AND wall THEN ST_Area(polygon_proj) ELSE NULL END AS area
-FROM (
-SELECT DISTINCT ON (id)
     id,
+    type || id AS type_id,
     tags,
-    linestring,
-    CASE WHEN ST_IsValid(linestring) = 't' AND ST_IsSimple(linestring) = 't' AND ST_IsValid(ST_MakePolygon(ST_Transform(linestring, {1}))) THEN ST_MakePolygon(ST_Transform(linestring, {1})) ELSE NULL END AS polygon_proj,
+    poly,
+    poly_proj,
     (NOT tags?'wall' OR tags->'wall' != 'no') AND tags->'building' != 'roof' AS wall,
     tags?'layer' AS layer,
-    ST_NPoints(linestring) AS npoints,
-    relation_members.relation_id IS NOT NULL AS relation
+    ST_NPoints(poly) AS npoints,
+    ST_Area(poly_proj) AS area
 FROM
-    ways
-    LEFT JOIN relation_members ON
-        relation_members.member_type = 'W' AND
-        relation_members.member_id = ways.id
+    polygons
 WHERE
-    tags != ''::hstore AND
     tags?'building' AND
-    tags->'building' != 'no' AND
-    is_polygon
-) AS t
+    tags->'building' != 'no'
 ;
 
-CREATE INDEX idx_buildings_linestring ON {0}.buildings USING GIST(linestring);
-CREATE INDEX idx_buildings_linestring_wall ON {0}.buildings USING GIST(linestring) WHERE wall;
-CREATE INDEX idx_buildings_polygon_proj ON {0}.buildings USING gist(polygon_proj);
+CREATE INDEX idx_buildings_poly ON {0}.buildings USING GIST(poly);
+CREATE INDEX idx_buildings_poly_wall ON {0}.buildings USING GIST(poly) WHERE wall;
+CREATE INDEX idx_buildings_poly_proj ON {0}.buildings USING gist(poly_proj);
 ANALYZE {0}.buildings;
 """
 
@@ -146,12 +269,8 @@ ANALYZE {0}.buildings;
         self.classs = {}
         self.classs_change = {}
         self.explain_sql = False
-        self.FixTypeTable = {
-            self.node:"node", self.node_full:"node", self.node_new:"node", self.node_position:"node",
-            self.way:"way", self.way_full:"way",
-            self.relation:"relation", self.relation_full:"relation",
-        }
         self.typeMapping = {'N': self.node_full, 'W': self.way_full, 'R': self.relation_full}
+        self.typeMapping_id_only = {'N': self.node, 'W': self.way, 'R': self.relation}
         self.resume_from_timestamp = None
         self.already_issued_objects = None
 
@@ -268,16 +387,31 @@ ANALYZE {0}.buildings;
                 elif table == 'touched_highway_ends':
                     self.requires_tables_build(["highway_ends"])
                     self.create_view_touched('highway_ends', 'W')
+                elif table == 'multipolygons':
+                    self.giscurs.execute(self.sql_create_multipolygons.format(self.config.db_schema.split(',')[0], self.config.options.get("proj")))
+                elif table == 'touched_multipolygons':
+                    self.requires_tables_build(['multipolygons'])
+                    self.create_view_touched('multipolygons', 'R')
+                elif table == 'polygons':
+                    self.requires_tables_build(["multipolygons"])
+                    self.giscurs.execute(self.sql_create_polygons.format(self.config.db_schema.split(',')[0], self.config.options.get("proj")))
+                elif table == 'touched_polygons':
+                    self.requires_tables_build(["polygons"])
+                    self.create_view_touched('polygons', ['W', 'R'])
+                elif table == 'not_touched_polygons':
+                    self.requires_tables_build(["polygons"])
+                    self.create_view_not_touched('polygons', ['W', 'R'])
                 elif table == 'buildings':
+                    self.requires_tables_build(["polygons"])
                     self.giscurs.execute(self.sql_create_buildings.format(self.config.db_schema.split(',')[0], self.config.options.get("proj")))
                 elif table == 'touched_buildings':
                     self.requires_tables_build(["buildings"])
-                    self.create_view_touched('buildings', 'W')
+                    self.create_view_touched('buildings', ['W', 'R'])
                 elif table == 'not_touched_buildings':
                     self.requires_tables_build(["buildings"])
-                    self.create_view_not_touched('buildings', 'W')
+                    self.create_view_not_touched('buildings', ['W', 'R'])
                 else:
-                    raise Exception('Unknow table name {0}'.format(table))
+                    raise Exception('Unknown table name {0}'.format(table))
                 self.giscurs.execute('COMMIT')
                 self.giscurs.execute('BEGIN')
 
@@ -397,10 +531,11 @@ SELECT
 FROM
     {0}
     JOIN transitive_touched ON
-        transitive_touched.data_type = '{1}' AND
-        {0}.{2} = transitive_touched.id
+        transitive_touched.data_type = ANY(%s) AND
+        {0}.{1} = transitive_touched.id
 """
-        self.giscurs.execute(sql.format(table, type, id))
+        type = type if isinstance(type, (list, tuple)) else [type]
+        self.giscurs.execute(sql.format(table, id), (type, ))
 
     def create_view_not_touched(self, table, type, id = 'id'):
         """
@@ -413,12 +548,13 @@ SELECT
 FROM
     {0}
     LEFT JOIN transitive_touched ON
-        transitive_touched.data_type = '{1}' AND
-        {0}.{2} = transitive_touched.id
+        transitive_touched.data_type = ANY(%s) AND
+        {0}.{1} = transitive_touched.id
 WHERE
     transitive_touched.id IS NULL
 """
-        self.giscurs.execute(sql.format(table, type, id))
+        type = type if isinstance(type, (list, tuple)) else [type]
+        self.giscurs.execute(sql.format(table, id), (type, ))
 
     def run00(self, sql, callback = None):
         if self.explain_sql:
@@ -462,10 +598,13 @@ WHERE
                     res = ret["self"](res)
                 if "data" in ret:
                     self.geom = defaultdict(list)
+                    ret["fixType"] = []
                     for (i, d) in enumerate(ret["data"]):
                         if d is not None:
                             d(res[i])
-                    ret["fixType"] = list(map(lambda datai: self.FixTypeTable[datai] if datai is not None and datai in self.FixTypeTable else None, ret["data"]))
+                            ret["fixType"].append(self._typeFromCallback(d, res[i]))
+                            if d in (self.any_full, self.any_id):
+                                res[i] = int(res[i][1:])
                 self.error_file.error(
                     ret["class"],
                     ret.get("subclass"),
@@ -483,6 +622,17 @@ WHERE
             self.logger.log("{0}:{1} sql".format(os.path.basename(caller.filename), caller.lineno))
             self.run00(sql)
 
+    def _typeFromCallback(self, fn, input=None):
+        if fn in (self.node, self.node_full, self.node_new, self.node_position):
+            return "node"
+        if fn in (self.way, self.way_full):
+            return "way"
+        if fn in (self.relation, self.relation_full):
+            return "relation"
+        if fn == self.any_full:
+            return self._typeFromCallback(self.typeMapping[input[0]])
+        if fn == self.any_id:
+            return self._typeFromCallback(self.typeMapping_id_only[input[0]])
 
     def node(self, res):
         self.geom["node"].append({"id":res, "tag":{}})
@@ -513,9 +663,16 @@ WHERE
     def any_full(self, res):
         self.typeMapping[res[0]](int(res[1:]))
 
+    def any_id(self, res):
+        self.typeMapping_id_only[res[0]](int(res[1:]))
+
     def array_full(self, res):
         for type, id in map(lambda r: (r[0], r[1:]), res):
             self.typeMapping[type](int(id))
+
+    def array_id(self, res):
+        for type, id in map(lambda r: (r[0], r[1:]), res):
+            self.typeMapping_id_only[type](int(id))
 
     re_points = re.compile(r"[\(,][^\(,\)]*[\),]")
 
@@ -528,9 +685,13 @@ WHERE
 
     def positionAsText(self, res):
         if res is None:
-            self.logger.err("NULL location provided")
+            self.logger.warn("NULL location provided")
             return []
-        for loc in self.get_points(res):
+        points = self.get_points(res)
+        if points == []:
+            self.logger.err("Invalid location provided")
+            return []
+        for loc in points:
             self.geom["position"].append(loc)
 
 #    def positionWay(self, res):

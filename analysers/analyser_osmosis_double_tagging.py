@@ -26,15 +26,34 @@ from .Analyser_Osmosis import Analyser_Osmosis
 sql10 = """
 CREATE TEMP TABLE relations_alb AS
 SELECT
-  id,
-  ST_Buffer(relation_shape(id), 0.0000001) AS geom, -- Force convertion of Collection to Multipolygon
-  tags,
-  tags->'name' AS name
-FROM
-  relations
+    id,
+    geom,
+    tags,
+    tags->'name' AS name
+FROM (
+    SELECT
+        id,
+        ST_Buffer(relation_shape(id), 0.0000001) AS geom, -- Force convertion of Collection to Multipolygon
+        tags
+    FROM
+        relations
+    WHERE
+        tags?'type' AND
+        tags->'type' != 'multipolygon'
+    UNION ALL
+    -- Treat type=multipolygon relations separate as inners aren't excluded by relation_shape
+    SELECT
+        id,
+        poly AS geom,
+        tags
+    FROM
+        multipolygons
+    WHERE
+        is_valid
+) AS t
 WHERE
-  tags ?| ARRAY['amenity', 'leisure', 'building'] AND
-  (NOT tags?'building' OR tags?'name')
+    tags ?| ARRAY['amenity', 'leisure', 'building'] AND
+    (NOT tags?'building' OR tags?'name')
 """
 
 sql11 = """
@@ -81,7 +100,7 @@ SELECT
 FROM
     {0}{2} AS {2}
     JOIN {1}{3} AS {3} ON
-        ST_Contains({2}.geom, {3}.geom) AND
+        ST_Covers({2}.geom, {3}.geom) AND
         (
             ({2}.name IS NULL AND {3}.name IS NULL) OR
             {2}.name = {3}.name
@@ -94,6 +113,9 @@ FROM
 """
 
 class Analyser_Osmosis_Double_Tagging(Analyser_Osmosis):
+
+    requires_tables_full = ['multipolygons']
+    requires_tables_diff = ['multipolygons']
 
     def __init__(self, config, logger = None):
         Analyser_Osmosis.__init__(self, config, logger)
@@ -144,3 +166,28 @@ the tags.'''),
         ret = {"nodes_alb": self.node_full, "ways_alb": self.way_full, "relations_alb": self.relation_full}
         for c in [["ways_alb", "nodes_alb", 1], ["relations_alb", "ways_alb", 2], ["relations_alb", "nodes_alb", 3]]:
             callback(c[0], c[1], ret[c[0]], ret[c[1]], c[2])
+
+
+from .Analyser_Osmosis import TestAnalyserOsmosis
+
+class Test(TestAnalyserOsmosis):
+    @classmethod
+    def setup_class(cls):
+        from modules import config
+        TestAnalyserOsmosis.setup_class()
+        cls.analyser_conf = cls.load_osm("tests/osmosis_double_tagging.osm",
+                                         config.dir_tmp + "/tests/osmosis_double_tagging.test.xml",
+                                         {"proj": 23032})
+
+    def test_classes(self):
+        with Analyser_Osmosis_Double_Tagging(self.analyser_conf, self.logger) as a:
+            a.analyser()
+
+        self.root_err = self.load_errors()
+        self.check_err(cl="1", elems=[("way", "1000"), ("node", "3")])
+        self.check_err(cl="2", elems=[("relation", "10000"), ("way", "1001")])
+        self.check_err(cl="2", elems=[("relation", "10001"), ("way", "1006")])
+        self.check_err(cl="2", elems=[("relation", "10001"), ("way", "1007")])
+        self.check_err(cl="3", elems=[("relation", "10000"), ("node", "17")])
+        self.check_err(cl="3", elems=[("relation", "10001"), ("node", "13")])
+        self.check_num_err(6)

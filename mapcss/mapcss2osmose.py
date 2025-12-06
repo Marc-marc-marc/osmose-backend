@@ -5,13 +5,16 @@ import sys
 import os
 import re
 import ast
-import hashlib
+from modules.Stablehash import stablehash
 from pprint import pprint
 from antlr4 import FileStream, CommonTokenStream, ParseTreeWalker
 from .generated.MapCSSLexer import MapCSSLexer
 from .generated.MapCSSParser import MapCSSParser
 from .MapCSSListenerL import MapCSSListenerL
-from typing import Dict, List, Set, Optional
+from typing import Dict, List, Set, Optional, Union
+from copy import deepcopy
+from . import mapcss_lib
+from inspect import signature, Parameter
 
 
 # Clean
@@ -66,9 +69,61 @@ def regexExpression_unescape(t, c):
 def simple_selector_pseudo_class(t, c):
     """
     type = simple_selector
-    Remove allways true pseudo class
+    Remove always true pseudo class
     """
     t['pseudo_class'] = list(filter(lambda p: not (p['not_class'] and p['pseudo_class'] in ('completely_downloaded', 'in-downloaded-area')), t['pseudo_class']))
+    return t
+
+def convert_area_selectors(t, c):
+    """
+    type = rule
+    Convert area* rules to way[area!=no]* + relation[type=multipolygon]*
+    """
+    areaselectors = list(filter(lambda selector: selector['simple_selectors'][0]['type_selector'] == 'area', t['selectors']))
+    for s in areaselectors:
+        relSelector = deepcopy(s)
+        relSelector['simple_selectors'][0]['type_selector'] = 'relation'
+        extra_predicate = deepcopy(mock_rules['type_eq_multipolygon'])
+        extra_predicate.update({'selector_index': selector_index_map['arearule']})
+        relSelector['simple_selectors'][0]['predicates'].append(extra_predicate)
+        t['selectors'].append(relSelector)
+
+        s['simple_selectors'][0]['type_selector'] = 'way'
+        extra_predicate = deepcopy(mock_rules['area_neq_no'])
+        extra_predicate.update({'selector_index': selector_index_map['arearule']})
+        s['simple_selectors'][0]['predicates'].append(extra_predicate)
+    return t
+
+def convert_closed_pseudo_relation_node(t, c):
+    """
+    type = rule
+    Convert relation:closed/closed2 to [type=multipolygon]
+    Multipolygon relations are always closed, nodes and other relations are always open
+    (Technically partially downloaded multipolygons aren't closed2)
+    """
+
+    for selector in t['selectors']:
+        type_selector = selector['simple_selectors'][0]['type_selector']
+        if type_selector not in ('node', 'relation'):
+            continue
+
+        if type_selector == 'node':
+            selector.update({'pseudo_class': list(filter(lambda p: not (p['not_class'] and p['pseudo_class'] in ('closed', 'closed2')), selector['pseudo_class']))})
+            selector['simple_selectors'][0]['pseudo_class'] = list(filter(lambda p: not (p['not_class'] and p['pseudo_class'] in ('closed', 'closed2')), selector['pseudo_class']))
+        if type_selector == 'relation':
+            isPseudoClosed = any(map(lambda p: p['pseudo_class'] in ('closed', 'closed2') and not p['not_class'], selector['pseudo_class']))
+            isPseudoNotClosed = any(map(lambda p: p['pseudo_class'] in ('closed', 'closed2') and p['not_class'], selector['pseudo_class']))
+            selector.update({'pseudo_class': list(filter(lambda p: not p['pseudo_class'] in ('closed', 'closed2'), selector['pseudo_class']))})
+            selector['simple_selectors'][0]['pseudo_class'] = list(filter(lambda p: not p['pseudo_class'] in ('closed', 'closed2'), selector['pseudo_class']))
+            if isPseudoClosed:
+                extra_predicate = deepcopy(mock_rules['type_eq_multipolygon'])
+                extra_predicate.update({'selector_index': selector_index_map['closedrelation']})
+                selector['simple_selectors'][0]['predicates'].append(extra_predicate)
+            if isPseudoNotClosed:
+                extra_predicate = deepcopy(mock_rules['type_neq_multipolygon'])
+                extra_predicate.update({'selector_index': selector_index_map['closedrelation']})
+                selector['simple_selectors'][0]['predicates'].append(extra_predicate)
+
     return t
 
 def functionExpression_eval(t, c):
@@ -129,7 +184,7 @@ def booleanExpression_dereference_first_operand(t, c):
     Replace first operand by the value of the tag
     """
     if len(t['operands']) >= 1 and t['operands'][0]['type'] in ('osmtag', 'quoted'):
-        t['operands'][0] = {'type': 'functionExpression', 'name': 'tag', 'params': [t['operands'][0]]}
+        t['operands'][0] = {'type': 'functionExpression', 'name': 'maintag', 'params': [t['operands'][0]]}
     return t
 
 def booleanExpression_capture_first_operand(t, c):
@@ -137,7 +192,7 @@ def booleanExpression_capture_first_operand(t, c):
     type = booleanExpression
     Capture first operand tag
     """
-    if len(t['operands']) >= 1 and t['operands'][0]['type'] == 'functionExpression' and t['operands'][0]['name'] == 'tag':
+    if len(t['operands']) >= 1 and t['operands'][0]['type'] == 'functionExpression' and t['operands'][0]['name'] == 'maintag':
         if not t['operator'] in ('!', '!=', '!~'):
             c['selector_capture'].append(t['operands'][0]['params'][0])
         t['operands'][0] = {'type': 'functionExpression', 'name': '_tag_capture', 'params': ['capture_tags', str(t['selector_index']), 'tags', t['operands'][0]['params'][0]]}
@@ -211,10 +266,10 @@ def pseudo_class_righthandtraffic(t, c):
     Replace pseudo class :righthandtraffic by call to setting()
     """
     if t['pseudo_class'] == 'righthandtraffic':
-        t = {'type': 'booleanExpression', 'operator': '=' if t['not_class'] else '!=', 'operands': [
-            {'type': 'functionExpression', 'name': 'setting', 'params': [{'type': 'primaryExpression', 'derefered': False, 'value': {'type': 'quoted', 'value': 'driving_side'}}]},
-            {'type': 'primaryExpression', 'derefered': False, 'value': {'type': 'quoted', 'value': 'left'}}
-        ]}
+        setting_selector = deepcopy(mock_rules['setting_drivingside_eq_left' if t['not_class'] else 'setting_drivingside_neq_left'])
+        setting_selector = rewrite_tree_rules(rewrite_rules_clean, None, setting_selector, {})
+        setting_selector['selector_index'] = t.get('selector_index')
+        return setting_selector
     return t
 
 rule_declarations_order_map = {
@@ -223,6 +278,11 @@ rule_declarations_order_map = {
     # Osmose
     '-osmoseItemClassLevel': 2,
     '-osmoseTags': 2,
+    '-osmoseDetail': 2,
+    '-osmoseTrap': 2,
+    '-osmoseFix': 2,
+    '-osmoseExample': 2,
+    '-osmoseResource': 2,
     # text
     'throwError': 3,
     'throwWarning': 3,
@@ -245,7 +305,7 @@ def rule_declarations_order(t, c):
     type = rule
     Order the declarations in order attended by the code generator
     """
-    t['declarations'] = sorted(t['declarations'], key = lambda d: (d.get('property') and [rule_declarations_order_map.get(d['property']) or print("W: Unknow property: " + d['property']) and -1, str(d['value'])]) or [-1, -1])
+    t['declarations'] = sorted(t['declarations'], key = lambda d: (d.get('property') and [rule_declarations_order_map.get(d['property']) or print("W: Unknown property: " + d['property']) and -1, str(d['value'])]) or [-1, -1])
     return t
 
 def selector_before_capture(t, c):
@@ -282,6 +342,34 @@ def functionExpression_rule_flags(t, c):
         c['flags'].append('josm')
     elif t['name'] in ('parent_tag', 'parent_tags', 'parent_osm_id'):
         c['flags'].append('relational')
+    return t
+
+specialCountryMap = {
+    # https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#exceptional-reservations
+    # None here simply means 'not yet implemented by us'
+    'AC': None,
+    'CP': None,
+    'CQ': None,
+    'DG': None,
+    'EA': None,
+    'EU': None,
+    'EZ': None,
+    'FX': ['FR-69M', 'FR-69D', 'FR-2A', 'FR-2B'] + list(map(lambda n: 'FR-{:02}'.format(n), range(1,96))),
+    'IC': None,
+    'SU': None,
+    'TA': None,
+    'UK': None,
+    'UN': None,
+}
+def functionExpression_insideoutside(t, c):
+    """
+    type = functionExpression
+    convert unconventional country codes to Osmose equivalent
+    """
+    if t['name'] in ('inside', 'outside'):
+        countries = t["params"][0]["value"].split(',')
+        countries = list(map(lambda x: x if x not in specialCountryMap or (specialCountryMap[x] is None and not print("Warning: special country code not implemented yet: " + x)) else ','.join(specialCountryMap[x]), countries))
+        t["params"][0]["value"] = ','.join(countries)
     return t
 
 def rule_after_flags(t, c):
@@ -350,10 +438,10 @@ def quoted_uncapture(t, c):
 def functionExpression_runtime(t, c):
     """
     type = functionExpression
-    Add runtime pyhton paramter and function name
+    Add runtime python parameter and function name
     """
     if t['name'] == 'osm_id':
-        return "dada['id']"
+        return "data['id']"
     elif t['name'] == 'number_of_tags':
         return "len(tags)"
     else:
@@ -367,10 +455,33 @@ def functionExpression_runtime(t, c):
         t['name'] = (
             "keys.__contains__" if t['name'] == 'has_tag_key' else
             "mapcss.list_" if t['name'] == 'list' else
+            "mapcss.any_" if t['name'] == 'any' else
             "mapcss.round_" if t['name'] == 'round' else
             "mapcss." + t['name']
         )
+
+        if not c.get('flags'):
+            checkValidFunction(t['name'], len(t['params']))
     return t
+
+def checkValidFunction(fn_name, num_params):
+    """
+    Tests if mapcss.* functions actually exist, throws a compile error otherwise
+    """
+    if fn_name[0:7] != "mapcss.":
+        return
+    if not fn_name[7:] in dir(mapcss_lib):
+        raise NotImplementedError("Undefined function '{0}'. Blacklist or implement to avoid errors".format(fn_name))
+    else:
+        sig = signature(getattr(mapcss_lib, fn_name[7:]))
+        argcount = len(sig.parameters) # includes optional arguments
+        has_vararg = any(map(lambda p: p.kind == Parameter.VAR_POSITIONAL, sig.parameters.values()))
+        num_optional_arg = len(set(filter(lambda p: p.default != Parameter.empty, sig.parameters.values())))
+        if has_vararg:
+            argcount = argcount - 1 # *args can be zero-length
+        if num_params < argcount - num_optional_arg or (not has_vararg and num_params > argcount):
+            raise NotImplementedError("Undefined function '{0}' with {1} arguments. Blacklist or implement to avoid errors".format(fn_name, num_params))
+
 
 rewrite_rules_clean = [
     ('valueExpression', valueExpression_remove_null_op),
@@ -379,6 +490,8 @@ rewrite_rules_clean = [
     ('quoted', quoted_unescape),
     ('regexExpression', regexExpression_unescape),
     ('simple_selector', simple_selector_pseudo_class),
+    ('rule', convert_area_selectors),
+    ('rule', convert_closed_pseudo_relation_node),
     ('functionExpression', functionExpression_eval),
     ('rule', rule_exclude_throw_other),
     ('rule', rule_exclude_unsupported_meta),
@@ -394,6 +507,7 @@ rewrite_rules_change_before = [
     ('booleanExpression', booleanExpression_operator_to_function),
     ('functionExpression', functionExpression_param_regex),
     ('functionExpression', functionExpression_regexp_flags),
+    ('functionExpression', functionExpression_insideoutside),
     ('pseudo_class', pseudo_class_righthandtraffic),
     # Safty
     ('rule', rule_declarations_order),
@@ -459,7 +573,7 @@ def segregate_selectors_by_complexity(t):
             for selector in rule['selectors']:
                 if selector['operator']:
                     selector_complex.append(selector)
-                elif any(map(lambda a: not a['pseudo_class'] in ('closed', 'closed2', 'tagged', 'righthandtraffic'), selector['simple_selectors'][0]['pseudo_class'])):
+                elif any(map(lambda a: not a['pseudo_class'] in ('closed', 'closed2', 'righthandtraffic'), selector['simple_selectors'][0]['pseudo_class'])):
                     selector_complex.append(selector)
                 else:
                     selector_simple.append(selector)
@@ -514,20 +628,21 @@ def filter_osmose_none_rules(rules):
         rules))
 
 
-def filter_area_rules(rules):
+def filter_typeselector_rules(rules):
     return list(filter(lambda rule: rule.get('_meta') or len(rule['selectors']) > 0, map(lambda rule:
         rule.get('_meta') and rule or
-        rule.update({'selectors': list(filter(lambda selector: selector['simple_selectors'][0]['type_selector'] != 'area' or print("W: Skip area selector"), rule['selectors']))}) or rule,
+        rule.update({'selectors': list(filter(lambda selector: selector['simple_selectors'][0]['type_selector'] in ('node', 'way', 'relation', '*') or print("W: Skip unknown type selector"), rule['selectors']))}) or rule,
         rules
     )))
 
-
-def stablehash(s):
-    """
-    Compute a stable positive integer hash on 32bits
-    @param s: a string
-    """
-    return int(abs(int(hashlib.md5(s.encode('utf-8')).hexdigest(), 16)) % 2147483647)
+def filter_support_rules(rules):
+    # We don't parse the actual values of @supports
+    # Assume all rules within @supports {} are unsafe unless -osmoseItemClassLevel is set
+    return list(filter(lambda rule:
+        rule.get('_meta') or
+        not rule.get('in_supports_declaration') or
+        next(filter(lambda declaration: declaration.get('property') == '-osmoseItemClassLevel', rule['declarations']), None),
+        rules))
 
 
 class_map: Dict[Optional[str], int] = {}
@@ -535,8 +650,9 @@ class_index = 0
 meta_tags = None
 item_default = None
 item = class_id = level = tags = group = group_class = text = text_class = fix = None
+class_info_text = {}
 subclass_id = 0
-class_ = {}
+class_: Dict[str, Union[str, int, Dict[str, List[str]]]] = {}
 tests = []
 regex_store: Dict[List[str], str] = {}
 set_store: Set[str] = set()
@@ -544,10 +660,7 @@ subclass_blacklist = []
 is_meta_rule = False
 
 def to_p(t):
-    global item_default
-    global class_map, class_index, meta_tags, item, class_id, level, tags, subclass_id, group, group_class, text, text_class, fix
-    global tests, class_, regex_store, set_store
-    global subclass_blacklist
+    global class_index, meta_tags, item, class_id, level, tags, subclass_id, group, group_class, text, text_class, fix, class_info_text
     global is_meta_rule
 
     if isinstance(t, str):
@@ -555,12 +668,12 @@ def to_p(t):
     elif t['type'] == 'stylesheet':
         return "\n".join(filter(lambda s: s != "", map(to_p, t['rules'])))
     elif t['type'] == 'rule':
-        item = class_id = level = tags = group = group_class = text = text_class = None # For safty
+        item = class_id = level = tags = group = group_class = text = text_class = None # For safety
         is_meta_rule = t.get('_meta')
         selectors_text = "# " + "\n# ".join(map(lambda s: s['text'], t['selectors']))
         subclass_id = stablehash(selectors_text)
         if subclass_id in subclass_blacklist:
-            return selectors_text + "\n# Rule Blacklisted\n"
+            return selectors_text + "\n# Rule Blacklisted (id: {0})\n".format(subclass_id)
         elif t.get('_flag'):
             return selectors_text + "\n# Part of rule not implemented\n"
         elif not is_meta_rule:
@@ -577,7 +690,7 @@ def to_p(t):
                 "".join(map(to_p, t['selectors'])) +
                 "    if match:\n" +
                 "        # " + "\n        # ".join(filter(lambda a: a, map(lambda d: d['text'], t['declarations']))) + "\n" +
-                (("        " + "\n    ".join(declarations_text) + "\n") if declarations_text else "") +
+                (("        " + "\n        ".join(declarations_text) + "\n") if declarations_text else "") +
                 (("        err.append({" +
                     "'class': " + str(class_id) + ", " +
                     "'subclass': " + str(subclass_id or 0) + ", " +
@@ -641,6 +754,15 @@ def to_p(t):
         elif t['property'] == '-osmoseItemClassLevel':
             item, class_id, level = t['value']['value']['value'].split('/')
             item, class_id, subclass_id, level = int(item), int(class_id.split(':')[0]), ':' in class_id and int(class_id.split(':')[1]), int(level)
+        elif t['property'] in ('-osmoseDetail', '-osmoseTrap', '-osmoseFix', '-osmoseResource', '-osmoseExample'):
+            whichMsg = t['property'][7:].lower()
+            text = to_p(t['value'])
+            if t['value']['type'] == 'functionExpression' and t['value']['name'] == 'mapcss.tr':
+                class_info_text[whichMsg] = text
+            elif whichMsg == 'resource':
+                class_info_text[whichMsg] = text # hyperlink as string, no need for language
+            else:
+                class_info_text[whichMsg] = '{"en": ' + text + '}'
         elif t['property'] in ('throwError', 'throwWarning', 'throwOther'):
             text = to_p(t['value'])
             text_class = t['value']['params'][0] if t['value']['type'] == 'functionExpression' and t['value']['name'] == 'mapcss.tr' else t['value']
@@ -651,10 +773,31 @@ def to_p(t):
                 else:
                     class_index += 1
                     class_id = class_map[group_class or text_class] = class_index
-            class_[class_id] = {'item': item or item_default, 'class': class_id, 'level': level or {'E': 2, 'W': 3, 'O': None}[t['property'][5]], 'tags': " + ".join(filter(lambda a: a, [meta_tags, tags])) or "[]", 'desc':
-                (group if group.startswith('mapcss.tr') else "{'en': " + group + "}") if group else
-                (text if text.startswith('mapcss.tr') else "{'en': " + text + "}")
+            else:
+                # Store assigned id's (via -osmoseItemClassLevel) in None. They are not mapped to strings as this would lead to undefined behavior if
+                # there is an entry with for instance -osmoseExample, which would (depending on sequence) be overwritten by an entry without -osmose*
+                # properties, yet with the same group_class or text_class. Using None makes sure these get a unique id (as the max value is used for
+                # determining the class_index.
+                class_map[None] = max(class_map.get(None, 0), class_id)
+
+            classInfoNew = {
+                'item': item or item_default,
+                'class': class_id,
+                'level': level or {'E': 2, 'W': 3, 'O': None}[t['property'][5]],
+                'tags': " + ".join(filter(lambda a: a, [meta_tags, tags])) or "[]",
+                'desc':
+                    (group if group.startswith('mapcss.tr') else "{'en': " + group + "}") if group else
+                    (text if text.startswith('mapcss.tr') else "{'en': " + text + "}"),
+                'info': class_info_text.copy()
             }
+            normFn = lambda x: str(x).replace(" ", "").replace("'", '"').split('",')[0] if str(x).startswith('mapcss.tr') else str(x)
+            if class_id in class_ and any([normFn(class_[class_id][x]) != normFn(classInfoNew[x]) for x in ('item', 'tags', 'desc', 'info')]):
+                # Accept that e.g. level may differ, which can happen with the JOSM entries having the same message with throwError/throwWarning
+                # Also remove everything after a ", because currently tr("xyz", "km") and tr("xyz", "kg") are in the same group, see also #1530
+                # This will raise if e.g. the same class is used for two different messages.
+                raise Exception("Overwriting class with different properties for class id {0}".format(str(class_id)))
+            class_[class_id] = classInfoNew
+            class_info_text = {}
         elif t['property'] == 'suggestAlternative':
             pass # Do nothing
         elif t['property'] == 'fixAdd':
@@ -711,7 +854,7 @@ def to_p(t):
     elif t['type'] == 'zoom_selector':
         return "" # Ignore
     elif t['type'] == 'quoted':
-        return "'" + t['value'].replace("'", "\\'") + "'"
+        return "'" + t['value'].replace('\\', '\\\\').replace("'", "\\'") + "'"
     elif t['type'] == 'osmtag':
         return "'" + t['value'] + "'"
     elif t['type'] == 'regexExpression':
@@ -727,18 +870,36 @@ def to_p(t):
             raise NotImplementedError(t) # Done with rewrite_rules
         return to_p(t['value'])
     else:
-        return "<UNKNOW TYPE {0}>".format(t['type'])
+        return "<UNKNOWN TYPE {0}>".format(t['type'])
 
 
 def build_items(class_):
     out = []
     for _, c in sorted(class_.items(), key = lambda a: a[0]):
-        out.append("self.errors[" + str(c['class']) + "] = self.def_class(item = " + str(c['item']) + ", level = " + str(c['level']) + ", tags = " + c['tags'] + ", title = " + c['desc'] + ")")
+        out.append("self.errors[" + str(c['class']) + "] = self.def_class(item = " + str(c['item']) +
+        ", level = " + str(c['level']) + ", tags = " + c['tags'] + ", title = " + c['desc'] +
+        "".join([', %s = %s' % (k,v) for k,v in c['info'].items()]) + ")")
     return "\n".join(out)
 
 context_map = {
     'inside': 'country',
 }
+
+selector_index_map = {
+    # Non-real selector indices, used for rule rewrites
+    'arearule': -1,
+    'closedrelation': -2,
+}
+
+mock_rules = {} # Contains the predicate selector part of mocked rules
+def build_mock_rules():
+    files = os.listdir(os.path.join(os.path.dirname(__file__), "mock_rules"))
+    for f in list(map(lambda fn: fn[0:-7], files)):
+        listener, tree = parse_mapcss("mapcss/mock_rules/" + f + ".mapcss")
+        r = listener.stylesheet['rules'][0]['selectors'][0]['simple_selectors'][0]['predicates'][0]
+        r['selector_index'] = None # Safety, for mock rules it should never propagate
+        mock_rules.update({f: r})
+
 
 def build_tests(tests):
     kv_split = re.compile('([^= ]*=)')
@@ -760,10 +921,8 @@ def build_tests(tests):
         out.append(test_code)
     return "\n".join(out)
 
-
-def compile(input, class_name, mapcss_url = None, only_for = [], not_for = [], prefix = ""):
-    global item_default, class_map, subclass_blacklist, class_index, meta_tags
-
+def parse_mapcss(inputfile):
+    input = FileStream(inputfile, encoding='utf-8')
     lexer = MapCSSLexer(input)
     stream = CommonTokenStream(lexer)
     parser = MapCSSParser(stream)
@@ -772,6 +931,12 @@ def compile(input, class_name, mapcss_url = None, only_for = [], not_for = [], p
     listener = MapCSSListenerL()
     walker = ParseTreeWalker()
     walker.walk(listener, tree)
+    return listener, tree
+
+def compile(inputfile, class_name, mapcss_url = None, only_for = [], not_for = [], prefix = ""):
+    listener, tree = parse_mapcss(inputfile)
+
+    build_mock_rules()
 
     selectors_by_complexity = segregate_selectors_by_complexity(listener.stylesheet)
     if len(selectors_by_complexity['rules_complex']) > 0:
@@ -779,13 +944,32 @@ def compile(input, class_name, mapcss_url = None, only_for = [], not_for = [], p
     tree = rewrite_tree(selectors_by_complexity['rules_meta'] + selectors_by_complexity['rules_simple'])
     tree = filter_non_productive_rules(tree)
     tree = filter_osmose_none_rules(tree)
-    tree = filter_area_rules(tree)
+    tree = filter_typeselector_rules(tree)
+    tree = filter_support_rules(tree)
     selectors_type = segregate_selectors_type(tree)
 
-    global class_, tests, regex_store, set_store
     rules = dict(map(lambda t: [t, to_p({'type': 'stylesheet', 'rules': selectors_type[t]})], sorted(selectors_type.keys(), key = lambda a: {'node': 0, 'way': 1, 'relation':2}[a])))
     items = build_items(class_)
-    asserts = build_tests(tests)
+
+    asserts = ""
+    if tests:
+        asserts = """
+
+from plugins.PluginMapCSS import TestPluginMapcss
+
+
+class Test(TestPluginMapcss):
+    def test(self):
+        n = """ + prefix + class_name + """(None)
+        class _config:
+            options = {"country": None, "language": None}
+        class father:
+            config = _config()
+        n.father = father()
+        n.init(None)
+        data = {'id': 0, 'lat': 0, 'lon': 0}
+
+        """ + build_tests(tests).replace("\n", "\n        ") + "\n"
 
     mapcss = ("""#-*- coding: utf-8 -*-
 import modules.mapcss_lib as mapcss
@@ -796,6 +980,10 @@ from plugins.PluginMapCSS import PluginMapCSS
 
 
 class """ + prefix + class_name + """(PluginMapCSS):
+    # ------------------------------- IMPORTANT -------------------------------
+    # This file is generated automatically and should not be modified directly.
+    # Instead, modify the source mapcss file and regenerate this Python script.
+    # -------------------------------------------------------------------------
 """ + ("\n    MAPCSS_URL = '" + mapcss_url + "'" if mapcss_url else "") + """
 """ + ("\n    only_for = ['" + "', '".join(only_for) + "']\n" if only_for != [] else "") + """
 """ + ("\n    not_for = ['" + "', '".join(not_for) + "']\n" if not_for != [] else "") + """
@@ -815,24 +1003,8 @@ class """ + prefix + class_name + """(PluginMapCSS):
 
         """ + rules[t].replace("\n", "\n        ") + """
         return err
-""", sorted(rules.keys(), key = lambda a: {'node': 0, 'way': 1, 'relation':2}[a]))) + """
-
-from plugins.PluginMapCSS import TestPluginMapcss
-
-
-class Test(TestPluginMapcss):
-    def test(self):
-        n = """ + prefix + class_name + """(None)
-        class _config:
-            options = {"country": None, "language": None}
-        class father:
-            config = _config()
-        n.father = father()
-        n.init(None)
-        data = {'id': 0, 'lat': 0, 'lon': 0}
-
-        """ + asserts.replace("\n", "\n        ") + """
-""").replace("        \n", "\n")
+""", sorted(rules.keys(), key = lambda a: {'node': 0, 'way': 1, 'relation':2}[a])))
+    + asserts).replace("        \n", "\n")
     return mapcss
 
 
@@ -865,9 +1037,7 @@ def mapcss2osmose(mapcss, output_path = None):
         meta_tags = None
     class_name = class_name.replace('.', '_').replace('-', '_')
 
-    input = FileStream(mapcss, encoding='utf-8')
-
-    python_code = compile(input, class_name, mapcss_url, only_for, not_for, prefix)
+    python_code = compile(mapcss, class_name, mapcss_url, only_for, not_for, prefix)
 
     path = output_path if output_path else os.path.dirname(mapcss)
     output = open((path or '.') + '/' + prefix + class_name + '.py', 'w')

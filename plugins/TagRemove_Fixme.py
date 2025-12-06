@@ -21,6 +21,8 @@
 
 from modules.OsmoseTranslation import T_
 from plugins.Plugin import Plugin
+from modules.Stablehash import stablehash64
+from datetime import date
 
 
 class TagRemove_Fixme(Plugin):
@@ -28,24 +30,30 @@ class TagRemove_Fixme(Plugin):
     def init(self, logger):
         Plugin.init(self, logger)
         self.errors[40610] = self.def_class(item = 4061, level = 3, tags = ['fixme', 'fix:chair'],
-            title = T_('Object need review'))
+            title = T_('Object needs review'))
         self.errors[40611] = self.def_class(item = 4061, level = 2, tags = ['fixme', 'fix:chair', 'highway'],
-            title = T_('Highway classification need review'),
+            title = T_('Highway classification needs review'),
             detail = T_(
 '''`highway=road` has been used, choose a correct value, such as
 `highway=unclassified`.'''))
+        self.currentYear = str(date.today().year)
 
     def node(self, data, tags):
-        if "fixme" in tags or "FIXME" in tags:
-            return [{"class": 40610, "subclass": 1, "text": {"en": tags['fixme'] if 'fixme' in tags else tags['FIXME']}}]
-        else:
-            return []
+        err = []
+        for t in tags:
+            if t.lower().startswith("fixme") or t.lower().endswith(":fixme"):
+                err.append({
+                    "class": 40610,
+                    "subclass": stablehash64(t + self.currentYear), # Reset false positives every year
+                    "text": {"en": tags[t]}
+                })
+        return err
 
     def way(self, data, tags, nds):
         ret = self.node(data, tags)
 
         if tags.get("highway") == "road":
-            ret.append({"class": 40611, "subclass": 1})
+            ret.append({"class": 40611, "subclass": stablehash64("highway=road" + self.currentYear)})
 
         return ret
 
@@ -62,5 +70,9 @@ class Test(TestPluginCommon):
         assert not a.way(None, {"highway": "trunk"}, None)
         self.check_err(a.way(None, {"highway": "road"}, None))
         self.check_err(a.way(None, {"fixme": "plop"}, None))
+        self.check_err(a.way(None, {"fixme2": "plop"}, None))
+        self.check_err(a.way(None, {"fixme:name": "plop"}, None))
+        self.check_err(a.way(None, {"name:fixme": "plop"}, None))
+        self.check_err(a.way(None, {"FIXME:name": "plop"}, None))
         self.check_err(a.way(None, {"FIXME": "plop"}, None))
         self.check_err(a.way(None, {"fixme": ""}, None))

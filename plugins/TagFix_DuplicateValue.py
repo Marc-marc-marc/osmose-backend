@@ -79,6 +79,7 @@ Ensure the interpretation of the tag does not change when you delete one item.''
             'communication:mobile_phone',
             'cuisine',
             'operator',
+            'delivery',
             'changing_table:location',
             'furniture',
             'seamark:berth:category',
@@ -96,12 +97,13 @@ Ensure the interpretation of the tag does not change when you delete one item.''
             re.compile('massgis:.+'),
             re.compile('lacounty:.+'),
             re.compile('turn:lanes.*'),
+            re.compile('.+:conditional'), # More thorough check in ConditionalRestrictions plugin
         ))
         self.WhitelistSimilarRegex = set(( # Regexes for keys that can have similar, but not equal values
             re.compile('.+_name'),
-            re.compile('.+:conditional'),
             re.compile('.+:date'),
             re.compile('.+:colour'),
+            re.compile('.+:denominations'),
             re.compile('opening_hours(:.+)?'),
             re.compile('(.+:)?wikidata'),
             re.compile('railway:signal:.+'),
@@ -201,6 +203,7 @@ class Test(TestPluginCommon):
                   {"seamark:buoy_lateral:colour":"red;white;red;white"},
                   {"ref:mhs":"IA00070520; IA00070492"},
                   {"opening_hours": "Mo 14:00-19:00; Tu-Fr 10:00-14:00,15:00-19:00; Sa 10:00-19:00"},
+                  {"payment:coins:denominations": "0.10 EUR;0.20 EUR;0.50 EUR;1 EUR;2 EUR"},
                   {"oneway":"yes;no"},
                   {"passenger":"national;international;regional"},
                   {"AND_toto":"121;121;121"},

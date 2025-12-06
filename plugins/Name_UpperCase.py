@@ -22,12 +22,12 @@
 from modules.OsmoseTranslation import T_
 from plugins.Plugin import Plugin
 import regex as re
-from modules.downloader import urlread
-import json
+from plugins.modules.name_suggestion_index import whitelist_from_nsi
 
 # Whitelist of allowed capitals by country code
 UpperCase_WhiteList = {
     "FR": ["CNFPT", "COSEC", "EHPAD", "MEDEF", "URSSAF"],
+    "AU": ["ANZAC", "CSIRO"],
 }
 
 class Name_UpperCase(Plugin):
@@ -47,52 +47,31 @@ class Name_UpperCase(Plugin):
         )
         self.UpperTitleCase = re.compile(r".*[\p{Lu}\p{Lt}]{5,}")
         self.RomanNumber = re.compile(r".*[IVXCDLM]{5,}")
+        self.country = None
 
         if "country" in self.father.config.options:
-            country = self.father.config.options.get("country")[:2]
-            self.whitelist = set(UpperCase_WhiteList.get(country, []))
-            nsi = self._download_nsi()
-            self.whitelist.update(self._whitelist_from_nsi(nsi, "brands/", country.lower()))
+            self.country = self.father.config.options.get("country")
+            self.whitelist = set(UpperCase_WhiteList.get(self.country.split("-")[0], []))
+            nsi_whitelist = set(filter(lambda name: self.UpperTitleCase.match(name) and not self.RomanNumber.match(name),
+                                       whitelist_from_nsi(self.country)))
+            self.whitelist.update(nsi_whitelist)
         else:
             self.whitelist = set()
 
-    def _download_nsi(self):
-        nsi_url = "https://raw.githubusercontent.com/osmlab/name-suggestion-index/main/dist/nsi.json"
-        json_str = urlread(nsi_url, 30)
-        results = json.loads(json_str)
-        return results['nsi']
-
-    def _whitelist_from_nsi(self, nsi, nsiprefix, country):
-        whitelist = set()
-        for tag, details in nsi.items():
-            if tag.startswith(nsiprefix) and "items" in details:
-                for preset in details["items"]:
-                    if "locationSet" in preset:
-                        if ("include" in preset["locationSet"] and
-                                country not in preset["locationSet"]["include"] and
-                                "001" not in preset["locationSet"]["include"]):
-                            continue
-                        if "exclude" in preset["locationSet"] and country in preset["locationSet"]["exclude"]:
-                            continue
-                    if "name" in preset["tags"]:
-                        for name in preset["tags"]["name"].split():
-                            if self.UpperTitleCase.match(name) and not self.RomanNumber.match(name):
-                                whitelist.add(name)
-                    for name in preset["displayName"].split():
-                        if self.UpperTitleCase.match(name) and not self.RomanNumber.match(name):
-                            whitelist.add(name)
-        return whitelist
-
     def node(self, data, tags):
         err = []
-        if u"name" in tags:
+        if "name" in tags:
+            # Whitelist bus stops in Greece, see #2368
+            if self.country and self.country.split("-")[0] == "GR" and "public_transport" in tags and tags["public_transport"] in ("stop_position", "platform", "station"):
+                return err
+
             # first check if the name *might* match
-            if self.UpperTitleCase.match(tags[u"name"]) and not self.RomanNumber.match(tags[u"name"]):
-                if not self.whitelist:
+            if self.UpperTitleCase.match(tags["name"]) and not self.RomanNumber.match(tags["name"]):
+                if not self.whitelist or not any(map(lambda whitelist: whitelist in tags["name"], self.whitelist)):
                     err.append({"class": 803, "text": T_("Concerns tag: `{0}`", '='.join(['name', tags['name']])) })
                 else:
                     # Check if we match the whitelist and if so re-try
-                    name = " ".join(i for i in tags[u"name"].split() if not i in self.whitelist)
+                    name = " ".join([i for i in tags["name"].split() if not i in " ".join(self.whitelist).split()])
                     if self.UpperTitleCase.match(name) and not self.RomanNumber.match(name):
                         err.append({"class": 803, "text": T_("Concerns tag: `{0}`", '='.join(['name', tags['name']])) })
         return err
@@ -115,13 +94,35 @@ class Test(TestPluginCommon):
         a.init(None)
         for t in [{u"name": u"COL TRÈS HAUTTT"},
                   {u"name": u"EHPAD MAGEUSCULE"},
+                  {u"name": u"ICI PARIS XL"}, # in NSI, but not for FR
                   {u"name": u"AÇǱÞΣSSὩΙST"},
+                  {u"name": u"IKEA PARIS"},
                  ]:
             self.check_err(a.node(None, t), t)
             self.check_err(a.way(None, t, None), t)
 
         for t in [{u"name": u"Col des Champs XIIVVVIM"},
                   {u"name": u"EHPAD La Madelon"},
+                  {u"name": u"IKEA"}, # in NSI
+                  {u"name": u"IKEA Paris"},
                   {u"name": u"ƻאᎯᚦ京"},
+                 ]:
+            assert not a.node(None, t), t
+
+    def test_GR(self):
+        a = Name_UpperCase(None)
+        class _config:
+            options = {"country": "GR", "language": "el"}
+        class father:
+            config = _config()
+        a.father = father()
+        a.init(None)
+        for t in [{"name": u"ΠΛΑΤΕΙΑ ΕΛΕΥΘΕΡΙΑΣ"},
+                  {"name": "ABCDEFGHIJKLMNOPQRSTUVWXYZ"},
+                 ]:
+            self.check_err(a.node(None, t), t)
+            self.check_err(a.way(None, t, None), t)
+
+        for t in [{"name": u"ΠΛΑΤΕΙΑ ΕΛΕΥΘΕΡΙΑΣ", "public_transport": "stop_position"},
                  ]:
             assert not a.node(None, t), t

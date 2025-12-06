@@ -55,7 +55,6 @@ sql20 = """
 CREATE TEMP TABLE water_ends AS
 SELECT
     id,
-    nodes[array_length(nodes,1)] AS start,
     nodes[array_length(nodes,1)] AS end,
     tags->'waterway' AS waterway,
     linestring
@@ -86,7 +85,7 @@ FROM
         ways.id = way_nodes.way_id AND
         ways.tags != ''::hstore AND
         ways.tags?'waterway' AND
-        ways.tags->'waterway' IN ('stream', 'river', 'canal', 'drain', 'ditch')
+        ways.tags->'waterway' IN ('stream', 'river', 'canal', 'drain', 'ditch', 'tidal_channel', 'flowline')
 """
 
 sql23 = """
@@ -115,8 +114,10 @@ FROM
     JOIN nodes ON
         nodes.id = ww.end AND
         nodes.tags != ''::hstore AND
-        nodes.tags?'natural' AND
-        nodes.tags->'natural' IN ('sinkhole')
+        (
+            (nodes.tags?'natural' AND nodes.tags->'natural' IN ('sinkhole')) OR
+            (nodes.tags?'waterway' AND nodes.tags->'waterway' IN ('stream_end'))
+        )
 """
 
 sql24 = """

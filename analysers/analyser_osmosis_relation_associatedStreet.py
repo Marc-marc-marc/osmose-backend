@@ -614,7 +614,7 @@ class Analyser_Osmosis_Relation_AssociatedStreet(Analyser_Osmosis):
     def __init__(self, config, logger = None):
         Analyser_Osmosis.__init__(self, config, logger)
         self.classs[1] = self.def_class(item = 2060, level = 3, tags = ['addr', 'relation', 'fix:chair'],
-            title = T_('addr:housenumber or addr:housename without addr:street, addr:district, addr:neighbourhood, addr:quarter, addr:suburb, addr:place or addr:hamlet must be in a associatedStreet relation'),
+            title = T_('addr:housenumber or addr:housename without an addr:street, addr:district, addr:neighbourhood, addr:quarter, addr:suburb, addr:place or addr:hamlet tag, nor within an associatedStreet relation'),
             detail = T_(
 '''There is only a part of the required tag `addr:*=*`. They do not
 provide a consistent address.'''))
@@ -623,7 +623,7 @@ provide a consistent address.'''))
             detail = T_(
 '''The street is not present in relation with the role `street`.'''))
         self.classs_change[3] = self.def_class(item = 2060, level = 2, tags = ['addr', 'fix:chair'],
-            title = T_('street role is not an highway'),
+            title = T_('street role is not a highway'),
             detail = T_(
 '''The street must be a highway.'''))
         self.classs_change[4] = self.def_class(item = 2060, level = 3, tags = ['addr', 'relation', 'fix:chair'],

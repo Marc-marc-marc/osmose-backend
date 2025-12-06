@@ -41,7 +41,7 @@ addr:inclusion=*.'''))
             title = T_('Invalid addr:interpolation or addr:inclusion value'),
             detail = T_(
 '''* Tag `addr:interpolation=*` is only valid with values: `even`, `odd`,
-`all`, `alphabetic` and Number.
+`all`, `alphabetic` or a number.
 * Tag `addr:inclusion=*` is only valid with values: `actual`, `estimate`
 and `potential`.'''))
 
@@ -64,7 +64,7 @@ and `potential`.'''))
         elif country == 'IT':
             # Allow "snc" (Senza numero civico) in Italy
             self.housenumber = re.compile(r"(:?^[1-9])|(^snc$)")
-        elif country == 'NL':
+        elif country in ('NL', 'CW'):
             # Baseline:
             #   https://imbag.github.io/catalogus/hoofdstukken/attributen--relaties#734-huisnummertoevoeging
             #   (7.3.2 huisnummer, 7.3.3 huisletter and 7.3.4 huisnummertoevoeging)

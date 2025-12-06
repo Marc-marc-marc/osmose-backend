@@ -7,6 +7,10 @@ from plugins.PluginMapCSS import PluginMapCSS
 
 
 class Name_MisspelledWordByRegex_Lang_fa(PluginMapCSS):
+    # ------------------------------- IMPORTANT -------------------------------
+    # This file is generated automatically and should not be modified directly.
+    # Instead, modify the source mapcss file and regenerate this Python script.
+    # -------------------------------------------------------------------------
 
 
 
@@ -26,53 +30,77 @@ class Name_MisspelledWordByRegex_Lang_fa(PluginMapCSS):
 
 
         # *[name=~/ي/][language("fa")]
-        # *[name:fa=~/ي/]
-        if ('name' in keys) or ('name:fa' in keys):
+        if ('name' in keys):
             match = False
             if not match:
                 capture_tags = {}
                 try: match = ((mapcss.regexp_test(mapcss._value_capture(capture_tags, 0, self.re_5eeade1c), mapcss._tag_capture(capture_tags, 0, tags, 'name'))) and (mapcss.language(self.father.config.options, 'fa')))
                 except mapcss.RuleAbort: pass
+            if match:
+                # group:tr("Arabic letter detected in Farsi name")
+                # -osmoseItemClassLevel:"5010/50109001:10/2"
+                # throwError:tr("In Farsi, the Arabic letter `{0}` should be replaced by `{1}`.","ي","ی")
+                # fixAdd:concat("name=",replace(tag("name"),"ي","ی"))
+                # -osmoseAssertMatchWithContext:list("node name=\"روابط عمومي مجتمع مس شهربابك\"","language=fa")
+                # assertNoMatch:"node name=\"روابط عمومي مجتمع مس شهربابك\""
+                err.append({'class': 50109001, 'subclass': 10, 'text': mapcss.tr('In Farsi, the Arabic letter `{0}` should be replaced by `{1}`.', 'ي', 'ی'), 'allow_fix_override': True, 'fix': {
+                    '+': dict([
+                    (mapcss.concat('name=', mapcss.replace(mapcss.tag(tags, 'name'), 'ي', 'ی'))).split('=', 1)])
+                }})
+
+        # *[name:fa=~/ي/]
+        if ('name:fa' in keys):
+            match = False
             if not match:
                 capture_tags = {}
                 try: match = ((mapcss.regexp_test(mapcss._value_capture(capture_tags, 0, self.re_5eeade1c), mapcss._tag_capture(capture_tags, 0, tags, 'name:fa'))))
                 except mapcss.RuleAbort: pass
             if match:
                 # group:tr("Arabic letter detected in Farsi name")
-                # -osmoseItemClassLevel:"5010/50109001:0/2"
-                # throwError:tr("In Farsi, the Arabic letter '{0}' should be replaced by '{1}'","ي","ی")
-                # fixAdd:concat("{0.key}=",replace("{0.value}","ي","ی"))
-                # -osmoseAssertMatchWithContext:list('node name="روابط عمومي مجتمع مس شهربابك"','language=fa')
-                # assertMatch:'node name:fa="روابط عمومي مجتمع مس شهربابك"'
-                # assertNoMatch:'node name="روابط عمومي مجتمع مس شهربابك"'
-                err.append({'class': 50109001, 'subclass': 0, 'text': mapcss.tr('In Farsi, the Arabic letter \'{0}\' should be replaced by \'{1}\'', 'ي', 'ی'), 'allow_fix_override': True, 'fix': {
+                # -osmoseItemClassLevel:"5010/50109001:11/2"
+                # throwError:tr("In Farsi, the Arabic letter `{0}` should be replaced by `{1}`.","ي","ی")
+                # fixAdd:concat("name:fa=",replace(tag("name:fa"),"ي","ی"))
+                # assertMatch:"node name:fa=\"روابط عمومي مجتمع مس شهربابك\""
+                err.append({'class': 50109001, 'subclass': 11, 'text': mapcss.tr('In Farsi, the Arabic letter `{0}` should be replaced by `{1}`.', 'ي', 'ی'), 'allow_fix_override': True, 'fix': {
                     '+': dict([
-                    (mapcss.concat(mapcss._tag_uncapture(capture_tags, '{0.key}='), mapcss.replace(mapcss._tag_uncapture(capture_tags, '{0.value}'), 'ي', 'ی'))).split('=', 1)])
+                    (mapcss.concat('name:fa=', mapcss.replace(mapcss.tag(tags, 'name:fa'), 'ي', 'ی'))).split('=', 1)])
                 }})
 
         # *[name=~/ك/][language("fa")]
-        # *[name:fa=~/ك/]
-        if ('name' in keys) or ('name:fa' in keys):
+        if ('name' in keys):
             match = False
             if not match:
                 capture_tags = {}
                 try: match = ((mapcss.regexp_test(mapcss._value_capture(capture_tags, 0, self.re_4234bf3b), mapcss._tag_capture(capture_tags, 0, tags, 'name'))) and (mapcss.language(self.father.config.options, 'fa')))
                 except mapcss.RuleAbort: pass
+            if match:
+                # group:tr("Arabic letter detected in Farsi name")
+                # -osmoseItemClassLevel:"5010/50109001:20/2"
+                # throwError:tr("In Farsi, the Arabic letter `{0}` should be replaced by `{1}`.","ك","ک")
+                # fixAdd:concat("name=",replace(tag("name"),"ك","ک"))
+                # -osmoseAssertMatchWithContext:list("node name=\"روابط عمومي مجتمع مس شهربابك\"","language=fa")
+                # assertNoMatch:"node name=\"روابط عمومي مجتمع مس شهربابك\""
+                err.append({'class': 50109001, 'subclass': 20, 'text': mapcss.tr('In Farsi, the Arabic letter `{0}` should be replaced by `{1}`.', 'ك', 'ک'), 'allow_fix_override': True, 'fix': {
+                    '+': dict([
+                    (mapcss.concat('name=', mapcss.replace(mapcss.tag(tags, 'name'), 'ك', 'ک'))).split('=', 1)])
+                }})
+
+        # *[name:fa=~/ك/]
+        if ('name:fa' in keys):
+            match = False
             if not match:
                 capture_tags = {}
                 try: match = ((mapcss.regexp_test(mapcss._value_capture(capture_tags, 0, self.re_4234bf3b), mapcss._tag_capture(capture_tags, 0, tags, 'name:fa'))))
                 except mapcss.RuleAbort: pass
             if match:
                 # group:tr("Arabic letter detected in Farsi name")
-                # -osmoseItemClassLevel:"5010/50109001:1/2"
-                # throwError:tr("In Farsi, the Arabic letter '{0}' should be replaced by '{1}'","ك","ک")
-                # fixAdd:concat("{0.key}=",replace("{0.value}","ك","ک"))
-                # -osmoseAssertMatchWithContext:list('node name="روابط عمومي مجتمع مس شهربابك"','language=fa')
-                # assertMatch:'node name:fa="روابط عمومي مجتمع مس شهربابك"'
-                # assertNoMatch:'node name="روابط عمومي مجتمع مس شهربابك"'
-                err.append({'class': 50109001, 'subclass': 1, 'text': mapcss.tr('In Farsi, the Arabic letter \'{0}\' should be replaced by \'{1}\'', 'ك', 'ک'), 'allow_fix_override': True, 'fix': {
+                # -osmoseItemClassLevel:"5010/50109001:21/2"
+                # throwError:tr("In Farsi, the Arabic letter `{0}` should be replaced by `{1}`.","ك","ک")
+                # fixAdd:concat("name:fa=",replace(tag("name:fa"),"ك","ک"))
+                # assertMatch:"node name:fa=\"روابط عمومي مجتمع مس شهربابك\""
+                err.append({'class': 50109001, 'subclass': 21, 'text': mapcss.tr('In Farsi, the Arabic letter `{0}` should be replaced by `{1}`.', 'ك', 'ک'), 'allow_fix_override': True, 'fix': {
                     '+': dict([
-                    (mapcss.concat(mapcss._tag_uncapture(capture_tags, '{0.key}='), mapcss.replace(mapcss._tag_uncapture(capture_tags, '{0.value}'), 'ك', 'ک'))).split('=', 1)])
+                    (mapcss.concat('name:fa=', mapcss.replace(mapcss.tag(tags, 'name:fa'), 'ك', 'ک'))).split('=', 1)])
                 }})
 
         return err
@@ -84,47 +112,71 @@ class Name_MisspelledWordByRegex_Lang_fa(PluginMapCSS):
 
 
         # *[name=~/ي/][language("fa")]
-        # *[name:fa=~/ي/]
-        if ('name' in keys) or ('name:fa' in keys):
+        if ('name' in keys):
             match = False
             if not match:
                 capture_tags = {}
                 try: match = ((mapcss.regexp_test(mapcss._value_capture(capture_tags, 0, self.re_5eeade1c), mapcss._tag_capture(capture_tags, 0, tags, 'name'))) and (mapcss.language(self.father.config.options, 'fa')))
                 except mapcss.RuleAbort: pass
+            if match:
+                # group:tr("Arabic letter detected in Farsi name")
+                # -osmoseItemClassLevel:"5010/50109001:10/2"
+                # throwError:tr("In Farsi, the Arabic letter `{0}` should be replaced by `{1}`.","ي","ی")
+                # fixAdd:concat("name=",replace(tag("name"),"ي","ی"))
+                err.append({'class': 50109001, 'subclass': 10, 'text': mapcss.tr('In Farsi, the Arabic letter `{0}` should be replaced by `{1}`.', 'ي', 'ی'), 'allow_fix_override': True, 'fix': {
+                    '+': dict([
+                    (mapcss.concat('name=', mapcss.replace(mapcss.tag(tags, 'name'), 'ي', 'ی'))).split('=', 1)])
+                }})
+
+        # *[name:fa=~/ي/]
+        if ('name:fa' in keys):
+            match = False
             if not match:
                 capture_tags = {}
                 try: match = ((mapcss.regexp_test(mapcss._value_capture(capture_tags, 0, self.re_5eeade1c), mapcss._tag_capture(capture_tags, 0, tags, 'name:fa'))))
                 except mapcss.RuleAbort: pass
             if match:
                 # group:tr("Arabic letter detected in Farsi name")
-                # -osmoseItemClassLevel:"5010/50109001:0/2"
-                # throwError:tr("In Farsi, the Arabic letter '{0}' should be replaced by '{1}'","ي","ی")
-                # fixAdd:concat("{0.key}=",replace("{0.value}","ي","ی"))
-                err.append({'class': 50109001, 'subclass': 0, 'text': mapcss.tr('In Farsi, the Arabic letter \'{0}\' should be replaced by \'{1}\'', 'ي', 'ی'), 'allow_fix_override': True, 'fix': {
+                # -osmoseItemClassLevel:"5010/50109001:11/2"
+                # throwError:tr("In Farsi, the Arabic letter `{0}` should be replaced by `{1}`.","ي","ی")
+                # fixAdd:concat("name:fa=",replace(tag("name:fa"),"ي","ی"))
+                err.append({'class': 50109001, 'subclass': 11, 'text': mapcss.tr('In Farsi, the Arabic letter `{0}` should be replaced by `{1}`.', 'ي', 'ی'), 'allow_fix_override': True, 'fix': {
                     '+': dict([
-                    (mapcss.concat(mapcss._tag_uncapture(capture_tags, '{0.key}='), mapcss.replace(mapcss._tag_uncapture(capture_tags, '{0.value}'), 'ي', 'ی'))).split('=', 1)])
+                    (mapcss.concat('name:fa=', mapcss.replace(mapcss.tag(tags, 'name:fa'), 'ي', 'ی'))).split('=', 1)])
                 }})
 
         # *[name=~/ك/][language("fa")]
-        # *[name:fa=~/ك/]
-        if ('name' in keys) or ('name:fa' in keys):
+        if ('name' in keys):
             match = False
             if not match:
                 capture_tags = {}
                 try: match = ((mapcss.regexp_test(mapcss._value_capture(capture_tags, 0, self.re_4234bf3b), mapcss._tag_capture(capture_tags, 0, tags, 'name'))) and (mapcss.language(self.father.config.options, 'fa')))
                 except mapcss.RuleAbort: pass
+            if match:
+                # group:tr("Arabic letter detected in Farsi name")
+                # -osmoseItemClassLevel:"5010/50109001:20/2"
+                # throwError:tr("In Farsi, the Arabic letter `{0}` should be replaced by `{1}`.","ك","ک")
+                # fixAdd:concat("name=",replace(tag("name"),"ك","ک"))
+                err.append({'class': 50109001, 'subclass': 20, 'text': mapcss.tr('In Farsi, the Arabic letter `{0}` should be replaced by `{1}`.', 'ك', 'ک'), 'allow_fix_override': True, 'fix': {
+                    '+': dict([
+                    (mapcss.concat('name=', mapcss.replace(mapcss.tag(tags, 'name'), 'ك', 'ک'))).split('=', 1)])
+                }})
+
+        # *[name:fa=~/ك/]
+        if ('name:fa' in keys):
+            match = False
             if not match:
                 capture_tags = {}
                 try: match = ((mapcss.regexp_test(mapcss._value_capture(capture_tags, 0, self.re_4234bf3b), mapcss._tag_capture(capture_tags, 0, tags, 'name:fa'))))
                 except mapcss.RuleAbort: pass
             if match:
                 # group:tr("Arabic letter detected in Farsi name")
-                # -osmoseItemClassLevel:"5010/50109001:1/2"
-                # throwError:tr("In Farsi, the Arabic letter '{0}' should be replaced by '{1}'","ك","ک")
-                # fixAdd:concat("{0.key}=",replace("{0.value}","ك","ک"))
-                err.append({'class': 50109001, 'subclass': 1, 'text': mapcss.tr('In Farsi, the Arabic letter \'{0}\' should be replaced by \'{1}\'', 'ك', 'ک'), 'allow_fix_override': True, 'fix': {
+                # -osmoseItemClassLevel:"5010/50109001:21/2"
+                # throwError:tr("In Farsi, the Arabic letter `{0}` should be replaced by `{1}`.","ك","ک")
+                # fixAdd:concat("name:fa=",replace(tag("name:fa"),"ك","ک"))
+                err.append({'class': 50109001, 'subclass': 21, 'text': mapcss.tr('In Farsi, the Arabic letter `{0}` should be replaced by `{1}`.', 'ك', 'ک'), 'allow_fix_override': True, 'fix': {
                     '+': dict([
-                    (mapcss.concat(mapcss._tag_uncapture(capture_tags, '{0.key}='), mapcss.replace(mapcss._tag_uncapture(capture_tags, '{0.value}'), 'ك', 'ک'))).split('=', 1)])
+                    (mapcss.concat('name:fa=', mapcss.replace(mapcss.tag(tags, 'name:fa'), 'ك', 'ک'))).split('=', 1)])
                 }})
 
         return err
@@ -136,47 +188,71 @@ class Name_MisspelledWordByRegex_Lang_fa(PluginMapCSS):
 
 
         # *[name=~/ي/][language("fa")]
-        # *[name:fa=~/ي/]
-        if ('name' in keys) or ('name:fa' in keys):
+        if ('name' in keys):
             match = False
             if not match:
                 capture_tags = {}
                 try: match = ((mapcss.regexp_test(mapcss._value_capture(capture_tags, 0, self.re_5eeade1c), mapcss._tag_capture(capture_tags, 0, tags, 'name'))) and (mapcss.language(self.father.config.options, 'fa')))
                 except mapcss.RuleAbort: pass
+            if match:
+                # group:tr("Arabic letter detected in Farsi name")
+                # -osmoseItemClassLevel:"5010/50109001:10/2"
+                # throwError:tr("In Farsi, the Arabic letter `{0}` should be replaced by `{1}`.","ي","ی")
+                # fixAdd:concat("name=",replace(tag("name"),"ي","ی"))
+                err.append({'class': 50109001, 'subclass': 10, 'text': mapcss.tr('In Farsi, the Arabic letter `{0}` should be replaced by `{1}`.', 'ي', 'ی'), 'allow_fix_override': True, 'fix': {
+                    '+': dict([
+                    (mapcss.concat('name=', mapcss.replace(mapcss.tag(tags, 'name'), 'ي', 'ی'))).split('=', 1)])
+                }})
+
+        # *[name:fa=~/ي/]
+        if ('name:fa' in keys):
+            match = False
             if not match:
                 capture_tags = {}
                 try: match = ((mapcss.regexp_test(mapcss._value_capture(capture_tags, 0, self.re_5eeade1c), mapcss._tag_capture(capture_tags, 0, tags, 'name:fa'))))
                 except mapcss.RuleAbort: pass
             if match:
                 # group:tr("Arabic letter detected in Farsi name")
-                # -osmoseItemClassLevel:"5010/50109001:0/2"
-                # throwError:tr("In Farsi, the Arabic letter '{0}' should be replaced by '{1}'","ي","ی")
-                # fixAdd:concat("{0.key}=",replace("{0.value}","ي","ی"))
-                err.append({'class': 50109001, 'subclass': 0, 'text': mapcss.tr('In Farsi, the Arabic letter \'{0}\' should be replaced by \'{1}\'', 'ي', 'ی'), 'allow_fix_override': True, 'fix': {
+                # -osmoseItemClassLevel:"5010/50109001:11/2"
+                # throwError:tr("In Farsi, the Arabic letter `{0}` should be replaced by `{1}`.","ي","ی")
+                # fixAdd:concat("name:fa=",replace(tag("name:fa"),"ي","ی"))
+                err.append({'class': 50109001, 'subclass': 11, 'text': mapcss.tr('In Farsi, the Arabic letter `{0}` should be replaced by `{1}`.', 'ي', 'ی'), 'allow_fix_override': True, 'fix': {
                     '+': dict([
-                    (mapcss.concat(mapcss._tag_uncapture(capture_tags, '{0.key}='), mapcss.replace(mapcss._tag_uncapture(capture_tags, '{0.value}'), 'ي', 'ی'))).split('=', 1)])
+                    (mapcss.concat('name:fa=', mapcss.replace(mapcss.tag(tags, 'name:fa'), 'ي', 'ی'))).split('=', 1)])
                 }})
 
         # *[name=~/ك/][language("fa")]
-        # *[name:fa=~/ك/]
-        if ('name' in keys) or ('name:fa' in keys):
+        if ('name' in keys):
             match = False
             if not match:
                 capture_tags = {}
                 try: match = ((mapcss.regexp_test(mapcss._value_capture(capture_tags, 0, self.re_4234bf3b), mapcss._tag_capture(capture_tags, 0, tags, 'name'))) and (mapcss.language(self.father.config.options, 'fa')))
                 except mapcss.RuleAbort: pass
+            if match:
+                # group:tr("Arabic letter detected in Farsi name")
+                # -osmoseItemClassLevel:"5010/50109001:20/2"
+                # throwError:tr("In Farsi, the Arabic letter `{0}` should be replaced by `{1}`.","ك","ک")
+                # fixAdd:concat("name=",replace(tag("name"),"ك","ک"))
+                err.append({'class': 50109001, 'subclass': 20, 'text': mapcss.tr('In Farsi, the Arabic letter `{0}` should be replaced by `{1}`.', 'ك', 'ک'), 'allow_fix_override': True, 'fix': {
+                    '+': dict([
+                    (mapcss.concat('name=', mapcss.replace(mapcss.tag(tags, 'name'), 'ك', 'ک'))).split('=', 1)])
+                }})
+
+        # *[name:fa=~/ك/]
+        if ('name:fa' in keys):
+            match = False
             if not match:
                 capture_tags = {}
                 try: match = ((mapcss.regexp_test(mapcss._value_capture(capture_tags, 0, self.re_4234bf3b), mapcss._tag_capture(capture_tags, 0, tags, 'name:fa'))))
                 except mapcss.RuleAbort: pass
             if match:
                 # group:tr("Arabic letter detected in Farsi name")
-                # -osmoseItemClassLevel:"5010/50109001:1/2"
-                # throwError:tr("In Farsi, the Arabic letter '{0}' should be replaced by '{1}'","ك","ک")
-                # fixAdd:concat("{0.key}=",replace("{0.value}","ك","ک"))
-                err.append({'class': 50109001, 'subclass': 1, 'text': mapcss.tr('In Farsi, the Arabic letter \'{0}\' should be replaced by \'{1}\'', 'ك', 'ک'), 'allow_fix_override': True, 'fix': {
+                # -osmoseItemClassLevel:"5010/50109001:21/2"
+                # throwError:tr("In Farsi, the Arabic letter `{0}` should be replaced by `{1}`.","ك","ک")
+                # fixAdd:concat("name:fa=",replace(tag("name:fa"),"ك","ک"))
+                err.append({'class': 50109001, 'subclass': 21, 'text': mapcss.tr('In Farsi, the Arabic letter `{0}` should be replaced by `{1}`.', 'ك', 'ک'), 'allow_fix_override': True, 'fix': {
                     '+': dict([
-                    (mapcss.concat(mapcss._tag_uncapture(capture_tags, '{0.key}='), mapcss.replace(mapcss._tag_uncapture(capture_tags, '{0.value}'), 'ك', 'ک'))).split('=', 1)])
+                    (mapcss.concat('name:fa=', mapcss.replace(mapcss.tag(tags, 'name:fa'), 'ك', 'ک'))).split('=', 1)])
                 }})
 
         return err
@@ -197,10 +273,10 @@ class Test(TestPluginMapcss):
         data = {'id': 0, 'lat': 0, 'lon': 0}
 
         with with_options(n, {'language': 'fa'}):
-            self.check_err(n.node(data, {'name': 'روابط عمومي مجتمع مس شهربابك'}), expected={'class': 50109001, 'subclass': 0})
-        self.check_err(n.node(data, {'name:fa': 'روابط عمومي مجتمع مس شهربابك'}), expected={'class': 50109001, 'subclass': 0})
-        self.check_not_err(n.node(data, {'name': 'روابط عمومي مجتمع مس شهربابك'}), expected={'class': 50109001, 'subclass': 0})
+            self.check_err(n.node(data, {'name': 'روابط عمومي مجتمع مس شهربابك'}), expected={'class': 50109001, 'subclass': 10})
+        self.check_not_err(n.node(data, {'name': 'روابط عمومي مجتمع مس شهربابك'}), expected={'class': 50109001, 'subclass': 10})
+        self.check_err(n.node(data, {'name:fa': 'روابط عمومي مجتمع مس شهربابك'}), expected={'class': 50109001, 'subclass': 11})
         with with_options(n, {'language': 'fa'}):
-            self.check_err(n.node(data, {'name': 'روابط عمومي مجتمع مس شهربابك'}), expected={'class': 50109001, 'subclass': 1})
-        self.check_err(n.node(data, {'name:fa': 'روابط عمومي مجتمع مس شهربابك'}), expected={'class': 50109001, 'subclass': 1})
-        self.check_not_err(n.node(data, {'name': 'روابط عمومي مجتمع مس شهربابك'}), expected={'class': 50109001, 'subclass': 1})
+            self.check_err(n.node(data, {'name': 'روابط عمومي مجتمع مس شهربابك'}), expected={'class': 50109001, 'subclass': 20})
+        self.check_not_err(n.node(data, {'name': 'روابط عمومي مجتمع مس شهربابك'}), expected={'class': 50109001, 'subclass': 20})
+        self.check_err(n.node(data, {'name:fa': 'روابط عمومي مجتمع مس شهربابك'}), expected={'class': 50109001, 'subclass': 21})

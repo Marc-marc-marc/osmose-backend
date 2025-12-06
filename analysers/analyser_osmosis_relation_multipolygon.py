@@ -43,7 +43,7 @@ CREATE INDEX rel_poly_linestring_idx ON rel_poly USING gist(linestring)
 """
 
 sql12 = """
-SELECT
+SELECT DISTINCT
     relations.id,
     w1.id,
     w2.id,
@@ -68,7 +68,7 @@ WHERE
 """
 
 sql20 = """
-SELECT
+SELECT DISTINCT
     relations.id,
     ways.id,
     ST_AsText(way_locate(ways.linestring)),
@@ -94,25 +94,27 @@ WHERE
     relations.tags->'type' = 'multipolygon' AND
     ways.tags != ''::hstore AND
     (
-        relations.tags?'landuse' AND
-        ways.tags?'landuse' AND
-        ways.tags->'landuse' != (relations.tags->'landuse')
-    ) OR (
-        relations.tags?'natural' AND
-        relations.tags->'natural' IN ('bay', 'beach', 'fell', 'grassland', 'glacier', 'heath', 'mud', 'sand', 'scree', 'scrub', 'sinkhole', 'water', 'wetland', 'wood') AND
-        ways.tags?'natural' AND
-        ways.tags->'natural' IN ('bay', 'beach', 'fell', 'grassland', 'glacier', 'heath', 'mud', 'sand', 'scree', 'scrub', 'sinkhole', 'water', 'wetland', 'wood') AND
-        ways.tags->'natural' != (relations.tags->'natural')
-    ) OR (
-        relations.tags?'waterway' AND
-        relations.tags->'waterway' IN ('boatyard', 'dock', 'riverbank') AND
-        ways.tags?'waterway' AND
-        ways.tags->'waterway' IN ('boatyard', 'dock', 'riverbank') AND
-        ways.tags->'waterway' != (relations.tags->'waterway')
-    ) OR (
-        relations.tags?'building' AND
-        ways.tags?'building' AND
-        ways.tags->'building' != (relations.tags->'building')
+        (
+            relations.tags?'landuse' AND
+            ways.tags?'landuse' AND
+            ways.tags->'landuse' != (relations.tags->'landuse')
+        ) OR (
+            relations.tags?'natural' AND
+            relations.tags->'natural' IN ('bay', 'beach', 'fell', 'grassland', 'glacier', 'heath', 'mud', 'sand', 'scree', 'scrub', 'sinkhole', 'water', 'wetland', 'wood') AND
+            ways.tags?'natural' AND
+            ways.tags->'natural' IN ('bay', 'beach', 'fell', 'grassland', 'glacier', 'heath', 'mud', 'sand', 'scree', 'scrub', 'sinkhole', 'water', 'wetland', 'wood') AND
+            ways.tags->'natural' != (relations.tags->'natural')
+        ) OR (
+            relations.tags?'waterway' AND
+            relations.tags->'waterway' IN ('boatyard', 'dock', 'riverbank') AND
+            ways.tags?'waterway' AND
+            ways.tags->'waterway' IN ('boatyard', 'dock', 'riverbank') AND
+            ways.tags->'waterway' != (relations.tags->'waterway')
+        ) OR (
+            relations.tags?'building' AND
+            ways.tags?'building' AND
+            ways.tags->'building' != (relations.tags->'building')
+        )
     )
 """
 
@@ -133,12 +135,12 @@ FROM
         ways.tags->'waterway' AS waterway,
         ways.tags->'building' AS building
     FROM
-        {0}relations AS relations
+        relations
         JOIN relation_members ON
             relation_members.relation_id = relations.id AND
             relation_members.member_type = 'W' AND
             relation_members.member_role IN ('', 'outer')
-        JOIN {1}ways AS ways ON
+        JOIN ways ON
             ways.id = relation_members.member_id
     WHERE
         relations.tags?'type' AND
@@ -159,39 +161,6 @@ HAVING
     COUNT(*) > 1
 """
 
-sql40 = """
-SELECT
-    ways.id,
-    ST_AsText(way_locate(ways.linestring)),
-    ways.tags->'area',
-    ways.tags->'landuse',
-    ways.tags->'natural',
-    ways.tags->'waterway',
-    ways.tags->'leisure',
-    ways.tags->'amenity',
-    ways.tags->'building',
-    COALESCE(ways.tags->'area', ways.tags->'landuse', ways.tags->'natural', ways.tags->'waterway', ways.tags->'leisure', ways.tags->'amenity', ways.tags->'building')
-FROM
-    {0}ways AS ways
-    LEFT JOIN relation_members ON
-        relation_members.member_id = ways.id AND
-        relation_members.member_type = 'W'
-WHERE
-    ways.tags != ''::hstore AND
-    (
-        (ways.tags?'area' AND ways.tags->'area' in ('yes', 'true')) OR
-        ways.tags?'landuse' OR
-        (ways.tags?'natural' AND ways.tags->'natural' in ('wood', 'scrub', 'heath', 'moor', 'grassland', 'fell', 'bare_rock', 'scree', 'shingle', 'sand', 'mud', 'water', 'wetland', 'glacier', 'bay', 'beach', 'hot_spring', 'rock', 'stone', 'sinkhole')) OR
-        (ways.tags?'waterway' AND ways.tags->'waterway' in ('boatyard', 'dock', 'riverbank', 'fuel')) OR
-        (ways.tags?'leisure' AND ways.tags->'leisure' in ('adult_gaming_centre', 'amusement_arcade', 'beach_resort', 'bandstand', 'bird_hide', 'common', 'dance', 'dog_park', 'firepit', 'fishing', 'fitness_centre', 'garden', 'golf_course', 'hackerspace', 'horse_riding', 'ice_rink', 'marina', 'miniature_golf', 'nature_reserve', 'park', 'picnic_table', 'pitch', 'playground', 'sports_centre', 'stadium', 'summer_camp', 'swimming_area', 'swimming_pool', 'water_park', 'wildlife_hide', 'user', 'defined')) OR
-        (ways.tags?'amenity' AND ways.tags->'amenity' in ('bar', 'biergarten', 'cafe', 'fast_food', 'food_court', 'ice_cream', 'pub', 'restaurant', 'college', 'kindergarten', 'library', 'public_bookcase', 'school', 'music_school', 'driving_school', 'language_school', 'university', 'bicycle_repair_station', 'bicycle_rental', 'boat_sharing', 'bus_station', 'car_rental', 'car_sharing', 'car_wash', 'ferry_terminal', 'fuel', 'motorcycle_parking', 'parking', 'parking_space', 'taxi', 'bank', 'baby_hatch', 'clinic', 'dentist', 'doctors', 'hospital', 'nursing_home', 'pharmacy', 'social_facility', 'veterinary', 'blood_donation', 'arts_centre', 'brothel', 'casino', 'cinema', 'community_centre', 'fountain', 'gambling', 'nightclub', 'planetarium', 'social_centre', 'studio', 'swingerclub', 'theatre', 'animal_boarding', 'animal_shelter', 'courthouse', 'coworking_space', 'crematorium', 'crypt', 'dive_centre', 'dojo', 'embassy', 'fire_station', 'firepit', 'game_feeding', 'grave_yard', 'gym', 'hunting_stand', 'internet_cafe', 'kneipp_water_cure', 'marketplace', 'place_of_worship', 'police', 'post_office', 'prison', 'public_building', 'ranger_station', 'recycling', 'rescue_station', 'sauna', 'shelter', 'shower', 'toilets', 'townhall', 'waste_transfer_station')) OR
-        ways.tags?'building'
-    ) AND
-    ways.linestring IS NOT NULL AND
-    NOT ways.is_polygon AND
-    relation_members.member_id IS NULL
-"""
-
 class Analyser_Osmosis_Relation_Multipolygon(Analyser_Osmosis):
 
     def __init__(self, config, logger = None):
@@ -205,22 +174,15 @@ relation without tag and another with tags not part of the relation.'''),
 '''Remove the ring without tag. Add in the relation the one with the tags
 as `inner` role.'''))
         self.classs_change[2] = self.def_class(item = 1170, level = 2, tags = ['relation', 'fix:chair', 'multipolygon'],
-            title = T_('Inconsistant multipolygon nature with members nature'),
+            title = T_('Inconsistent multipolygon nature with members nature'),
             detail = T_(
 '''Multipolygon defines a nature that is different from that specified in
 the outers roles.'''))
-        self.classs_change[3] = self.def_class(item = 1170, level = 2, tags = ['relation', 'fix:chair', 'multipolygon'],
-            title = T_('Inconsistant multipolygon member nature'),
+        self.classs[3] = self.def_class(item = 1170, level = 2, tags = ['relation', 'fix:chair', 'multipolygon'],
+            title = T_('Inconsistent multipolygon member nature'),
             detail = T_(
 '''Multipolygon does not define nature, several found on the outer role
 members.'''))
-        self.classs_change[4] = self.def_class(item = 1170, level = 1, tags = ['relation', 'fix:chair', 'geom'],
-            title = T_('Should be polygon, part of multipolygon or not having area tag'),
-            detail = T_(
-'''The nature of the way indicates that it is a surface, the way would be
-a polygon or a part of a multipolygon as outer role.'''),
-            fix = T_(
-'''Close the way to make a polygon or add to a multipolygon.'''))
 
         self.callback10 = lambda res: {"class":1, "data":[self.relation_full, self.way_full, self.way_full, self.positionAsText]}
         self.callback20 = lambda res: {"class":2, "subclass":stablehash64(res[11]), "data":[self.relation_full, self.way_full, self.positionAsText],
@@ -229,17 +191,15 @@ a polygon or a part of a multipolygon as outer role.'''),
         self.callback30 = lambda res: {"class":3, "subclass":1, "data":[self.relation_full, self.positionAsText],
             "text": {"en": u", ".join(map(lambda k: "{0}=({1})".format(*k), filter(lambda k: k[1], (("landuse",res[2]), ("natural",res[3]), ("waterway",res[4]), ("building",res[5])))))}
         }
-        self.callback40 = lambda res: {"class":4, "subclass":stablehash64(res[9]), "data":[self.way_full, self.positionAsText],
-            "text": {"en": u", ".join(map(lambda k: "{0}={1}".format(*k), filter(lambda k: k[1], (("area",res[2]), ("landuse",res[3]), ("natural",res[4]), ("waterway",res[5]), ("leisure",res[6]), ("amenity",res[7]), ("building",res[8])))))}
-        }
+
+    def analyser_osmosis_common(self):
+        self.run(sql30, self.callback30)
 
     def analyser_osmosis_full(self):
         self.run(sql10)
         self.run(sql11)
         self.run(sql12.format("", "", ""), self.callback10)
         self.run(sql20.format("", ""), self.callback20)
-        self.run(sql30.format("", ""), self.callback30)
-        self.run(sql40.format(""), self.callback40)
 
     def analyser_osmosis_diff(self):
         self.run(sql10)
@@ -250,6 +210,3 @@ a polygon or a part of a multipolygon as outer role.'''),
         self.run(sql12.format("not_touched_", "not_touched_", "touched_"), self.callback10)
         self.run(sql20.format("touched_", ""), self.callback20)
         self.run(sql20.format("not_touched_", "touched_"), self.callback20)
-        self.run(sql30.format("touched_", ""), self.callback30)
-        self.run(sql30.format("not_touched_", "touched_"), self.callback30)
-        self.run(sql40.format("touched_"), self.callback40)

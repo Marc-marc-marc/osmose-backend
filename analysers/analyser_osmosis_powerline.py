@@ -24,7 +24,169 @@ from modules.OsmoseTranslation import T_
 from .Analyser_Osmosis import Analyser_Osmosis
 from modules.Stablehash import stablehash64
 
+# Power lines nodes with their voltage as array padded up to 99 zeros to cope with non-numerical values
+# Lines with no voltage get null voltage instead empty array
+sql01 = """
+CREATE TEMP TABLE power_lines_nodes AS
+WITH power_lines_norm AS (
+    SELECT
+        w.id,
+        w.nodes,
+        w.tags,
+        coalesce(w.tags->'circuits', '1') as circuits,
+        w.tags->'voltage' as voltage,
+        regexp_replace (w.tags->'voltage', ';', '_', 1,  greatest(1, char_length(w.tags->'circuits') - char_length(replace(w.tags->'circuits', ';', '')) - 1)) as voltage_norm
+    FROM ways w
+    WHERE
+        w.tags != ''::hstore AND
+        w.tags?'power' AND
+        w.tags->'power' IN ('line', 'minor_line', 'cable')
+)
+
+-- Lines with voltages and appropriate circuits values
+SELECT
+    w.id as wid,
+    unnest('{NULL}' || w.nodes[1:array_length(w.nodes, 1) - 1]) AS nid_prec,
+    unnest(w.nodes) AS nid,
+    unnest(w.nodes[2:]) AS nid_next,
+    w.tags->'cables' AS cables,
+    w.tags->'line' AS line,
+    t.circuits,
+    coalesce(w.tags->'location', 'overhead') AS location,
+    t.voltages
+FROM
+    power_lines_norm AS w
+    JOIN LATERAL (
+        -- Creating a voltage list consistent with number of circuits by padding with the first voltage when necessary or limiting:
+        -- Filling size is the difference between circuits (defaults to 1) and the number of voltages in the list
+        -- circuits=1 + voltage=20000;400 => voltage={20000} (no fill and limiting to 1)
+        -- circuits=2 + voltage=20000 => voltage={20000;20000} (filling with first value and no limiting)
+        -- circuits=2 + voltage=20000;400 => voltage={20000;400} (no fill and no limiting)
+        -- circuits=3 + voltage=20000;400 => voltage={20000;20000;400} (filling with first value and no limiting)
+        -- circuits=2;1 + voltage=400000;63000 => voltage={400000;400000;63000}
+        SELECT
+            count(*) as circuits,
+            array_agg(lpad(t3.v, 99, '0'))
+        FROM
+            -- circuits table
+            string_to_table(w.circuits, ';') WITH ORDINALITY AS t1(c, s),
+
+            -- voltages table
+            unnest(
+                CASE WHEN strpos(w.circuits, ';') > 0 THEN
+                    array_cat(
+                        regexp_split_to_array(split_part(w.voltage_norm, '_', 1), '; *'),
+                        ARRAY[split_part(w.voltage_norm, '_', 2)]
+                    )
+                ELSE
+                    ARRAY[w.voltage]
+                END
+            ) WITH ORDINALITY AS t2(v, s)
+
+            JOIN LATERAL (SELECT
+                t1.c,
+                t1.s,
+                unnest(array_cat(
+                array_fill(
+                    split_part(t2.v, ';', t1.s::integer)::text, -- voltage1 in voltage1;voltage2
+                    ARRAY[greatest(0, (t1.c)::integer - (1 + length(coalesce(t2.v, '')) - length(replace(coalesce(t2.v,''), ';', ''))))]
+                ),
+                regexp_split_to_array(t2.v, '; *'))
+            ) LIMIT (t1.c)::integer
+            ) AS t3(c, s, v) ON t3.s=t2.s
+        ) AS t(circuits, voltages)
+        ON TRUE
+WHERE
+    w.tags?'voltage' AND
+    (
+        NOT w.tags?'circuits' OR
+        w.tags->'circuits' ~ '^[0-9;]+$'
+    )
+
+UNION ALL
+
+-- Lines with no voltage or not appropriate circuits value
+SELECT
+    w.id AS wid,
+    unnest('{NULL}' || w.nodes[1:array_length(w.nodes, 1) - 1]) AS nid_prec,
+    unnest(w.nodes) AS nid,
+    unnest(w.nodes[2:]) AS nid_next,
+    w.tags->'cables' AS cables,
+    w.tags->'line' AS line,
+    CASE WHEN w.tags?'circuits' AND w.tags->'circuits' ~ '^[0-9]+$' THEN
+        (w.tags->'circuits')::integer
+    WHEN w.tags?'circuits' AND w.tags->'circuits' ~ '^[0-9;]+$' THEN
+        (SELECT SUM(c::integer) FROM unnest(regexp_split_to_array(w.tags->'circuits', '; *')) c) -- Sum circuits list 2;1 => 3
+    ELSE
+        1 -- Every line with not resolvable circuits definition count as one
+    END AS circuits,
+    coalesce(w.tags->'location', 'overhead') AS location,
+    NULL AS voltages
+FROM
+   power_lines_norm AS w
+WHERE
+    NOT w.tags?'voltage' OR (
+        w.tags?'circuits' AND
+        w.tags->'circuits' !~ '^[0-9;]+$'
+    )
+"""
+
+# Build junctions knowledge
+# Topoedges are couples attached to a given node with their neighbors.
+# Topoedges are agregated by nodes and location (two *overhead* lines between two node will give a single topoedge)
+# Involved nodes are not necessary power, particularly on cables
+sql02 = """
+CREATE TEMP TABLE power_lines_topoedges AS
+WITH topotuples as (
+    SELECT
+        n.wid,
+        n.nid # n.nid_prec AS tid,
+        n.nid,
+        n.location,
+        n.cables,
+        n.line,
+        n.circuits,
+        voltages
+    FROM
+        power_lines_nodes AS n
+    WHERE
+        nid_prec IS NOT NULL
+
+    UNION ALL
+
+    SELECT
+        n.wid,
+        n.nid # n.nid_next as tid,
+        n.nid,
+        n.location,
+        n.cables,
+        n.line,
+        n.circuits,
+        voltages
+    FROM
+        power_lines_nodes AS n
+    WHERE
+        nid_next IS NOT NULL
+)
+
+SELECT
+    p.nid,
+    p.tid,
+    p.location,
+    p.line,
+    count(distinct p.wid) AS cw,
+    sum(p.circuits::integer) AS circuits,
+    regexp_split_to_array(string_agg(array_to_string(p.voltages, ';'), ';'), '; *') AS voltages
+FROM
+    topotuples p
+GROUP BY
+    p.nid, p.tid, p.location, p.line
+HAVING
+    bool_and(p.circuits IS NOT NULL)
+"""
+
 # Lone power supports
+# TODO rework by using exclusion from power_lines_nodes, it will save a join and work on a lower amount of pre-selected power nodes
 sql10 = """
 SELECT
     nodes.id,
@@ -49,12 +211,13 @@ HAVING
     bool_and(ways.id IS NULL)
 """
 
-# Power lines ends with their voltages
+# Power lines ends with their voltages as array padded with up to 99 zeros
+# TODO rework this analysis with topoedges, find topoedges that end a line and conflate them with terminators.
 sql20 = """
-CREATE TEMP TABLE line_ends AS
+CREATE TEMP TABLE power_lines_ends AS
 SELECT DISTINCT ON (ends(ways.nodes))
     ways.id AS wid,
-    ends(ways.nodes) AS id,
+    ends(ways.nodes) AS nid,
     ways.tags->'power' AS power,
     (SELECT array_agg(lpad(v, 99, '0')) FROM unnest(regexp_split_to_array(ways.tags->'voltage','; *')) AS t(v)) AS voltage
 FROM
@@ -68,48 +231,49 @@ ORDER BY
 """
 
 sql21 = """
-CREATE INDEX idx_line_ends_id ON line_ends(id)
+CREATE INDEX idx_line_ends_id ON power_lines_ends(nid)
 """
 
 # Unfinished lines ends
 sql22 = """
-CREATE TEMP TABLE line_ends1 AS
+CREATE TEMP TABLE power_lines_unfinished AS
 SELECT
     line_ends.wid,
-    line_ends.id,
+    line_ends.nid,
     line_ends.power,
     line_ends.voltage,
     nodes.geom::geography
 FROM
     (
     SELECT
-        line_ends.wid,
-        line_ends.id,
-        line_ends.power,
-        line_ends.voltage
+        e.wid,
+        e.nid,
+        e.power,
+        e.voltage
     FROM
-        line_ends
-        LEFT JOIN line_ends AS other ON
-        line_ends.wid != other.wid AND
-            line_ends.id = other.id
+        power_lines_ends e
+        LEFT JOIN power_lines_ends AS other ON
+        e.wid != other.wid AND
+            e.nid = other.nid
     WHERE
-        other.id IS NULL
+        other.nid IS NULL
     ) AS line_ends
     JOIN nodes ON
-        line_ends.id = nodes.id AND
-        NOT (tags?'location:transition' AND tags->'location:transition' = 'yes') AND
-        NOT (tags?'transformer' AND tags->'transformer' in ('distribution', 'main')) AND
-        NOT (tags?'substation' AND tags->'substation' = 'minor_distribution') AND
-        NOT (tags?'line_management' AND tags->'line_management' = 'termination') AND
-        NOT (tags?'power' AND tags->'power' = 'terminal')
+        line_ends.nid = nodes.id
+    WHERE
+        NOT (nodes.tags?'location:transition' AND nodes.tags->'location:transition' = 'yes') AND
+        NOT (nodes.tags?'transformer' AND nodes.tags->'transformer' in ('distribution', 'main')) AND
+        NOT (nodes.tags?'substation' AND nodes.tags->'substation' = 'minor_distribution') AND
+        NOT (nodes.tags?'line_management' AND nodes.tags->'line_management' IN ('transition','termination')) AND
+        NOT (nodes.tags?'power' AND nodes.tags->'power' = 'terminal')
 """
 
 sql23 = """
-CREATE INDEX idx_line_ends1_geom ON line_ends1 USING GIST(geom)
+CREATE INDEX idx_line_ends1_geom ON power_lines_unfinished USING GIST(geom)
 """
 
 sql24 = """
-CREATE TEMP TABLE line_terminators AS
+CREATE TEMP TABLE power_lines_terminators AS
 (
 SELECT
     'N' || id AS type_id,
@@ -143,120 +307,184 @@ WHERE
 """
 
 sql25 = """
-CREATE INDEX idx_line_terminators_geom ON line_terminators USING GIST(geom)
+CREATE INDEX idx_line_terminators_geom ON power_lines_terminators USING GIST(geom)
 """
 
 # Find every unfinished end that isn't near of any terminator
 sql26 = """
 SELECT
-    id,
-    ST_AsText(geom),
-    power
+    t.nid,
+    t.wid,
+    ST_AsText(t.geom),
+    t.power
 FROM (
 SELECT
-    line_ends1.id,
-    line_ends1.geom,
-    line_ends1.power
+    u.nid,
+    u.wid,
+    u.geom,
+    u.power
 FROM
-    line_ends1
+    power_lines_unfinished u
 
 EXCEPT
 
 SELECT
-    line_ends1.id,
-    line_ends1.geom,
-    line_ends1.power
+    u.nid,
+    u.wid,
+    u.geom,
+    u.power
 FROM
-    line_ends1
-    JOIN line_terminators ON
-        ST_DWithin(line_ends1.geom, line_terminators.geom, 50)
+    power_lines_unfinished u
+    JOIN power_lines_terminators plt ON
+        ST_DWithin(u.geom, plt.geom, 50)
 
 EXCEPT
 
 SELECT
-    line_ends1.id,
-    line_ends1.geom,
-    line_ends1.power
+    u.nid,
+    u.wid,
+    u.geom,
+    u.power
 FROM
-    line_ends1
+    power_lines_unfinished u
     JOIN ways ON
-        ways.id != line_ends1.wid AND
-        tags != ''::hstore AND
-        tags?'power' AND
-        tags->'power' IN ('line', 'minor_line', 'cable') AND
-        ways.linestring && line_ends1.geom AND
-        line_ends1.id = ANY(ways.nodes)
+        ways.id != u.wid AND
+        ways.tags != ''::hstore AND
+        ways.tags?'power' AND
+        ways.tags->'power' IN ('line', 'minor_line', 'cable') AND
+        ways.linestring && u.geom AND
+        u.nid = ANY(ways.nodes)
 ) AS t
 """
 
+# Every plain line junction that isn't transformers, termination or cross repeated twice (main and / sqrt(3)) (meaning the junction involves different voltages)
+# It looks for voltage continuation on every junction. Two (or more) topoedges on a given node with the same voltage means a connection.
+# TODO support partial termination (i.e termination|straight) with different voltages involved.
 sql30 = """
-CREATE TEMP TABLE power_line AS
-SELECT
-    id,
-    ends(nodes) AS nid,
-    voltage
-FROM
-    ways
-    JOIN LATERAL (SELECT array_agg(lpad(v, 99, '0')) FROM unnest(regexp_split_to_array(tags->'voltage','; *')) AS t(v)) AS t(voltage) ON TRUE
-WHERE
-    tags != ''::hstore AND
-    tags?'power' AND
-    tags->'power' IN ('line', 'minor_line') AND
-    tags?'voltage'
-"""
+WITH nodes_voltage AS (
+    SELECT
+        nid,
+        tid,
+        unnest(voltages)::varchar AS voltage
+    FROM
+        power_lines_topoedges
+),
+nodes_voltage_values AS (
+    -- Nodes with their voltage in deca-volts
+    SELECT
+        nid,
+        tid,
+        voltage,
+        (voltage::numeric / 1000)::numeric(11,1)::varchar AS voltage_val, --rounding voltage in deca-volts
+        'numeric' AS origin
+    FROM
+        nodes_voltage
+    WHERE
+        voltage ~ '^[0-9.]+$'
 
-sql31 = """
-CREATE VIEW power_line_junction AS
-SELECT
-    nid
-FROM
-    (SELECT nid FROM power_line GROUP BY id, nid) AS p
-GROUP BY
-    nid
-HAVING
-    COUNT(*) > 1
-"""
+    UNION
 
-sql32 = """
+    -- Nodes with their voltage to ground in deca-volts
+    SELECT
+        nid,
+        tid,
+        voltage AS voltage,
+        (voltage::numeric / (1000 * sqrt(3)))::numeric(11,1)::varchar AS voltage_val,
+        'numeric' AS origin
+    FROM
+        nodes_voltage
+    WHERE
+        voltage ~ '^[0-9.]+$'
+
+    UNION
+
+    -- Nodes with no (numerical) voltages
+    SELECT
+        nid,
+        tid,
+        voltage AS voltage,
+        voltage AS voltage_val,
+        'varchar' AS origin
+    FROM
+        nodes_voltage
+    WHERE
+        voltage !~ '^[0-9.]+$'
+),
+
+-- We select nodes connecting at least two edges
+nodes_selected AS (
+    SELECT
+        nid
+    FROM
+        power_lines_topoedges
+    GROUP BY
+        nid
+    HAVING
+        count(distinct tid) > 1
+),
+
+-- Matching selected nodes by their voltage or between voltage and voltage-to-ground independently
+voltage_groups AS (
+    SELECT
+        n.nid,
+        max(n.voltage) AS voltage,
+        n.voltage_val,
+        count(n.voltage) AS cv,
+        n.origin
+    FROM
+        nodes_voltage_values AS n
+        JOIN nodes_selected AS s ON
+            s.nid = n.nid
+    GROUP BY
+        n.nid, n.voltage_val, n.origin
+)
+
 SELECT
-    DISTINCT(nid),
-    ST_AsText(geom)
+    DISTINCT(v.nid),
+    ST_AsText(nodes.geom)
 FROM
-    power_line_junction
-    NATURAL JOIN power_line
+    voltage_groups AS v
     JOIN nodes ON
-        power_line.nid = nodes.id AND
-        (
-            NOT nodes.tags?'power' OR
-            nodes.tags->'power' != 'transformer'
-        ) AND
-        NOT nodes.tags?'transformer' -- example: power=pole + transformer=*
+        v.nid = nodes.id
+WHERE
+    (
+        NOT nodes.tags?'power' OR
+        nodes.tags->'power' != 'transformer'
+    ) AND
+    NOT nodes.tags?'transformer' AND -- example: power=pole + transformer=*
+    (
+        NOT nodes.tags?'line_management' OR
+        nodes.tags->'line_management' NOT IN ('cross', 'termination')
+    )
 GROUP BY
-    nid,
-    voltage,
-    geom
+    v.nid,
+    nodes.geom,
+    v.voltage,
+    v.origin
 HAVING
-    COUNT(*) = 1
+    (v.origin='numeric' AND sum(v.cv)=2) OR (v.origin='varchar' AND sum(v.cv)=1)
 """
 
+# Non power nodes on power line and minor_line ways
 sql40 = """
 SELECT DISTINCT ON (nodes.id)
-    nodes.id,
+    nodes.id AS nid,
+    ways.id AS wid,
     ST_AsText(nodes.geom)
 FROM
     ways
     JOIN nodes ON
         nodes.id = ANY (ways.nodes[2:array_length(nodes,1)-1]) AND
         NOT nodes.tags?'power'
-    LEFT JOIN line_terminators ON
-        ST_DWithin(nodes.geom, line_terminators.geom, 50)
+    LEFT JOIN power_lines_terminators t ON
+        ST_DWithin(nodes.geom, t.geom, 50)
 WHERE
     ways.tags != ''::hstore AND
     ways.tags?'power' AND
     ways.tags->'power' IN ('line', 'minor_line') AND
     (NOT ways.tags?'tunnel' OR NOT ways.tags->'tunnel' IN ('yes', 'true')) AND
     (NOT ways.tags?'submarine' OR NOT ways.tags->'submarine' IN ('yes', 'true')) AND
-    line_terminators.geom IS NULL
+    t.geom IS NULL
 ORDER BY
     nodes.id
 """
@@ -325,22 +553,124 @@ ORDER BY
 """
 
 sql60 = """
-SELECT DISTINCT ON (line_ends1.wid)
-    line_ends1.wid,
-    line_terminators.type_id,
-    ST_AsText(line_ends1.geom)
+SELECT DISTINCT ON (u.wid)
+    u.wid,
+    t.type_id,
+    ST_AsText(u.geom)
 FROM
-    line_ends1
-    JOIN line_terminators ON
-        ST_Intersects(line_ends1.geom, line_terminators.geom)
+    power_lines_unfinished u
+    JOIN power_lines_terminators t ON
+        ST_Intersects(u.geom, t.geom)
 WHERE
-    line_terminators.power = 'substation' AND
-    (line_terminators.substation IS NULL OR line_terminators.substation != 'minor_distribution') AND
-    (SELECT max(v) FROM unnest(line_ends1.voltage) AS t(v)) > (SELECT max(v) FROM unnest(line_terminators.voltage) AS t(v))
+    t.power = 'substation' AND
+    (t.substation IS NULL OR t.substation != 'minor_distribution') AND
+    (SELECT max(v) FROM unnest(u.voltage) AS t(v)) > (SELECT max(v) FROM unnest(t.voltage) AS t(v))
 ORDER BY
-    line_ends1.wid
+    u.wid
 """
 
+# Find line_management and location:transition values from power lines nodes
+# Two circuits in vertices query means 1 in and 1 out of a given node, so straight.
+# Please keep case when ordered
+sql70 = """
+CREATE TEMP TABLE power_lines_mgmt AS
+
+WITH nodes_voltage AS (
+    SELECT
+        nid,
+        tid,
+        unnest(voltages)::varchar AS voltage
+    FROM
+        power_lines_topoedges
+),
+-- We process nodes with voltage > 50 kV only
+nodes_selected AS (
+    SELECT
+        nid
+    FROM nodes_voltage
+    WHERE voltage ~ '^[0-9.]+$' AND
+        voltage::numeric >= 50000
+    GROUP BY nid
+),
+vertices AS (
+    SELECT
+        e.nid,
+        string_agg(CASE e.location WHEN 'overhead' THEN e.circuits::varchar ELSE NULL END, '-' ORDER BY e.circuits desc) AS circuits_overhead,
+        string_agg(CASE WHEN e.location!='overhead' THEN e.circuits::varchar ELSE NULL END, '-' ORDER BY e.circuits desc) AS circuits_elsewhere
+    FROM
+        power_lines_topoedges e
+    JOIN nodes_selected ns ON
+        ns.nid=e.nid
+    JOIN nodes n ON
+        n.id=e.nid
+    GROUP BY
+        e.nid
+    HAVING
+        count(*) > 1 AND
+        sum(e.circuits) > 2 AND
+        NOT(COALESCE('busbar' = ANY(array_agg(e.line)),false)) AND
+        NOT(COALESCE('bay' = ANY(array_agg(e.line)),false)) AND
+        NOT(COALESCE('substation' = ANY(array_agg(array_append(akeys(n.tags), NULL))),false)) --Array_append to avoid empty arrays
+)
+
+SELECT
+    j.nid,
+    CASE
+    WHEN j.circuits_overhead='1' AND j.circuits_elsewhere IS NULL THEN 'termination'
+    WHEN j.circuits_overhead='1' AND j.circuits_elsewhere='1' THEN 'transition'
+    WHEN j.circuits_overhead='1-1' AND j.circuits_elsewhere='1' THEN 'branch'
+    WHEN j.circuits_overhead='1-1' AND j.circuits_elsewhere='1-1' THEN 'split'
+    WHEN j.circuits_overhead='1-1-1' AND j.circuits_elsewhere IS NULL THEN 'branch'
+    WHEN j.circuits_overhead='2' AND j.circuits_elsewhere='1-1'  THEN 'transition'
+    WHEN j.circuits_overhead='2-1' AND j.circuits_elsewhere='1' THEN 'split|transition'
+    WHEN j.circuits_overhead='2-1-1' AND j.circuits_elsewhere IS NULL THEN 'split'
+    WHEN j.circuits_overhead='2-1-1-1' AND j.circuits_elsewhere IS NULL THEN 'straight|branch'
+    WHEN j.circuits_overhead='2-2' AND j.circuits_elsewhere='1' THEN 'straight|branch'
+    WHEN j.circuits_overhead='2-2' AND j.circuits_elsewhere='1-1' THEN 'split'
+    WHEN j.circuits_overhead='2-2' AND j.circuits_elsewhere='2' THEN 'split'
+    WHEN j.circuits_overhead='2-2-1' THEN 'straight|branch'
+    WHEN j.circuits_overhead='2-2-1-1' AND j.circuits_elsewhere IS NULL THEN 'split'
+    WHEN j.circuits_overhead='2-2-2' AND j.circuits_elsewhere IS NULL THEN 'split'
+    WHEN j.circuits_overhead='3-1-1-1' AND j.circuits_elsewhere IS NULL THEN 'split'
+    WHEN j.circuits_overhead='3-2-1' AND j.circuits_elsewhere IS NULL THEN 'split'
+    WHEN j.circuits_overhead='4-1-1-1-1' AND j.circuits_elsewhere IS NULL THEN 'split'
+    WHEN j.circuits_overhead='4-2-1-1' AND j.circuits_elsewhere IS NULL THEN 'split'
+    WHEN j.circuits_overhead='4-2-2' AND j.circuits_elsewhere IS NULL THEN 'split'
+    WHEN j.circuits_overhead='4-3-1' AND j.circuits_elsewhere IS NULL THEN 'split'
+    WHEN j.circuits_overhead='5-2-2-1' AND j.circuits_elsewhere IS NULL THEN 'split'
+    ELSE NULL
+    END as line_management,
+    CASE
+    WHEN j.circuits_overhead='1' AND j.circuits_elsewhere='1' THEN 'yes'
+    WHEN j.circuits_overhead='1-1' AND j.circuits_elsewhere='1' THEN 'yes'
+    WHEN j.circuits_overhead='1-1' AND j.circuits_elsewhere='1-1' THEN 'yes'
+    WHEN j.circuits_overhead='2' AND j.circuits_elsewhere='1-1'  THEN 'yes'
+    WHEN j.circuits_overhead='2-1' AND j.circuits_elsewhere='1' THEN 'yes'
+    WHEN j.circuits_overhead='2-2' AND j.circuits_elsewhere='1' THEN 'yes'
+    WHEN j.circuits_overhead='2-2' AND j.circuits_elsewhere='1-1' THEN 'yes'
+    WHEN j.circuits_overhead='2-2' AND j.circuits_elsewhere='2' THEN 'yes'
+    ELSE NULL
+    END as location_transition
+FROM
+    vertices j
+"""
+
+sql71 = """
+SELECT m.nid,
+    ST_AsText(nodes.geom),
+    m.line_management,
+    m.location_transition,
+    nodes.tags->'line_management' as current_line_management,
+    nodes.tags->'location:transition' as current_location_transition
+FROM
+    power_lines_mgmt m
+    JOIN nodes ON nodes.id=m.nid
+WHERE
+    (line_management IS NOT NULL AND (NOT nodes.tags?'line_management' OR nodes.tags->'line_management' != m.line_management)) OR
+    (location_transition IS NOT NULL AND (NOT nodes.tags?'location:transition' OR nodes.tags->'location:transition' != m.location_transition))
+ORDER BY
+    m.nid
+"""
 
 class Analyser_Osmosis_Powerline(Analyser_Osmosis):
 
@@ -354,7 +684,7 @@ class Analyser_Osmosis_Powerline(Analyser_Osmosis):
 '''It's possible that disused power features could be disconnected from the network.
 In which case make use of the `disused:` [lifecycle prefix](https://wiki.openstreetmap.org/wiki/Lifecycle_prefix).'''))
         self.classs[2] = self.def_class(item = 7040, level = 2, tags = ['power', 'fix:imagery'],
-            title = T_('Unfinished power major line'),
+            title = T_('Unfinished power transmission line'),
             detail = T_(
 '''The line ends in a vacuum, and should be connected to another line or
 a transformer (`power=transformer`), a generator (`power=generator`)
@@ -363,7 +693,7 @@ or marked as transitioning into ground (`location:transition=yes`).'''),
 '''It's possible that disused power features could be disconnected from the network.
 In which case make use of the `disused:` [lifecycle prefix](https://wiki.openstreetmap.org/wiki/Lifecycle_prefix).'''))
         self.classs[6] = self.def_class(item = 7040, level = 3, tags = ['power', 'fix:imagery'],
-            title = T_('Unfinished power minor line'),
+            title = T_('Unfinished power distribution line'),
             detail = T_(
 '''The line ends in a vacuum, and should be connected to another line or
 a transformer (`power=transformer`), a generator (`power=generator`)
@@ -392,11 +722,19 @@ have additional nodes that aren't tagged as a `power` feature.'''),
 there's likely an unmapped pole nearby.'''))
         self.classs[7] = self.def_class(item = 7040, level = 3, tags = ['power', 'fix:chair'],
             title = T_('Unmatched voltage of line on substation'))
+        self.classs[8] = self.def_class(item = 7040, level = 3, tags = ['power', 'fix:chair'],
+            title = T_('Power support line management suggestion'))
 
-        self.callback40 = lambda res: {"class":4, "data":[self.node_full, self.positionAsText], "fix":[{"+": {"power": "tower"}}, {"+": {"power": "pole"}}]}
         self.callback50 = lambda res: {"class":5, "subclass": stablehash64(res[1]), "data":[self.way_full, self.positionAsText]}
 
+    def way_power(self, res):
+        way_data = self.apiconn.WayGet(res)
+        way_tags = {key: way_data["tag"][key] for key in way_data["tag"].keys() & {'power', 'voltage'}}
+        self.geom["way"].append({"id":res, "nd":[], "tag":way_tags})
+
     def analyser_osmosis_common(self):
+        self.run(sql01)
+        self.run(sql02)
         self.run(sql10, lambda res: {"class":1, "data":[self.node_full, self.positionAsText]} )
         self.run(sql20)
         self.run(sql21)
@@ -404,12 +742,12 @@ there's likely an unmapped pole nearby.'''))
         self.run(sql23)
         self.run(sql24)
         self.run(sql25)
-        self.run(sql26, lambda res: {"class":6 if res[2] == 'minor_line' else 2, "data":[self.node_full, self.positionAsText]} )
-        self.run(sql30)
-        self.run(sql31)
-        self.run(sql32, lambda res: {"class":3, "data":[self.node, self.positionAsText]} )
-        self.run(sql40, self.callback40)
+        self.run(sql26, lambda res: {"class":6 if res[3] == 'minor_line' else 2, "data":[self.node_full, self.way_power, self.positionAsText]} )
+        self.run(sql30, lambda res: {"class":3, "data":[self.node, self.positionAsText]} )
+        self.run(sql40, lambda res: {"class":4, "data":[self.node_full, self.way_power, self.positionAsText], "fix":[{"+": {"power": "tower"}}, {"+": {"power": "pole"}}]})
         self.run(sql60, lambda res: {"class":7, "data":[self.way_full, self.any_full, self.positionAsText]} )
+        self.run(sql70)
+        self.run(sql71, lambda res: {"class":8, "data":[self.node_full, self.positionAsText], "fix":self.__callback80_fix(res)} )
 
     def analyser_osmosis_full(self):
         self.run(sql50.format(""))
@@ -421,6 +759,21 @@ there's likely an unmapped pole nearby.'''))
         self.run(sql51)
         self.run(sql52, self.callback50)
 
+    def __callback80_fix(self, res):
+        result = []
+        if res[2]:
+            if res[4] is None:
+                result.append({"+": {"line_management": res[2]}})
+            elif res[4] != res[2]:
+                result.append({"~": {"line_management": res[2]}})
+        if res[3]:
+            if res[5] is None:
+                result.append({"+": {"location:transition": res[3]}})
+            elif res[5] != res[3]:
+                result.append({"~": {"location:transition": res[3]}})
+
+        return result
+
 
 ###########################################################################
 
@@ -431,13 +784,21 @@ class Test(TestAnalyserOsmosis):
     def setup_class(cls):
         from modules import config
         TestAnalyserOsmosis.setup_class()
-        cls.analyser_conf = cls.load_osm("tests/osmosis_powerline_voltage.test.osm",
-                                         config.dir_tmp + "/tests/osmosis_powerline_voltage.test.xml")
+        cls.analyser_conf = cls.load_osm("tests/osmosis_powerline.test.osm",
+                                         config.dir_tmp + "/tests/osmosis_powerline.test.xml")
 
-    def test_class3(self):
+    def test_powergrid(self):
         with Analyser_Osmosis_Powerline(self.analyser_conf, self.logger) as a:
             a.analyser()
 
         self.root_err = self.load_errors()
-        self.check_err(cl="3", elems=[("node", "4")])
-        self.check_num_err(1)
+        self.check_err(cl="1", elems=[("node", "26971")])
+        self.check_err(cl="2", elems=[("node", "25874"), ("way", "1909")])
+        self.check_err(cl="2", elems=[("node", "25883"), ("way", "1918")])
+        self.check_err(cl="3", elems=[("node", "25950")])
+        self.check_err(cl="4", elems=[("node", "26082"), ("way", "1910")])
+        self.check_err(cl="6", elems=[("node", "26191"), ("way", "2088")])
+        self.check_err(cl="8", elems=[("node", "25956")])
+        self.check_err(cl="8", elems=[("node", "26383")])
+        self.check_err(cl="8", elems=[("node", "26982")])
+        self.check_num_err(12)

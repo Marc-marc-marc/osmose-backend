@@ -7,6 +7,10 @@ from plugins.PluginMapCSS import PluginMapCSS
 
 
 class Josm_openrailwaymap(PluginMapCSS):
+    # ------------------------------- IMPORTANT -------------------------------
+    # This file is generated automatically and should not be modified directly.
+    # Instead, modify the source mapcss file and regenerate this Python script.
+    # -------------------------------------------------------------------------
 
     MAPCSS_URL = 'https://www.openrailwaymap.org/validator/openrailwaymap.validator.mapcss'
 
@@ -39,7 +43,6 @@ class Josm_openrailwaymap(PluginMapCSS):
         self.errors[9015025] = self.def_class(item = 9015, level = 3, tags = ["tag", "railway"], title = {'en': 'maxspeed=signals is deprecated, tag the highest possible speed instead'})
         self.errors[9015026] = self.def_class(item = 9015, level = 3, tags = ["tag", "railway"], title = {'en': 'maxspeed should contain the value as it is shown on the line with mph as unit'})
         self.errors[9015028] = self.def_class(item = 9015, level = 3, tags = ["tag", "railway"], title = {'en': 'Milestone without position, add railway:position=*'})
-        self.errors[9015029] = self.def_class(item = 9015, level = 3, tags = ["tag", "railway"], title = {'en': 'supervised=* is deprecated'})
         self.errors[9015030] = self.def_class(item = 9015, level = 3, tags = ["tag", "railway"], title = {'en': 'signal specification given but node is not tagged as signal or equivalent type'})
         self.errors[9015031] = self.def_class(item = 9015, level = 2, tags = ["tag", "railway"], title = {'en': 'A sign cannot have different states.'})
         self.errors[9015032] = self.def_class(item = 9015, level = 2, tags = ["tag", "railway"], title = {'en': 'railway=flat_crossing is deprecated'})
@@ -56,6 +59,8 @@ class Josm_openrailwaymap(PluginMapCSS):
         self.errors[9015043] = self.def_class(item = 9015, level = 2, tags = ["tag", "railway"], title = {'en': 'interlocking relation with type other than railway'})
         self.errors[9015044] = self.def_class(item = 9015, level = 3, tags = ["tag", "railway"], title = mapcss.tr('{0}={1} without name', mapcss._tag_uncapture(capture_tags, '{0.key}'), mapcss._tag_uncapture(capture_tags, '{0.value}')))
         self.errors[9015045] = self.def_class(item = 9015, level = 2, tags = ["tag", "railway"], title = {'en': 'track numbers inside a station should be railway:track_ref, not ref'})
+        self.errors[9015046] = self.def_class(item = 9015, level = 3, tags = ["tag", "railway"], title = {'en': 'Wrong tag for railway station building'})
+        self.errors[9015047] = self.def_class(item = 9015, level = 2, tags = ["tag", "railway"], title = {'en': 'workrules should be used on ways and not on nodes.'})
 
         self.re_066203d3 = re.compile(r'^[0-9]+$')
         self.re_0e3375d5 = re.compile(r'[Vv]iadu[ck]t')
@@ -92,30 +97,21 @@ class Josm_openrailwaymap(PluginMapCSS):
                 # assertMatch:"node railway=milestone"
                 err.append({'class': 9015028, 'subclass': 1237934683, 'text': {'en': 'Milestone without position, add railway:position=*'}})
 
-        # node[railway=level_crossing][supervised]
-        # node[railway=crossing][supervised]
-        if ('railway' in keys and 'supervised' in keys):
+        # node[railway][workrules]
+        if ('railway' in keys and 'workrules' in keys):
             match = False
             if not match:
                 capture_tags = {}
-                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway') == mapcss._value_capture(capture_tags, 0, 'level_crossing')) and (mapcss._tag_capture(capture_tags, 1, tags, 'supervised')))
-                except mapcss.RuleAbort: pass
-            if not match:
-                capture_tags = {}
-                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway') == mapcss._value_capture(capture_tags, 0, 'crossing')) and (mapcss._tag_capture(capture_tags, 1, tags, 'supervised')))
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway')) and (mapcss._tag_capture(capture_tags, 1, tags, 'workrules')))
                 except mapcss.RuleAbort: pass
             if match:
-                # suggestAlternative:"crossing:supervision"
-                # throwWarning:"supervised=* is deprecated"
-                # fixChangeKey:"supervised=>crossing:supervision"
-                # assertMatch:"node railway=level_crossing supervised=yes"
-                # assertNoMatch:"node railway=level_crossing"
-                err.append({'class': 9015029, 'subclass': 321695123, 'text': {'en': 'supervised=* is deprecated'}, 'allow_fix_override': True, 'fix': {
-                    '+': dict([
-                    ['crossing:supervision', mapcss.tag(tags, 'supervised')]]),
-                    '-': ([
-                    'supervised'])
-                }})
+                # throwError:"workrules should be used on ways and not on nodes."
+                # assertMatch:"node railway=rail workrules=EBO"
+                err.append({'class': 9015047, 'subclass': 1912633428, 'text': {'en': 'workrules should be used on ways and not on nodes.'}})
+
+        # node[railway=level_crossing][supervised]
+        # node[railway=crossing][supervised]
+        # Rule Blacklisted (id: 321695123)
 
         # node[/^railway:signal:/][railway!=signal][railway!=buffer_stop][railway!=derail]
         if True:
@@ -671,16 +667,21 @@ class Josm_openrailwaymap(PluginMapCSS):
                 }})
 
         # way[railway=station]
+        # area[railway=station]
         if ('railway' in keys):
             match = False
             if not match:
                 capture_tags = {}
                 try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway') == mapcss._value_capture(capture_tags, 0, 'station')))
                 except mapcss.RuleAbort: pass
+            if not match:
+                capture_tags = {}
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway') == mapcss._value_capture(capture_tags, 0, 'station')) and (mapcss._tag_capture(capture_tags, -1, tags, 'area') != mapcss._value_const_capture(capture_tags, -1, 'no', 'no')))
+                except mapcss.RuleAbort: pass
             if match:
                 # throwError:"Station mapped as a way, but should be mapped as a node"
                 # assertMatch:"way railway=station"
-                err.append({'class': 9015002, 'subclass': 1498103253, 'text': {'en': 'Station mapped as a way, but should be mapped as a node'}})
+                err.append({'class': 9015002, 'subclass': 610823238, 'text': {'en': 'Station mapped as a way, but should be mapped as a node'}})
 
         # way[railway][traffic_mode]
         if ('railway' in keys and 'traffic_mode' in keys):
@@ -758,12 +759,12 @@ class Josm_openrailwaymap(PluginMapCSS):
                     'usage'])
                 }})
 
-        # way[railway][railway!=platform][name=~/^[0-9]+[a-z]*.*/]["railway:track_ref"=*name]
+        # way[railway][railway!=platform][railway!=platform_edge][name=~/^[0-9]+[a-z]*.*/]["railway:track_ref"=*name]
         if ('name' in keys and 'railway' in keys and 'railway:track_ref' in keys):
             match = False
             if not match:
                 capture_tags = {}
-                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway')) and (mapcss._tag_capture(capture_tags, 1, tags, 'railway') != mapcss._value_const_capture(capture_tags, 1, 'platform', 'platform')) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 2, self.re_14388f34), mapcss._tag_capture(capture_tags, 2, tags, 'name'))) and (mapcss._tag_capture(capture_tags, 3, tags, 'railway:track_ref') == mapcss._value_capture(capture_tags, 3, mapcss.tag(tags, 'name'))))
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway')) and (mapcss._tag_capture(capture_tags, 1, tags, 'railway') != mapcss._value_const_capture(capture_tags, 1, 'platform', 'platform')) and (mapcss._tag_capture(capture_tags, 2, tags, 'railway') != mapcss._value_const_capture(capture_tags, 2, 'platform_edge', 'platform_edge')) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 3, self.re_14388f34), mapcss._tag_capture(capture_tags, 3, tags, 'name'))) and (mapcss._tag_capture(capture_tags, 4, tags, 'railway:track_ref') == mapcss._value_capture(capture_tags, 4, mapcss.tag(tags, 'name'))))
                 except mapcss.RuleAbort: pass
             if match:
                 # suggestAlternative:"railway:track_ref"
@@ -776,17 +777,17 @@ class Josm_openrailwaymap(PluginMapCSS):
                 # assertNoMatch:"way railway=rail name=3"
                 # assertMatch:"way railway=rail name=4 railway:track_ref=4"
                 # assertMatch:"way railway=rail name=4a railway:track_ref=4a"
-                err.append({'class': 9015007, 'subclass': 2091521035, 'text': {'en': 'track numbers inside a station should be railway:track_ref, not name'}, 'allow_fix_override': True, 'fix': {
+                err.append({'class': 9015007, 'subclass': 1642887419, 'text': {'en': 'track numbers inside a station should be railway:track_ref, not name'}, 'allow_fix_override': True, 'fix': {
                     '-': ([
                     'name'])
                 }})
 
-        # way[railway][railway!=platform][name=~/^[0-9]+[a-z]*.*/][!"railway:track_ref"]
+        # way[railway][railway!=platform][railway!=platform_edge][name=~/^[0-9]+[a-z]*.*/][!"railway:track_ref"]
         if ('name' in keys and 'railway' in keys):
             match = False
             if not match:
                 capture_tags = {}
-                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway')) and (mapcss._tag_capture(capture_tags, 1, tags, 'railway') != mapcss._value_const_capture(capture_tags, 1, 'platform', 'platform')) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 2, self.re_14388f34), mapcss._tag_capture(capture_tags, 2, tags, 'name'))) and (not mapcss._tag_capture(capture_tags, 3, tags, 'railway:track_ref')))
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway')) and (mapcss._tag_capture(capture_tags, 1, tags, 'railway') != mapcss._value_const_capture(capture_tags, 1, 'platform', 'platform')) and (mapcss._tag_capture(capture_tags, 2, tags, 'railway') != mapcss._value_const_capture(capture_tags, 2, 'platform_edge', 'platform_edge')) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 3, self.re_14388f34), mapcss._tag_capture(capture_tags, 3, tags, 'name'))) and (not mapcss._tag_capture(capture_tags, 4, tags, 'railway:track_ref')))
                 except mapcss.RuleAbort: pass
             if match:
                 # suggestAlternative:"railway:track_ref"
@@ -794,24 +795,25 @@ class Josm_openrailwaymap(PluginMapCSS):
                 # fixChangeKey:"name=>railway:track_ref"
                 # assertMatch:"way railway=light_rail name=14"
                 # assertNoMatch:"way railway=platform name=3"
+                # assertNoMatch:"way railway=platform_edge name=3"
                 # assertNoMatch:"way railway=rail name=\"Gleis 14b\""
                 # assertNoMatch:"way railway=rail name=\"track 4b\""
                 # assertMatch:"way railway=rail name=14b"
                 # assertMatch:"way railway=rail name=4"
                 # assertMatch:"way railway=rail name=4a"
-                err.append({'class': 9015007, 'subclass': 85438379, 'text': {'en': 'track numbers inside a station should be railway:track_ref, not name'}, 'allow_fix_override': True, 'fix': {
+                err.append({'class': 9015007, 'subclass': 1046448667, 'text': {'en': 'track numbers inside a station should be railway:track_ref, not name'}, 'allow_fix_override': True, 'fix': {
                     '+': dict([
                     ['railway:track_ref', mapcss.tag(tags, 'name')]]),
                     '-': ([
                     'name'])
                 }})
 
-        # way[railway][railway!=platform][service][ref]
+        # way[railway][railway!=platform][railway!=platform_edge][service][ref]
         if ('railway' in keys and 'ref' in keys and 'service' in keys):
             match = False
             if not match:
                 capture_tags = {}
-                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway')) and (mapcss._tag_capture(capture_tags, 1, tags, 'railway') != mapcss._value_const_capture(capture_tags, 1, 'platform', 'platform')) and (mapcss._tag_capture(capture_tags, 2, tags, 'service')) and (mapcss._tag_capture(capture_tags, 3, tags, 'ref')))
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway')) and (mapcss._tag_capture(capture_tags, 1, tags, 'railway') != mapcss._value_const_capture(capture_tags, 1, 'platform', 'platform')) and (mapcss._tag_capture(capture_tags, 2, tags, 'railway') != mapcss._value_const_capture(capture_tags, 2, 'platform_edge', 'platform_edge')) and (mapcss._tag_capture(capture_tags, 3, tags, 'service')) and (mapcss._tag_capture(capture_tags, 4, tags, 'ref')))
                 except mapcss.RuleAbort: pass
             if match:
                 # suggestAlternative:"railway:track_ref"
@@ -819,11 +821,12 @@ class Josm_openrailwaymap(PluginMapCSS):
                 # fixChangeKey:"ref=>railway:track_ref"
                 # assertMatch:"way railway=light_rail service=siding ref=14"
                 # assertNoMatch:"way railway=platform ref=3"
+                # assertNoMatch:"way railway=platform_edge ref=3"
                 # assertNoMatch:"way railway=rail ref=1234"
                 # assertMatch:"way railway=rail service=crossover ref=4a"
                 # assertNoMatch:"way railway=rail service=siding railway:track_ref=14b"
                 # assertMatch:"way railway=rail service=siding ref=4"
-                err.append({'class': 9015045, 'subclass': 194113748, 'text': {'en': 'track numbers inside a station should be railway:track_ref, not ref'}, 'allow_fix_override': True, 'fix': {
+                err.append({'class': 9015045, 'subclass': 2044248138, 'text': {'en': 'track numbers inside a station should be railway:track_ref, not ref'}, 'allow_fix_override': True, 'fix': {
                     '+': dict([
                     ['railway:track_ref', mapcss.tag(tags, 'ref')]]),
                     '-': ([
@@ -832,6 +835,8 @@ class Josm_openrailwaymap(PluginMapCSS):
 
         # way[railway=platform]["railway:track_ref"][!ref]
         # way[railway=platform]["railway:track_ref"]["railway:track_ref"=*ref]
+        # way[railway=platform_edge]["railway:track_ref"][!ref]
+        # way[railway=platform_edge]["railway:track_ref"]["railway:track_ref"=*ref]
         if ('railway' in keys and 'railway:track_ref' in keys):
             match = False
             if not match:
@@ -842,6 +847,14 @@ class Josm_openrailwaymap(PluginMapCSS):
                 capture_tags = {}
                 try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway') == mapcss._value_capture(capture_tags, 0, 'platform')) and (mapcss._tag_capture(capture_tags, 1, tags, 'railway:track_ref')) and (mapcss._tag_capture(capture_tags, 2, tags, 'railway:track_ref') == mapcss._value_capture(capture_tags, 2, mapcss.tag(tags, 'ref'))))
                 except mapcss.RuleAbort: pass
+            if not match:
+                capture_tags = {}
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway') == mapcss._value_capture(capture_tags, 0, 'platform_edge')) and (mapcss._tag_capture(capture_tags, 1, tags, 'railway:track_ref')) and (not mapcss._tag_capture(capture_tags, 2, tags, 'ref')))
+                except mapcss.RuleAbort: pass
+            if not match:
+                capture_tags = {}
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway') == mapcss._value_capture(capture_tags, 0, 'platform_edge')) and (mapcss._tag_capture(capture_tags, 1, tags, 'railway:track_ref')) and (mapcss._tag_capture(capture_tags, 2, tags, 'railway:track_ref') == mapcss._value_capture(capture_tags, 2, mapcss.tag(tags, 'ref'))))
+                except mapcss.RuleAbort: pass
             if match:
                 # throwError:"platforms should have the numbers in ref, not railway:track_ref"
                 # suggestAlternative:"ref"
@@ -849,8 +862,11 @@ class Josm_openrailwaymap(PluginMapCSS):
                 # assertMatch:"way railway=platform railway:track_ref=3 ref=3"
                 # assertNoMatch:"way railway=platform railway:track_ref=3 ref=4"
                 # assertMatch:"way railway=platform railway:track_ref=3"
+                # assertMatch:"way railway=platform_edge railway:track_ref=3 ref=3"
+                # assertNoMatch:"way railway=platform_edge railway:track_ref=3 ref=4"
+                # assertMatch:"way railway=platform_edge railway:track_ref=3"
                 # assertNoMatch:"way railway=rail railway:track_ref=3"
-                err.append({'class': 9015008, 'subclass': 226422824, 'text': {'en': 'platforms should have the numbers in ref, not railway:track_ref'}, 'allow_fix_override': True, 'fix': {
+                err.append({'class': 9015008, 'subclass': 1225277436, 'text': {'en': 'platforms should have the numbers in ref, not railway:track_ref'}, 'allow_fix_override': True, 'fix': {
                     '+': dict([
                     ['ref', mapcss.tag(tags, 'railway:track_ref')]]),
                     '-': ([
@@ -858,68 +874,76 @@ class Josm_openrailwaymap(PluginMapCSS):
                 }})
 
         # way[railway=platform]["railway:track_ref"]["ref"]["railway:track_ref"!=*ref]
+        # way[railway=platform_edge]["railway:track_ref"]["ref"]["railway:track_ref"!=*ref]
         if ('railway' in keys and 'railway:track_ref' in keys and 'ref' in keys):
             match = False
             if not match:
                 capture_tags = {}
                 try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway') == mapcss._value_capture(capture_tags, 0, 'platform')) and (mapcss._tag_capture(capture_tags, 1, tags, 'railway:track_ref')) and (mapcss._tag_capture(capture_tags, 2, tags, 'ref')) and (mapcss._tag_capture(capture_tags, 3, tags, 'railway:track_ref') != mapcss._value_capture(capture_tags, 3, mapcss.tag(tags, 'ref'))))
                 except mapcss.RuleAbort: pass
+            if not match:
+                capture_tags = {}
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway') == mapcss._value_capture(capture_tags, 0, 'platform_edge')) and (mapcss._tag_capture(capture_tags, 1, tags, 'railway:track_ref')) and (mapcss._tag_capture(capture_tags, 2, tags, 'ref')) and (mapcss._tag_capture(capture_tags, 3, tags, 'railway:track_ref') != mapcss._value_capture(capture_tags, 3, mapcss.tag(tags, 'ref'))))
+                except mapcss.RuleAbort: pass
             if match:
                 # throwError:"platforms should have the numbers in ref, not railway:track_ref"
                 # assertNoMatch:"way railway=platform railway:track_ref=3 ref=3"
                 # assertMatch:"way railway=platform railway:track_ref=3 ref=4"
                 # assertNoMatch:"way railway=platform railway:track_ref=3"
+                # assertNoMatch:"way railway=platform_edge railway:track_ref=3 ref=3"
+                # assertMatch:"way railway=platform_edge railway:track_ref=3 ref=4"
+                # assertNoMatch:"way railway=platform_edge railway:track_ref=3"
                 # assertNoMatch:"way railway=rail railway:track_ref=3"
-                err.append({'class': 9015008, 'subclass': 1676742857, 'text': {'en': 'platforms should have the numbers in ref, not railway:track_ref'}})
+                err.append({'class': 9015008, 'subclass': 197759443, 'text': {'en': 'platforms should have the numbers in ref, not railway:track_ref'}})
 
-        # way[railway][railway!=platform][name=~/^[Gg]leis [0-9]+[a-z]*.*/]
-        # way[railway][railway!=platform]["name:de"=~/^[Gg]leis [0-9]+[a-z]*.*/]
-        # way[railway][railway!=platform][name=~/^[Tt]rack [0-9]+[a-z]*.*/]
-        # way[railway][railway!=platform][name=~/^[Vv]oie [0-9]+[a-z]*.*/]
-        # way[railway][railway!=platform]["name:fr"=~/^[Vv]oie [0-9]+[a-z]*.*/]
-        # way[railway][railway!=platform][ref=~/^[Gg]leis [0-9]+[a-z]*.*/]
-        # way[railway][railway!=platform][ref=~/^[Tt]rack [0-9]+[a-z]*.*/]
-        # way[railway][railway!=platform][ref=~/^[Vv]oie [0-9]+[a-z]*.*/]
+        # way[railway][railway!=platform][railway!=platform_edge][name=~/^[Gg]leis [0-9]+[a-z]*.*/]
+        # way[railway][railway!=platform][railway!=platform_edge]["name:de"=~/^[Gg]leis [0-9]+[a-z]*.*/]
+        # way[railway][railway!=platform][railway!=platform_edge][name=~/^[Tt]rack [0-9]+[a-z]*.*/]
+        # way[railway][railway!=platform][railway!=platform_edge][name=~/^[Vv]oie [0-9]+[a-z]*.*/]
+        # way[railway][railway!=platform][railway!=platform_edge]["name:fr"=~/^[Vv]oie [0-9]+[a-z]*.*/]
+        # way[railway][railway!=platform][railway!=platform_edge][ref=~/^[Gg]leis [0-9]+[a-z]*.*/]
+        # way[railway][railway!=platform][railway!=platform_edge][ref=~/^[Tt]rack [0-9]+[a-z]*.*/]
+        # way[railway][railway!=platform][railway!=platform_edge][ref=~/^[Vv]oie [0-9]+[a-z]*.*/]
         if ('name' in keys and 'railway' in keys) or ('name:de' in keys and 'railway' in keys) or ('name:fr' in keys and 'railway' in keys) or ('railway' in keys and 'ref' in keys):
             match = False
             if not match:
                 capture_tags = {}
-                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway')) and (mapcss._tag_capture(capture_tags, 1, tags, 'railway') != mapcss._value_const_capture(capture_tags, 1, 'platform', 'platform')) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 2, self.re_7cf15856), mapcss._tag_capture(capture_tags, 2, tags, 'name'))))
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway')) and (mapcss._tag_capture(capture_tags, 1, tags, 'railway') != mapcss._value_const_capture(capture_tags, 1, 'platform', 'platform')) and (mapcss._tag_capture(capture_tags, 2, tags, 'railway') != mapcss._value_const_capture(capture_tags, 2, 'platform_edge', 'platform_edge')) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 3, self.re_7cf15856), mapcss._tag_capture(capture_tags, 3, tags, 'name'))))
                 except mapcss.RuleAbort: pass
             if not match:
                 capture_tags = {}
-                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway')) and (mapcss._tag_capture(capture_tags, 1, tags, 'railway') != mapcss._value_const_capture(capture_tags, 1, 'platform', 'platform')) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 2, self.re_7cf15856), mapcss._tag_capture(capture_tags, 2, tags, 'name:de'))))
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway')) and (mapcss._tag_capture(capture_tags, 1, tags, 'railway') != mapcss._value_const_capture(capture_tags, 1, 'platform', 'platform')) and (mapcss._tag_capture(capture_tags, 2, tags, 'railway') != mapcss._value_const_capture(capture_tags, 2, 'platform_edge', 'platform_edge')) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 3, self.re_7cf15856), mapcss._tag_capture(capture_tags, 3, tags, 'name:de'))))
                 except mapcss.RuleAbort: pass
             if not match:
                 capture_tags = {}
-                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway')) and (mapcss._tag_capture(capture_tags, 1, tags, 'railway') != mapcss._value_const_capture(capture_tags, 1, 'platform', 'platform')) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 2, self.re_4b2a9052), mapcss._tag_capture(capture_tags, 2, tags, 'name'))))
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway')) and (mapcss._tag_capture(capture_tags, 1, tags, 'railway') != mapcss._value_const_capture(capture_tags, 1, 'platform', 'platform')) and (mapcss._tag_capture(capture_tags, 2, tags, 'railway') != mapcss._value_const_capture(capture_tags, 2, 'platform_edge', 'platform_edge')) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 3, self.re_4b2a9052), mapcss._tag_capture(capture_tags, 3, tags, 'name'))))
                 except mapcss.RuleAbort: pass
             if not match:
                 capture_tags = {}
-                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway')) and (mapcss._tag_capture(capture_tags, 1, tags, 'railway') != mapcss._value_const_capture(capture_tags, 1, 'platform', 'platform')) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 2, self.re_3d75a7eb), mapcss._tag_capture(capture_tags, 2, tags, 'name'))))
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway')) and (mapcss._tag_capture(capture_tags, 1, tags, 'railway') != mapcss._value_const_capture(capture_tags, 1, 'platform', 'platform')) and (mapcss._tag_capture(capture_tags, 2, tags, 'railway') != mapcss._value_const_capture(capture_tags, 2, 'platform_edge', 'platform_edge')) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 3, self.re_3d75a7eb), mapcss._tag_capture(capture_tags, 3, tags, 'name'))))
                 except mapcss.RuleAbort: pass
             if not match:
                 capture_tags = {}
-                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway')) and (mapcss._tag_capture(capture_tags, 1, tags, 'railway') != mapcss._value_const_capture(capture_tags, 1, 'platform', 'platform')) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 2, self.re_3d75a7eb), mapcss._tag_capture(capture_tags, 2, tags, 'name:fr'))))
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway')) and (mapcss._tag_capture(capture_tags, 1, tags, 'railway') != mapcss._value_const_capture(capture_tags, 1, 'platform', 'platform')) and (mapcss._tag_capture(capture_tags, 2, tags, 'railway') != mapcss._value_const_capture(capture_tags, 2, 'platform_edge', 'platform_edge')) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 3, self.re_3d75a7eb), mapcss._tag_capture(capture_tags, 3, tags, 'name:fr'))))
                 except mapcss.RuleAbort: pass
             if not match:
                 capture_tags = {}
-                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway')) and (mapcss._tag_capture(capture_tags, 1, tags, 'railway') != mapcss._value_const_capture(capture_tags, 1, 'platform', 'platform')) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 2, self.re_7cf15856), mapcss._tag_capture(capture_tags, 2, tags, 'ref'))))
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway')) and (mapcss._tag_capture(capture_tags, 1, tags, 'railway') != mapcss._value_const_capture(capture_tags, 1, 'platform', 'platform')) and (mapcss._tag_capture(capture_tags, 2, tags, 'railway') != mapcss._value_const_capture(capture_tags, 2, 'platform_edge', 'platform_edge')) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 3, self.re_7cf15856), mapcss._tag_capture(capture_tags, 3, tags, 'ref'))))
                 except mapcss.RuleAbort: pass
             if not match:
                 capture_tags = {}
-                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway')) and (mapcss._tag_capture(capture_tags, 1, tags, 'railway') != mapcss._value_const_capture(capture_tags, 1, 'platform', 'platform')) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 2, self.re_4b2a9052), mapcss._tag_capture(capture_tags, 2, tags, 'ref'))))
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway')) and (mapcss._tag_capture(capture_tags, 1, tags, 'railway') != mapcss._value_const_capture(capture_tags, 1, 'platform', 'platform')) and (mapcss._tag_capture(capture_tags, 2, tags, 'railway') != mapcss._value_const_capture(capture_tags, 2, 'platform_edge', 'platform_edge')) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 3, self.re_4b2a9052), mapcss._tag_capture(capture_tags, 3, tags, 'ref'))))
                 except mapcss.RuleAbort: pass
             if not match:
                 capture_tags = {}
-                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway')) and (mapcss._tag_capture(capture_tags, 1, tags, 'railway') != mapcss._value_const_capture(capture_tags, 1, 'platform', 'platform')) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 2, self.re_3d75a7eb), mapcss._tag_capture(capture_tags, 2, tags, 'ref'))))
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway')) and (mapcss._tag_capture(capture_tags, 1, tags, 'railway') != mapcss._value_const_capture(capture_tags, 1, 'platform', 'platform')) and (mapcss._tag_capture(capture_tags, 2, tags, 'railway') != mapcss._value_const_capture(capture_tags, 2, 'platform_edge', 'platform_edge')) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 3, self.re_3d75a7eb), mapcss._tag_capture(capture_tags, 3, tags, 'ref'))))
                 except mapcss.RuleAbort: pass
             if match:
                 # throwError:"track names or refs should not include the word 'track', tag those numbers as railway:track_ref"
                 # assertMatch:"way railway=rail name=\"Gleis 14b\""
                 # assertNoMatch:"way railway=rail name=14b"
                 # assertMatch:"way railway=rail ref=\"track 4b\""
-                err.append({'class': 9015009, 'subclass': 1420092530, 'text': {'en': 'track names or refs should not include the word \'track\', tag those numbers as railway:track_ref'}})
+                err.append({'class': 9015009, 'subclass': 1419534293, 'text': {'en': 'track names or refs should not include the word \'track\', tag those numbers as railway:track_ref'}})
 
         # way[railway=platform][!description][name=~/^[Gg]leis [0-9]+[a-z]*.*/]
         # way[railway=platform][!description]["name:de"=~/^[Gg]leis [0-9]+[a-z]*.*/]
@@ -937,6 +961,22 @@ class Josm_openrailwaymap(PluginMapCSS):
         # way[railway=platform][description=*ref][ref=~/^[Gg]leis [0-9]+[a-z]*.*/]
         # way[railway=platform][description=*ref][ref=~/^[Tt]rack [0-9]+[a-z]*.*/]
         # way[railway=platform][description=*ref][ref=~/^[Vv]oie [0-9]+[a-z]*.*/]
+        # way[railway=platform_edge][!description][name=~/^[Gg]leis [0-9]+[a-z]*.*/]
+        # way[railway=platform_edge][!description]["name:de"=~/^[Gg]leis [0-9]+[a-z]*.*/]
+        # way[railway=platform_edge][!description][name=~/^[Tt]rack [0-9]+[a-z]*.*/]
+        # way[railway=platform_edge][!description][name=~/^[Vv]oie [0-9]+[a-z]*.*/]
+        # way[railway=platform_edge][!description]["name:fr"=~/^[Vv]oie [0-9]+[a-z]*.*/]
+        # way[railway=platform_edge][!description][ref=~/^[Gg]leis [0-9]+[a-z]*.*/]
+        # way[railway=platform_edge][!description][ref=~/^[Tt]rack [0-9]+[a-z]*.*/]
+        # way[railway=platform_edge][!description][ref=~/^[Vv]oie [0-9]+[a-z]*.*/]
+        # way[railway=platform_edge][description=*name][name=~/^[Gg]leis [0-9]+[a-z]*.*/]
+        # way[railway=platform_edge][description=*"name:de"]["name:de"=~/^[Gg]leis [0-9]+[a-z]*.*/]
+        # way[railway=platform_edge][description=*name][name=~/^[Tt]rack [0-9]+[a-z]*.*/]
+        # way[railway=platform_edge][description=*name][name=~/^[Vv]oie [0-9]+[a-z]*.*/]
+        # way[railway=platform_edge][description=*"name:fr"]["name:fr"=~/^[Vv]oie [0-9]+[a-z]*.*/]
+        # way[railway=platform_edge][description=*ref][ref=~/^[Gg]leis [0-9]+[a-z]*.*/]
+        # way[railway=platform_edge][description=*ref][ref=~/^[Tt]rack [0-9]+[a-z]*.*/]
+        # way[railway=platform_edge][description=*ref][ref=~/^[Vv]oie [0-9]+[a-z]*.*/]
         if ('description' in keys and 'name' in keys and 'railway' in keys) or ('description' in keys and 'name:de' in keys and 'railway' in keys) or ('description' in keys and 'name:fr' in keys and 'railway' in keys) or ('description' in keys and 'railway' in keys and 'ref' in keys) or ('name' in keys and 'railway' in keys) or ('name:de' in keys and 'railway' in keys) or ('name:fr' in keys and 'railway' in keys) or ('railway' in keys and 'ref' in keys):
             match = False
             if not match:
@@ -1003,6 +1043,70 @@ class Josm_openrailwaymap(PluginMapCSS):
                 capture_tags = {}
                 try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway') == mapcss._value_capture(capture_tags, 0, 'platform')) and (mapcss._tag_capture(capture_tags, 1, tags, 'description') == mapcss._value_capture(capture_tags, 1, mapcss.tag(tags, 'ref'))) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 2, self.re_3d75a7eb), mapcss._tag_capture(capture_tags, 2, tags, 'ref'))))
                 except mapcss.RuleAbort: pass
+            if not match:
+                capture_tags = {}
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway') == mapcss._value_capture(capture_tags, 0, 'platform_edge')) and (not mapcss._tag_capture(capture_tags, 1, tags, 'description')) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 2, self.re_7cf15856), mapcss._tag_capture(capture_tags, 2, tags, 'name'))))
+                except mapcss.RuleAbort: pass
+            if not match:
+                capture_tags = {}
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway') == mapcss._value_capture(capture_tags, 0, 'platform_edge')) and (not mapcss._tag_capture(capture_tags, 1, tags, 'description')) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 2, self.re_7cf15856), mapcss._tag_capture(capture_tags, 2, tags, 'name:de'))))
+                except mapcss.RuleAbort: pass
+            if not match:
+                capture_tags = {}
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway') == mapcss._value_capture(capture_tags, 0, 'platform_edge')) and (not mapcss._tag_capture(capture_tags, 1, tags, 'description')) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 2, self.re_4b2a9052), mapcss._tag_capture(capture_tags, 2, tags, 'name'))))
+                except mapcss.RuleAbort: pass
+            if not match:
+                capture_tags = {}
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway') == mapcss._value_capture(capture_tags, 0, 'platform_edge')) and (not mapcss._tag_capture(capture_tags, 1, tags, 'description')) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 2, self.re_3d75a7eb), mapcss._tag_capture(capture_tags, 2, tags, 'name'))))
+                except mapcss.RuleAbort: pass
+            if not match:
+                capture_tags = {}
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway') == mapcss._value_capture(capture_tags, 0, 'platform_edge')) and (not mapcss._tag_capture(capture_tags, 1, tags, 'description')) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 2, self.re_3d75a7eb), mapcss._tag_capture(capture_tags, 2, tags, 'name:fr'))))
+                except mapcss.RuleAbort: pass
+            if not match:
+                capture_tags = {}
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway') == mapcss._value_capture(capture_tags, 0, 'platform_edge')) and (not mapcss._tag_capture(capture_tags, 1, tags, 'description')) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 2, self.re_7cf15856), mapcss._tag_capture(capture_tags, 2, tags, 'ref'))))
+                except mapcss.RuleAbort: pass
+            if not match:
+                capture_tags = {}
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway') == mapcss._value_capture(capture_tags, 0, 'platform_edge')) and (not mapcss._tag_capture(capture_tags, 1, tags, 'description')) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 2, self.re_4b2a9052), mapcss._tag_capture(capture_tags, 2, tags, 'ref'))))
+                except mapcss.RuleAbort: pass
+            if not match:
+                capture_tags = {}
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway') == mapcss._value_capture(capture_tags, 0, 'platform_edge')) and (not mapcss._tag_capture(capture_tags, 1, tags, 'description')) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 2, self.re_3d75a7eb), mapcss._tag_capture(capture_tags, 2, tags, 'ref'))))
+                except mapcss.RuleAbort: pass
+            if not match:
+                capture_tags = {}
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway') == mapcss._value_capture(capture_tags, 0, 'platform_edge')) and (mapcss._tag_capture(capture_tags, 1, tags, 'description') == mapcss._value_capture(capture_tags, 1, mapcss.tag(tags, 'name'))) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 2, self.re_7cf15856), mapcss._tag_capture(capture_tags, 2, tags, 'name'))))
+                except mapcss.RuleAbort: pass
+            if not match:
+                capture_tags = {}
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway') == mapcss._value_capture(capture_tags, 0, 'platform_edge')) and (mapcss._tag_capture(capture_tags, 1, tags, 'description') == mapcss._value_capture(capture_tags, 1, mapcss.tag(tags, 'name:de'))) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 2, self.re_7cf15856), mapcss._tag_capture(capture_tags, 2, tags, 'name:de'))))
+                except mapcss.RuleAbort: pass
+            if not match:
+                capture_tags = {}
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway') == mapcss._value_capture(capture_tags, 0, 'platform_edge')) and (mapcss._tag_capture(capture_tags, 1, tags, 'description') == mapcss._value_capture(capture_tags, 1, mapcss.tag(tags, 'name'))) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 2, self.re_4b2a9052), mapcss._tag_capture(capture_tags, 2, tags, 'name'))))
+                except mapcss.RuleAbort: pass
+            if not match:
+                capture_tags = {}
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway') == mapcss._value_capture(capture_tags, 0, 'platform_edge')) and (mapcss._tag_capture(capture_tags, 1, tags, 'description') == mapcss._value_capture(capture_tags, 1, mapcss.tag(tags, 'name'))) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 2, self.re_3d75a7eb), mapcss._tag_capture(capture_tags, 2, tags, 'name'))))
+                except mapcss.RuleAbort: pass
+            if not match:
+                capture_tags = {}
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway') == mapcss._value_capture(capture_tags, 0, 'platform_edge')) and (mapcss._tag_capture(capture_tags, 1, tags, 'description') == mapcss._value_capture(capture_tags, 1, mapcss.tag(tags, 'name:fr'))) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 2, self.re_3d75a7eb), mapcss._tag_capture(capture_tags, 2, tags, 'name:fr'))))
+                except mapcss.RuleAbort: pass
+            if not match:
+                capture_tags = {}
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway') == mapcss._value_capture(capture_tags, 0, 'platform_edge')) and (mapcss._tag_capture(capture_tags, 1, tags, 'description') == mapcss._value_capture(capture_tags, 1, mapcss.tag(tags, 'ref'))) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 2, self.re_7cf15856), mapcss._tag_capture(capture_tags, 2, tags, 'ref'))))
+                except mapcss.RuleAbort: pass
+            if not match:
+                capture_tags = {}
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway') == mapcss._value_capture(capture_tags, 0, 'platform_edge')) and (mapcss._tag_capture(capture_tags, 1, tags, 'description') == mapcss._value_capture(capture_tags, 1, mapcss.tag(tags, 'ref'))) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 2, self.re_4b2a9052), mapcss._tag_capture(capture_tags, 2, tags, 'ref'))))
+                except mapcss.RuleAbort: pass
+            if not match:
+                capture_tags = {}
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway') == mapcss._value_capture(capture_tags, 0, 'platform_edge')) and (mapcss._tag_capture(capture_tags, 1, tags, 'description') == mapcss._value_capture(capture_tags, 1, mapcss.tag(tags, 'ref'))) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 2, self.re_3d75a7eb), mapcss._tag_capture(capture_tags, 2, tags, 'ref'))))
+                except mapcss.RuleAbort: pass
             if match:
                 # throwError:"platform names or refs should not include the word 'track', write that as 'description', put the bare numbers in 'ref', separated by ';'"
                 # suggestAlternative:"description"
@@ -1013,8 +1117,14 @@ class Josm_openrailwaymap(PluginMapCSS):
                 # assertNoMatch:"way railway=platform name=14b"
                 # assertMatch:"way railway=platform ref=\"track 4b\" ref=\"track 4b\""
                 # assertMatch:"way railway=platform ref=\"track 4b\""
+                # assertMatch:"way railway=platform_edge name=\"Gleis 14b\" description=\"Gleis 14b\""
+                # assertMatch:"way railway=platform_edge name=\"Gleis 14b\""
+                # assertNoMatch:"way railway=platform_edge name=14b description=other"
+                # assertNoMatch:"way railway=platform_edge name=14b"
+                # assertMatch:"way railway=platform_edge ref=\"track 4b\" ref=\"track 4b\""
+                # assertMatch:"way railway=platform_edge ref=\"track 4b\""
                 # assertNoMatch:"way railway=rail name=14b"
-                err.append({'class': 9015010, 'subclass': 1156420508, 'text': {'en': 'platform names or refs should not include the word \'track\', write that as \'description\', put the bare numbers in \'ref\', separated by \';\''}, 'allow_fix_override': True, 'fix': {
+                err.append({'class': 9015010, 'subclass': 1781916260, 'text': {'en': 'platform names or refs should not include the word \'track\', write that as \'description\', put the bare numbers in \'ref\', separated by \';\''}, 'allow_fix_override': True, 'fix': {
                     '+': dict([
                     [(mapcss._tag_uncapture(capture_tags, '{2.key}=>description')).split('=>', 1)[1].strip(), mapcss.tag(tags, (mapcss._tag_uncapture(capture_tags, '{2.key}=>description')).split('=>', 1)[0].strip())]]),
                     '-': ([
@@ -1029,6 +1139,14 @@ class Josm_openrailwaymap(PluginMapCSS):
         # way[railway=platform][description][description!=*ref][ref=~/^[Gg]leis [0-9]+[a-z]*.*/]
         # way[railway=platform][description][description!=*ref][ref=~/^[Tt]rack [0-9]+[a-z]*.*/]
         # way[railway=platform][description][description!=*ref][ref=~/^[Vv]oie [0-9]+[a-z]*.*/]
+        # way[railway=platform_edge][description][description!=*name][name=~/^[Gg]leis [0-9]+[a-z]*.*/]
+        # way[railway=platform_edge][description][description!=*"name:de"]["name:de"=~/^[Gg]leis [0-9]+[a-z]*.*/]
+        # way[railway=platform_edge][description][description!=*name][name=~/^[Tt]rack [0-9]+[a-z]*.*/]
+        # way[railway=platform_edge][description][description!=*name][name=~/^[Vv]oie [0-9]+[a-z]*.*/]
+        # way[railway=platform_edge][description][description!=*"name:fr"]["name:fr"=~/^[Vv]oie [0-9]+[a-z]*.*/]
+        # way[railway=platform_edge][description][description!=*ref][ref=~/^[Gg]leis [0-9]+[a-z]*.*/]
+        # way[railway=platform_edge][description][description!=*ref][ref=~/^[Tt]rack [0-9]+[a-z]*.*/]
+        # way[railway=platform_edge][description][description!=*ref][ref=~/^[Vv]oie [0-9]+[a-z]*.*/]
         if ('description' in keys and 'name' in keys and 'railway' in keys) or ('description' in keys and 'name:de' in keys and 'railway' in keys) or ('description' in keys and 'name:fr' in keys and 'railway' in keys) or ('description' in keys and 'railway' in keys and 'ref' in keys):
             match = False
             if not match:
@@ -1063,13 +1181,49 @@ class Josm_openrailwaymap(PluginMapCSS):
                 capture_tags = {}
                 try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway') == mapcss._value_capture(capture_tags, 0, 'platform')) and (mapcss._tag_capture(capture_tags, 1, tags, 'description')) and (mapcss._tag_capture(capture_tags, 2, tags, 'description') != mapcss._value_capture(capture_tags, 2, mapcss.tag(tags, 'ref'))) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 3, self.re_3d75a7eb), mapcss._tag_capture(capture_tags, 3, tags, 'ref'))))
                 except mapcss.RuleAbort: pass
+            if not match:
+                capture_tags = {}
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway') == mapcss._value_capture(capture_tags, 0, 'platform_edge')) and (mapcss._tag_capture(capture_tags, 1, tags, 'description')) and (mapcss._tag_capture(capture_tags, 2, tags, 'description') != mapcss._value_capture(capture_tags, 2, mapcss.tag(tags, 'name'))) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 3, self.re_7cf15856), mapcss._tag_capture(capture_tags, 3, tags, 'name'))))
+                except mapcss.RuleAbort: pass
+            if not match:
+                capture_tags = {}
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway') == mapcss._value_capture(capture_tags, 0, 'platform_edge')) and (mapcss._tag_capture(capture_tags, 1, tags, 'description')) and (mapcss._tag_capture(capture_tags, 2, tags, 'description') != mapcss._value_capture(capture_tags, 2, mapcss.tag(tags, 'name:de'))) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 3, self.re_7cf15856), mapcss._tag_capture(capture_tags, 3, tags, 'name:de'))))
+                except mapcss.RuleAbort: pass
+            if not match:
+                capture_tags = {}
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway') == mapcss._value_capture(capture_tags, 0, 'platform_edge')) and (mapcss._tag_capture(capture_tags, 1, tags, 'description')) and (mapcss._tag_capture(capture_tags, 2, tags, 'description') != mapcss._value_capture(capture_tags, 2, mapcss.tag(tags, 'name'))) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 3, self.re_4b2a9052), mapcss._tag_capture(capture_tags, 3, tags, 'name'))))
+                except mapcss.RuleAbort: pass
+            if not match:
+                capture_tags = {}
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway') == mapcss._value_capture(capture_tags, 0, 'platform_edge')) and (mapcss._tag_capture(capture_tags, 1, tags, 'description')) and (mapcss._tag_capture(capture_tags, 2, tags, 'description') != mapcss._value_capture(capture_tags, 2, mapcss.tag(tags, 'name'))) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 3, self.re_3d75a7eb), mapcss._tag_capture(capture_tags, 3, tags, 'name'))))
+                except mapcss.RuleAbort: pass
+            if not match:
+                capture_tags = {}
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway') == mapcss._value_capture(capture_tags, 0, 'platform_edge')) and (mapcss._tag_capture(capture_tags, 1, tags, 'description')) and (mapcss._tag_capture(capture_tags, 2, tags, 'description') != mapcss._value_capture(capture_tags, 2, mapcss.tag(tags, 'name:fr'))) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 3, self.re_3d75a7eb), mapcss._tag_capture(capture_tags, 3, tags, 'name:fr'))))
+                except mapcss.RuleAbort: pass
+            if not match:
+                capture_tags = {}
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway') == mapcss._value_capture(capture_tags, 0, 'platform_edge')) and (mapcss._tag_capture(capture_tags, 1, tags, 'description')) and (mapcss._tag_capture(capture_tags, 2, tags, 'description') != mapcss._value_capture(capture_tags, 2, mapcss.tag(tags, 'ref'))) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 3, self.re_7cf15856), mapcss._tag_capture(capture_tags, 3, tags, 'ref'))))
+                except mapcss.RuleAbort: pass
+            if not match:
+                capture_tags = {}
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway') == mapcss._value_capture(capture_tags, 0, 'platform_edge')) and (mapcss._tag_capture(capture_tags, 1, tags, 'description')) and (mapcss._tag_capture(capture_tags, 2, tags, 'description') != mapcss._value_capture(capture_tags, 2, mapcss.tag(tags, 'ref'))) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 3, self.re_4b2a9052), mapcss._tag_capture(capture_tags, 3, tags, 'ref'))))
+                except mapcss.RuleAbort: pass
+            if not match:
+                capture_tags = {}
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway') == mapcss._value_capture(capture_tags, 0, 'platform_edge')) and (mapcss._tag_capture(capture_tags, 1, tags, 'description')) and (mapcss._tag_capture(capture_tags, 2, tags, 'description') != mapcss._value_capture(capture_tags, 2, mapcss.tag(tags, 'ref'))) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 3, self.re_3d75a7eb), mapcss._tag_capture(capture_tags, 3, tags, 'ref'))))
+                except mapcss.RuleAbort: pass
             if match:
                 # throwError:"platform names or refs should not include the word 'track', write that as 'description', put the bare numbers in 'ref', separated by ';'"
                 # assertMatch:"way railway=platform name=\"Gleis 14b\" description=other"
                 # assertNoMatch:"way railway=platform name=14b description=14b"
                 # assertNoMatch:"way railway=platform name=14b"
                 # assertMatch:"way railway=platform ref=\"track 4b\" description=other"
-                err.append({'class': 9015010, 'subclass': 1149450895, 'text': {'en': 'platform names or refs should not include the word \'track\', write that as \'description\', put the bare numbers in \'ref\', separated by \';\''}})
+                # assertMatch:"way railway=platform_edge name=\"Gleis 14b\" description=other"
+                # assertNoMatch:"way railway=platform_edge name=14b description=14b"
+                # assertNoMatch:"way railway=platform_edge name=14b"
+                # assertMatch:"way railway=platform_edge ref=\"track 4b\" description=other"
+                err.append({'class': 9015010, 'subclass': 640924794, 'text': {'en': 'platform names or refs should not include the word \'track\', write that as \'description\', put the bare numbers in \'ref\', separated by \';\''}})
 
         # way[railway]["power:type"=overhead][electrified=contact_line]
         if ('electrified' in keys and 'power:type' in keys and 'railway' in keys):
@@ -1209,6 +1363,8 @@ class Josm_openrailwaymap(PluginMapCSS):
 
         # way[railway=crossing]
         # way[railway=level_crossing]
+        # area[railway=crossing]
+        # area[railway=level_crossing]
         if ('railway' in keys):
             match = False
             if not match:
@@ -1219,11 +1375,19 @@ class Josm_openrailwaymap(PluginMapCSS):
                 capture_tags = {}
                 try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway') == mapcss._value_capture(capture_tags, 0, 'level_crossing')))
                 except mapcss.RuleAbort: pass
+            if not match:
+                capture_tags = {}
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway') == mapcss._value_capture(capture_tags, 0, 'crossing')) and (mapcss._tag_capture(capture_tags, -1, tags, 'area') != mapcss._value_const_capture(capture_tags, -1, 'no', 'no')))
+                except mapcss.RuleAbort: pass
+            if not match:
+                capture_tags = {}
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway') == mapcss._value_capture(capture_tags, 0, 'level_crossing')) and (mapcss._tag_capture(capture_tags, -1, tags, 'area') != mapcss._value_const_capture(capture_tags, -1, 'no', 'no')))
+                except mapcss.RuleAbort: pass
             if match:
                 # throwError:"Crossings and level crossings should be mapped as nodes"
                 # assertMatch:"way railway=crossing railway:position:exact=2.4"
                 # assertMatch:"way railway=level_crossing railway:position:exact=2.4"
-                err.append({'class': 9015017, 'subclass': 2146160181, 'text': {'en': 'Crossings and level crossings should be mapped as nodes'}})
+                err.append({'class': 9015017, 'subclass': 145776718, 'text': {'en': 'Crossings and level crossings should be mapped as nodes'}})
 
         # way[railway][radio="GSM-R"][!"railway:radio"]
         # way[railway][radio="GSM-R"]["railway:radio"="gsm-r"]
@@ -1273,17 +1437,17 @@ class Josm_openrailwaymap(PluginMapCSS):
                 # assertNoMatch:"way railway=rail radio=\"GSM-R\""
                 err.append({'class': 9015019, 'subclass': 406318522, 'text': {'en': 'radio=* is deprecated, change to proper railway:radio value'}})
 
-        # way[railway][railway!=platform][name=~/[Tt]unnel/][!"tunnel:name"]
-        # way[railway][railway!=platform][name=~/[Tt]unnel/]["tunnel:name"=*name]
+        # way[railway][railway!=platform][railway!=platform_edge][name=~/[Tt]unnel/][!"tunnel:name"]
+        # way[railway][railway!=platform][railway!=platform_edge][name=~/[Tt]unnel/]["tunnel:name"=*name]
         if ('name' in keys and 'railway' in keys) or ('name' in keys and 'railway' in keys and 'tunnel:name' in keys):
             match = False
             if not match:
                 capture_tags = {}
-                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway')) and (mapcss._tag_capture(capture_tags, 1, tags, 'railway') != mapcss._value_const_capture(capture_tags, 1, 'platform', 'platform')) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 2, self.re_5bca804b), mapcss._tag_capture(capture_tags, 2, tags, 'name'))) and (not mapcss._tag_capture(capture_tags, 3, tags, 'tunnel:name')))
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway')) and (mapcss._tag_capture(capture_tags, 1, tags, 'railway') != mapcss._value_const_capture(capture_tags, 1, 'platform', 'platform')) and (mapcss._tag_capture(capture_tags, 2, tags, 'railway') != mapcss._value_const_capture(capture_tags, 2, 'platform_edge', 'platform_edge')) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 3, self.re_5bca804b), mapcss._tag_capture(capture_tags, 3, tags, 'name'))) and (not mapcss._tag_capture(capture_tags, 4, tags, 'tunnel:name')))
                 except mapcss.RuleAbort: pass
             if not match:
                 capture_tags = {}
-                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway')) and (mapcss._tag_capture(capture_tags, 1, tags, 'railway') != mapcss._value_const_capture(capture_tags, 1, 'platform', 'platform')) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 2, self.re_5bca804b), mapcss._tag_capture(capture_tags, 2, tags, 'name'))) and (mapcss._tag_capture(capture_tags, 3, tags, 'tunnel:name') == mapcss._value_capture(capture_tags, 3, mapcss.tag(tags, 'name'))))
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway')) and (mapcss._tag_capture(capture_tags, 1, tags, 'railway') != mapcss._value_const_capture(capture_tags, 1, 'platform', 'platform')) and (mapcss._tag_capture(capture_tags, 2, tags, 'railway') != mapcss._value_const_capture(capture_tags, 2, 'platform_edge', 'platform_edge')) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 3, self.re_5bca804b), mapcss._tag_capture(capture_tags, 3, tags, 'name'))) and (mapcss._tag_capture(capture_tags, 4, tags, 'tunnel:name') == mapcss._value_capture(capture_tags, 4, mapcss.tag(tags, 'name'))))
                 except mapcss.RuleAbort: pass
             if match:
                 # throwWarning:"track tagged with 'tunnel' in name, consider using tunnel:name instead and put the track name into name"
@@ -1293,24 +1457,24 @@ class Josm_openrailwaymap(PluginMapCSS):
                 # assertNoMatch:"way railway=platform name=Footunnel"
                 # assertMatch:"way railway=rail name=Footunnel"
                 # assertNoMatch:"way railway=rail tunnel:name=Baztunnel"
-                err.append({'class': 9015020, 'subclass': 1651250819, 'text': {'en': 'track tagged with \'tunnel\' in name, consider using tunnel:name instead and put the track name into name'}, 'allow_fix_override': True, 'fix': {
+                err.append({'class': 9015020, 'subclass': 1130379741, 'text': {'en': 'track tagged with \'tunnel\' in name, consider using tunnel:name instead and put the track name into name'}, 'allow_fix_override': True, 'fix': {
                     '+': dict([
                     ['tunnel:name', mapcss.tag(tags, 'name')]]),
                     '-': ([
                     'name'])
                 }})
 
-        # way[railway][railway!=platform][wikipedia=~/[Tt]unnel/][!"tunnel:wikipedia"]
-        # way[railway][railway!=platform][wikipedia=~/[Tt]unnel/]["tunnel:wikipedia"=*wikipedia]
+        # way[railway][railway!=platform][railway!=platform_edge][wikipedia=~/[Tt]unnel/][!"tunnel:wikipedia"]
+        # way[railway][railway!=platform][railway!=platform_edge][wikipedia=~/[Tt]unnel/]["tunnel:wikipedia"=*wikipedia]
         if ('railway' in keys and 'tunnel:wikipedia' in keys and 'wikipedia' in keys) or ('railway' in keys and 'wikipedia' in keys):
             match = False
             if not match:
                 capture_tags = {}
-                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway')) and (mapcss._tag_capture(capture_tags, 1, tags, 'railway') != mapcss._value_const_capture(capture_tags, 1, 'platform', 'platform')) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 2, self.re_5bca804b), mapcss._tag_capture(capture_tags, 2, tags, 'wikipedia'))) and (not mapcss._tag_capture(capture_tags, 3, tags, 'tunnel:wikipedia')))
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway')) and (mapcss._tag_capture(capture_tags, 1, tags, 'railway') != mapcss._value_const_capture(capture_tags, 1, 'platform', 'platform')) and (mapcss._tag_capture(capture_tags, 2, tags, 'railway') != mapcss._value_const_capture(capture_tags, 2, 'platform_edge', 'platform_edge')) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 3, self.re_5bca804b), mapcss._tag_capture(capture_tags, 3, tags, 'wikipedia'))) and (not mapcss._tag_capture(capture_tags, 4, tags, 'tunnel:wikipedia')))
                 except mapcss.RuleAbort: pass
             if not match:
                 capture_tags = {}
-                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway')) and (mapcss._tag_capture(capture_tags, 1, tags, 'railway') != mapcss._value_const_capture(capture_tags, 1, 'platform', 'platform')) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 2, self.re_5bca804b), mapcss._tag_capture(capture_tags, 2, tags, 'wikipedia'))) and (mapcss._tag_capture(capture_tags, 3, tags, 'tunnel:wikipedia') == mapcss._value_capture(capture_tags, 3, mapcss.tag(tags, 'wikipedia'))))
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway')) and (mapcss._tag_capture(capture_tags, 1, tags, 'railway') != mapcss._value_const_capture(capture_tags, 1, 'platform', 'platform')) and (mapcss._tag_capture(capture_tags, 2, tags, 'railway') != mapcss._value_const_capture(capture_tags, 2, 'platform_edge', 'platform_edge')) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 3, self.re_5bca804b), mapcss._tag_capture(capture_tags, 3, tags, 'wikipedia'))) and (mapcss._tag_capture(capture_tags, 4, tags, 'tunnel:wikipedia') == mapcss._value_capture(capture_tags, 4, mapcss.tag(tags, 'wikipedia'))))
                 except mapcss.RuleAbort: pass
             if match:
                 # throwWarning:"track tagged with 'tunnel' in wikipedia, consider using tunnel:wikipedia instead and put the track wikipedia entry into wikipedia"
@@ -1320,44 +1484,44 @@ class Josm_openrailwaymap(PluginMapCSS):
                 # assertNoMatch:"way railway=platform wikipedia=Footunnel"
                 # assertNoMatch:"way railway=rail tunnel:wikipedia=Baztunnel"
                 # assertMatch:"way railway=rail wikipedia=Footunnel"
-                err.append({'class': 9015021, 'subclass': 1581548500, 'text': {'en': 'track tagged with \'tunnel\' in wikipedia, consider using tunnel:wikipedia instead and put the track wikipedia entry into wikipedia'}, 'allow_fix_override': True, 'fix': {
+                err.append({'class': 9015021, 'subclass': 333095636, 'text': {'en': 'track tagged with \'tunnel\' in wikipedia, consider using tunnel:wikipedia instead and put the track wikipedia entry into wikipedia'}, 'allow_fix_override': True, 'fix': {
                     '+': dict([
                     ['tunnel:wikipedia', mapcss.tag(tags, 'wikipedia')]]),
                     '-': ([
                     'wikipedia'])
                 }})
 
-        # way[railway][railway!=platform][name=~/[Bb]ridge/][!"bridge:name"]
-        # way[railway][railway!=platform][name=~/[Bb]ridge/]["bridge:name"=*name]
-        # way[railway][railway!=platform][name=~/[Vv]iadu[ck]t/][!"bridge:name"]
-        # way[railway][railway!=platform][name=~/[Vv]iadu[ck]t/]["bridge:name"=*name]
-        # way[railway][railway!=platform][name=~/[Bb]rücke/][!"bridge:name"]
-        # way[railway][railway!=platform][name=~/[Bb]rücke/]["bridge:name"=*name]
+        # way[railway][railway!=platform][railway!=platform_edge][name=~/[Bb]ridge/][!"bridge:name"]
+        # way[railway][railway!=platform][railway!=platform_edge][name=~/[Bb]ridge/]["bridge:name"=*name]
+        # way[railway][railway!=platform][railway!=platform_edge][name=~/[Vv]iadu[ck]t/][!"bridge:name"]
+        # way[railway][railway!=platform][railway!=platform_edge][name=~/[Vv]iadu[ck]t/]["bridge:name"=*name]
+        # way[railway][railway!=platform][railway!=platform_edge][name=~/[Bb]rücke/][!"bridge:name"]
+        # way[railway][railway!=platform][railway!=platform_edge][name=~/[Bb]rücke/]["bridge:name"=*name]
         if ('bridge:name' in keys and 'name' in keys and 'railway' in keys) or ('name' in keys and 'railway' in keys):
             match = False
             if not match:
                 capture_tags = {}
-                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway')) and (mapcss._tag_capture(capture_tags, 1, tags, 'railway') != mapcss._value_const_capture(capture_tags, 1, 'platform', 'platform')) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 2, self.re_25833d04), mapcss._tag_capture(capture_tags, 2, tags, 'name'))) and (not mapcss._tag_capture(capture_tags, 3, tags, 'bridge:name')))
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway')) and (mapcss._tag_capture(capture_tags, 1, tags, 'railway') != mapcss._value_const_capture(capture_tags, 1, 'platform', 'platform')) and (mapcss._tag_capture(capture_tags, 2, tags, 'railway') != mapcss._value_const_capture(capture_tags, 2, 'platform_edge', 'platform_edge')) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 3, self.re_25833d04), mapcss._tag_capture(capture_tags, 3, tags, 'name'))) and (not mapcss._tag_capture(capture_tags, 4, tags, 'bridge:name')))
                 except mapcss.RuleAbort: pass
             if not match:
                 capture_tags = {}
-                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway')) and (mapcss._tag_capture(capture_tags, 1, tags, 'railway') != mapcss._value_const_capture(capture_tags, 1, 'platform', 'platform')) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 2, self.re_25833d04), mapcss._tag_capture(capture_tags, 2, tags, 'name'))) and (mapcss._tag_capture(capture_tags, 3, tags, 'bridge:name') == mapcss._value_capture(capture_tags, 3, mapcss.tag(tags, 'name'))))
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway')) and (mapcss._tag_capture(capture_tags, 1, tags, 'railway') != mapcss._value_const_capture(capture_tags, 1, 'platform', 'platform')) and (mapcss._tag_capture(capture_tags, 2, tags, 'railway') != mapcss._value_const_capture(capture_tags, 2, 'platform_edge', 'platform_edge')) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 3, self.re_25833d04), mapcss._tag_capture(capture_tags, 3, tags, 'name'))) and (mapcss._tag_capture(capture_tags, 4, tags, 'bridge:name') == mapcss._value_capture(capture_tags, 4, mapcss.tag(tags, 'name'))))
                 except mapcss.RuleAbort: pass
             if not match:
                 capture_tags = {}
-                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway')) and (mapcss._tag_capture(capture_tags, 1, tags, 'railway') != mapcss._value_const_capture(capture_tags, 1, 'platform', 'platform')) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 2, self.re_0e3375d5), mapcss._tag_capture(capture_tags, 2, tags, 'name'))) and (not mapcss._tag_capture(capture_tags, 3, tags, 'bridge:name')))
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway')) and (mapcss._tag_capture(capture_tags, 1, tags, 'railway') != mapcss._value_const_capture(capture_tags, 1, 'platform', 'platform')) and (mapcss._tag_capture(capture_tags, 2, tags, 'railway') != mapcss._value_const_capture(capture_tags, 2, 'platform_edge', 'platform_edge')) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 3, self.re_0e3375d5), mapcss._tag_capture(capture_tags, 3, tags, 'name'))) and (not mapcss._tag_capture(capture_tags, 4, tags, 'bridge:name')))
                 except mapcss.RuleAbort: pass
             if not match:
                 capture_tags = {}
-                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway')) and (mapcss._tag_capture(capture_tags, 1, tags, 'railway') != mapcss._value_const_capture(capture_tags, 1, 'platform', 'platform')) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 2, self.re_0e3375d5), mapcss._tag_capture(capture_tags, 2, tags, 'name'))) and (mapcss._tag_capture(capture_tags, 3, tags, 'bridge:name') == mapcss._value_capture(capture_tags, 3, mapcss.tag(tags, 'name'))))
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway')) and (mapcss._tag_capture(capture_tags, 1, tags, 'railway') != mapcss._value_const_capture(capture_tags, 1, 'platform', 'platform')) and (mapcss._tag_capture(capture_tags, 2, tags, 'railway') != mapcss._value_const_capture(capture_tags, 2, 'platform_edge', 'platform_edge')) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 3, self.re_0e3375d5), mapcss._tag_capture(capture_tags, 3, tags, 'name'))) and (mapcss._tag_capture(capture_tags, 4, tags, 'bridge:name') == mapcss._value_capture(capture_tags, 4, mapcss.tag(tags, 'name'))))
                 except mapcss.RuleAbort: pass
             if not match:
                 capture_tags = {}
-                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway')) and (mapcss._tag_capture(capture_tags, 1, tags, 'railway') != mapcss._value_const_capture(capture_tags, 1, 'platform', 'platform')) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 2, self.re_18e8cc14), mapcss._tag_capture(capture_tags, 2, tags, 'name'))) and (not mapcss._tag_capture(capture_tags, 3, tags, 'bridge:name')))
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway')) and (mapcss._tag_capture(capture_tags, 1, tags, 'railway') != mapcss._value_const_capture(capture_tags, 1, 'platform', 'platform')) and (mapcss._tag_capture(capture_tags, 2, tags, 'railway') != mapcss._value_const_capture(capture_tags, 2, 'platform_edge', 'platform_edge')) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 3, self.re_18e8cc14), mapcss._tag_capture(capture_tags, 3, tags, 'name'))) and (not mapcss._tag_capture(capture_tags, 4, tags, 'bridge:name')))
                 except mapcss.RuleAbort: pass
             if not match:
                 capture_tags = {}
-                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway')) and (mapcss._tag_capture(capture_tags, 1, tags, 'railway') != mapcss._value_const_capture(capture_tags, 1, 'platform', 'platform')) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 2, self.re_18e8cc14), mapcss._tag_capture(capture_tags, 2, tags, 'name'))) and (mapcss._tag_capture(capture_tags, 3, tags, 'bridge:name') == mapcss._value_capture(capture_tags, 3, mapcss.tag(tags, 'name'))))
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway')) and (mapcss._tag_capture(capture_tags, 1, tags, 'railway') != mapcss._value_const_capture(capture_tags, 1, 'platform', 'platform')) and (mapcss._tag_capture(capture_tags, 2, tags, 'railway') != mapcss._value_const_capture(capture_tags, 2, 'platform_edge', 'platform_edge')) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 3, self.re_18e8cc14), mapcss._tag_capture(capture_tags, 3, tags, 'name'))) and (mapcss._tag_capture(capture_tags, 4, tags, 'bridge:name') == mapcss._value_capture(capture_tags, 4, mapcss.tag(tags, 'name'))))
                 except mapcss.RuleAbort: pass
             if match:
                 # throwWarning:"track tagged with 'bridge' in name, consider using bridge:name instead and put the track name into name"
@@ -1369,44 +1533,44 @@ class Josm_openrailwaymap(PluginMapCSS):
                 # assertMatch:"way railway=rail name=\"Bay bridge\""
                 # assertMatch:"way railway=rail name=\"Baz viaduct\""
                 # assertMatch:"way railway=rail name=Foobrücke"
-                err.append({'class': 9015022, 'subclass': 359430532, 'text': {'en': 'track tagged with \'bridge\' in name, consider using bridge:name instead and put the track name into name'}, 'allow_fix_override': True, 'fix': {
+                err.append({'class': 9015022, 'subclass': 1280170106, 'text': {'en': 'track tagged with \'bridge\' in name, consider using bridge:name instead and put the track name into name'}, 'allow_fix_override': True, 'fix': {
                     '+': dict([
                     ['bridge:name', mapcss.tag(tags, 'name')]]),
                     '-': ([
                     'name'])
                 }})
 
-        # way[railway][railway!=platform][wikipedia=~/[Bb]ridge/][!"bridge:wikipedia"]
-        # way[railway][railway!=platform][wikipedia=~/[Bb]ridge/]["bridge:wikipedia"=*wikipedia]
-        # way[railway][railway!=platform][wikipedia=~/[Vv]iadu[ck]t/][!"bridge:wikipedia"]
-        # way[railway][railway!=platform][wikipedia=~/[Vv]iadu[ck]t/]["bridge:wikipedia"=*wikipedia]
-        # way[railway][railway!=platform][wikipedia=~/[Bb]rücke/][!"bridge:wikipedia"]
-        # way[railway][railway!=platform][wikipedia=~/[Bb]rücke/]["bridge:wikipedia"=*wikipedia]
+        # way[railway][railway!=platform][railway!=platform_edge][wikipedia=~/[Bb]ridge/][!"bridge:wikipedia"]
+        # way[railway][railway!=platform][railway!=platform_edge][wikipedia=~/[Bb]ridge/]["bridge:wikipedia"=*wikipedia]
+        # way[railway][railway!=platform][railway!=platform_edge][wikipedia=~/[Vv]iadu[ck]t/][!"bridge:wikipedia"]
+        # way[railway][railway!=platform][railway!=platform_edge][wikipedia=~/[Vv]iadu[ck]t/]["bridge:wikipedia"=*wikipedia]
+        # way[railway][railway!=platform][railway!=platform_edge][wikipedia=~/[Bb]rücke/][!"bridge:wikipedia"]
+        # way[railway][railway!=platform][railway!=platform_edge][wikipedia=~/[Bb]rücke/]["bridge:wikipedia"=*wikipedia]
         if ('bridge:wikipedia' in keys and 'railway' in keys and 'wikipedia' in keys) or ('railway' in keys and 'wikipedia' in keys):
             match = False
             if not match:
                 capture_tags = {}
-                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway')) and (mapcss._tag_capture(capture_tags, 1, tags, 'railway') != mapcss._value_const_capture(capture_tags, 1, 'platform', 'platform')) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 2, self.re_25833d04), mapcss._tag_capture(capture_tags, 2, tags, 'wikipedia'))) and (not mapcss._tag_capture(capture_tags, 3, tags, 'bridge:wikipedia')))
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway')) and (mapcss._tag_capture(capture_tags, 1, tags, 'railway') != mapcss._value_const_capture(capture_tags, 1, 'platform', 'platform')) and (mapcss._tag_capture(capture_tags, 2, tags, 'railway') != mapcss._value_const_capture(capture_tags, 2, 'platform_edge', 'platform_edge')) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 3, self.re_25833d04), mapcss._tag_capture(capture_tags, 3, tags, 'wikipedia'))) and (not mapcss._tag_capture(capture_tags, 4, tags, 'bridge:wikipedia')))
                 except mapcss.RuleAbort: pass
             if not match:
                 capture_tags = {}
-                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway')) and (mapcss._tag_capture(capture_tags, 1, tags, 'railway') != mapcss._value_const_capture(capture_tags, 1, 'platform', 'platform')) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 2, self.re_25833d04), mapcss._tag_capture(capture_tags, 2, tags, 'wikipedia'))) and (mapcss._tag_capture(capture_tags, 3, tags, 'bridge:wikipedia') == mapcss._value_capture(capture_tags, 3, mapcss.tag(tags, 'wikipedia'))))
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway')) and (mapcss._tag_capture(capture_tags, 1, tags, 'railway') != mapcss._value_const_capture(capture_tags, 1, 'platform', 'platform')) and (mapcss._tag_capture(capture_tags, 2, tags, 'railway') != mapcss._value_const_capture(capture_tags, 2, 'platform_edge', 'platform_edge')) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 3, self.re_25833d04), mapcss._tag_capture(capture_tags, 3, tags, 'wikipedia'))) and (mapcss._tag_capture(capture_tags, 4, tags, 'bridge:wikipedia') == mapcss._value_capture(capture_tags, 4, mapcss.tag(tags, 'wikipedia'))))
                 except mapcss.RuleAbort: pass
             if not match:
                 capture_tags = {}
-                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway')) and (mapcss._tag_capture(capture_tags, 1, tags, 'railway') != mapcss._value_const_capture(capture_tags, 1, 'platform', 'platform')) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 2, self.re_0e3375d5), mapcss._tag_capture(capture_tags, 2, tags, 'wikipedia'))) and (not mapcss._tag_capture(capture_tags, 3, tags, 'bridge:wikipedia')))
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway')) and (mapcss._tag_capture(capture_tags, 1, tags, 'railway') != mapcss._value_const_capture(capture_tags, 1, 'platform', 'platform')) and (mapcss._tag_capture(capture_tags, 2, tags, 'railway') != mapcss._value_const_capture(capture_tags, 2, 'platform_edge', 'platform_edge')) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 3, self.re_0e3375d5), mapcss._tag_capture(capture_tags, 3, tags, 'wikipedia'))) and (not mapcss._tag_capture(capture_tags, 4, tags, 'bridge:wikipedia')))
                 except mapcss.RuleAbort: pass
             if not match:
                 capture_tags = {}
-                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway')) and (mapcss._tag_capture(capture_tags, 1, tags, 'railway') != mapcss._value_const_capture(capture_tags, 1, 'platform', 'platform')) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 2, self.re_0e3375d5), mapcss._tag_capture(capture_tags, 2, tags, 'wikipedia'))) and (mapcss._tag_capture(capture_tags, 3, tags, 'bridge:wikipedia') == mapcss._value_capture(capture_tags, 3, mapcss.tag(tags, 'wikipedia'))))
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway')) and (mapcss._tag_capture(capture_tags, 1, tags, 'railway') != mapcss._value_const_capture(capture_tags, 1, 'platform', 'platform')) and (mapcss._tag_capture(capture_tags, 2, tags, 'railway') != mapcss._value_const_capture(capture_tags, 2, 'platform_edge', 'platform_edge')) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 3, self.re_0e3375d5), mapcss._tag_capture(capture_tags, 3, tags, 'wikipedia'))) and (mapcss._tag_capture(capture_tags, 4, tags, 'bridge:wikipedia') == mapcss._value_capture(capture_tags, 4, mapcss.tag(tags, 'wikipedia'))))
                 except mapcss.RuleAbort: pass
             if not match:
                 capture_tags = {}
-                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway')) and (mapcss._tag_capture(capture_tags, 1, tags, 'railway') != mapcss._value_const_capture(capture_tags, 1, 'platform', 'platform')) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 2, self.re_18e8cc14), mapcss._tag_capture(capture_tags, 2, tags, 'wikipedia'))) and (not mapcss._tag_capture(capture_tags, 3, tags, 'bridge:wikipedia')))
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway')) and (mapcss._tag_capture(capture_tags, 1, tags, 'railway') != mapcss._value_const_capture(capture_tags, 1, 'platform', 'platform')) and (mapcss._tag_capture(capture_tags, 2, tags, 'railway') != mapcss._value_const_capture(capture_tags, 2, 'platform_edge', 'platform_edge')) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 3, self.re_18e8cc14), mapcss._tag_capture(capture_tags, 3, tags, 'wikipedia'))) and (not mapcss._tag_capture(capture_tags, 4, tags, 'bridge:wikipedia')))
                 except mapcss.RuleAbort: pass
             if not match:
                 capture_tags = {}
-                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway')) and (mapcss._tag_capture(capture_tags, 1, tags, 'railway') != mapcss._value_const_capture(capture_tags, 1, 'platform', 'platform')) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 2, self.re_18e8cc14), mapcss._tag_capture(capture_tags, 2, tags, 'wikipedia'))) and (mapcss._tag_capture(capture_tags, 3, tags, 'bridge:wikipedia') == mapcss._value_capture(capture_tags, 3, mapcss.tag(tags, 'wikipedia'))))
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway')) and (mapcss._tag_capture(capture_tags, 1, tags, 'railway') != mapcss._value_const_capture(capture_tags, 1, 'platform', 'platform')) and (mapcss._tag_capture(capture_tags, 2, tags, 'railway') != mapcss._value_const_capture(capture_tags, 2, 'platform_edge', 'platform_edge')) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 3, self.re_18e8cc14), mapcss._tag_capture(capture_tags, 3, tags, 'wikipedia'))) and (mapcss._tag_capture(capture_tags, 4, tags, 'bridge:wikipedia') == mapcss._value_capture(capture_tags, 4, mapcss.tag(tags, 'wikipedia'))))
                 except mapcss.RuleAbort: pass
             if match:
                 # throwWarning:"track tagged with 'bridge' in wikipedia, consider using bridge:wikipedia instead and put track wikipedia entry into wikipedia"
@@ -1418,7 +1582,7 @@ class Josm_openrailwaymap(PluginMapCSS):
                 # assertMatch:"way railway=rail wikipedia=\"Bay bridge\""
                 # assertMatch:"way railway=rail wikipedia=\"Baz viaduct\""
                 # assertMatch:"way railway=rail wikipedia=Foobrücke"
-                err.append({'class': 9015023, 'subclass': 1594751596, 'text': {'en': 'track tagged with \'bridge\' in wikipedia, consider using bridge:wikipedia instead and put track wikipedia entry into wikipedia'}, 'allow_fix_override': True, 'fix': {
+                err.append({'class': 9015023, 'subclass': 2090973469, 'text': {'en': 'track tagged with \'bridge\' in wikipedia, consider using bridge:wikipedia instead and put track wikipedia entry into wikipedia'}, 'allow_fix_override': True, 'fix': {
                     '+': dict([
                     ['bridge:wikipedia', mapcss.tag(tags, 'wikipedia')]]),
                     '-': ([
@@ -1499,12 +1663,33 @@ class Josm_openrailwaymap(PluginMapCSS):
                     'mph:maxspeed'])
                 }})
 
+        # area[building=station]
+        # area[building=railway_station]
+        if ('building' in keys):
+            match = False
+            if not match:
+                capture_tags = {}
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'building') == mapcss._value_capture(capture_tags, 0, 'station')) and (mapcss._tag_capture(capture_tags, -1, tags, 'area') != mapcss._value_const_capture(capture_tags, -1, 'no', 'no')))
+                except mapcss.RuleAbort: pass
+            if not match:
+                capture_tags = {}
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'building') == mapcss._value_capture(capture_tags, 0, 'railway_station')) and (mapcss._tag_capture(capture_tags, -1, tags, 'area') != mapcss._value_const_capture(capture_tags, -1, 'no', 'no')))
+                except mapcss.RuleAbort: pass
+            if match:
+                # throwWarning:"Wrong tag for railway station building"
+                # suggestAlternative:"building=train_station"
+                # fixAdd:"building=train_station"
+                err.append({'class': 9015046, 'subclass': 520452514, 'text': {'en': 'Wrong tag for railway station building'}, 'allow_fix_override': True, 'fix': {
+                    '+': dict([
+                    ['building','train_station']])
+                }})
+
         # way|z9-[railway=disused][!"disused:railway"]
         # way|z9-[railway=abandoned][!"abandoned:railway"]
         # way|z9-[railway=razed][!"razed:railway"]
         # way|z9-[railway=proposed][!"proposed:railway"]
         # way|z9-[railway=construction][!"construction:railway"]
-        # Rule Blacklisted
+        # Rule Blacklisted (id: 160705788)
 
         return err
 
@@ -1513,6 +1698,33 @@ class Josm_openrailwaymap(PluginMapCSS):
         keys = tags.keys()
         err = []
 
+
+        # area[railway=station]
+        if ('railway' in keys and 'type' in keys):
+            match = False
+            if not match:
+                capture_tags = {}
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway') == mapcss._value_capture(capture_tags, 0, 'station')) and (mapcss._tag_capture(capture_tags, -1, tags, 'type') == mapcss._value_capture(capture_tags, -1, 'multipolygon')))
+                except mapcss.RuleAbort: pass
+            if match:
+                # throwError:"Station mapped as a way, but should be mapped as a node"
+                err.append({'class': 9015002, 'subclass': 641708275, 'text': {'en': 'Station mapped as a way, but should be mapped as a node'}})
+
+        # area[railway=crossing]
+        # area[railway=level_crossing]
+        if ('railway' in keys and 'type' in keys):
+            match = False
+            if not match:
+                capture_tags = {}
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway') == mapcss._value_capture(capture_tags, 0, 'crossing')) and (mapcss._tag_capture(capture_tags, -1, tags, 'type') == mapcss._value_capture(capture_tags, -1, 'multipolygon')))
+                except mapcss.RuleAbort: pass
+            if not match:
+                capture_tags = {}
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'railway') == mapcss._value_capture(capture_tags, 0, 'level_crossing')) and (mapcss._tag_capture(capture_tags, -1, tags, 'type') == mapcss._value_capture(capture_tags, -1, 'multipolygon')))
+                except mapcss.RuleAbort: pass
+            if match:
+                # throwError:"Crossings and level crossings should be mapped as nodes"
+                err.append({'class': 9015017, 'subclass': 803023253, 'text': {'en': 'Crossings and level crossings should be mapped as nodes'}})
 
         # relation[railway=controlled_area]
         if ('railway' in keys):
@@ -1563,6 +1775,27 @@ class Josm_openrailwaymap(PluginMapCSS):
                 # assertNoMatch:"relation railway=interlocking type=railway"
                 err.append({'class': 9015043, 'subclass': 1419769139, 'text': {'en': 'interlocking relation with type other than railway'}})
 
+        # area[building=station]
+        # area[building=railway_station]
+        if ('building' in keys and 'type' in keys):
+            match = False
+            if not match:
+                capture_tags = {}
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'building') == mapcss._value_capture(capture_tags, 0, 'station')) and (mapcss._tag_capture(capture_tags, -1, tags, 'type') == mapcss._value_capture(capture_tags, -1, 'multipolygon')))
+                except mapcss.RuleAbort: pass
+            if not match:
+                capture_tags = {}
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'building') == mapcss._value_capture(capture_tags, 0, 'railway_station')) and (mapcss._tag_capture(capture_tags, -1, tags, 'type') == mapcss._value_capture(capture_tags, -1, 'multipolygon')))
+                except mapcss.RuleAbort: pass
+            if match:
+                # throwWarning:"Wrong tag for railway station building"
+                # suggestAlternative:"building=train_station"
+                # fixAdd:"building=train_station"
+                err.append({'class': 9015046, 'subclass': 520452514, 'text': {'en': 'Wrong tag for railway station building'}, 'allow_fix_override': True, 'fix': {
+                    '+': dict([
+                    ['building','train_station']])
+                }})
+
         return err
 
 
@@ -1582,8 +1815,7 @@ class Test(TestPluginMapcss):
 
         self.check_not_err(n.node(data, {'railway': 'milestone', 'railway:position': '42.0'}), expected={'class': 9015028, 'subclass': 1237934683})
         self.check_err(n.node(data, {'railway': 'milestone'}), expected={'class': 9015028, 'subclass': 1237934683})
-        self.check_err(n.node(data, {'railway': 'level_crossing', 'supervised': 'yes'}), expected={'class': 9015029, 'subclass': 321695123})
-        self.check_not_err(n.node(data, {'railway': 'level_crossing'}), expected={'class': 9015029, 'subclass': 321695123})
+        self.check_err(n.node(data, {'railway': 'rail', 'workrules': 'EBO'}), expected={'class': 9015047, 'subclass': 1912633428})
         self.check_err(n.node(data, {'railway:signal:direction': 'forward'}), expected={'class': 9015030, 'subclass': 908641862})
         self.check_err(n.node(data, {'railway': 'level_crossing', 'railway:signal:position': 'right'}), expected={'class': 9015030, 'subclass': 908641862})
         self.check_not_err(n.node(data, {'railway': 'signal', 'railway:signal:position': 'right'}), expected={'class': 9015030, 'subclass': 908641862})
@@ -1662,7 +1894,7 @@ class Test(TestPluginMapcss):
         self.check_err(n.way(data, {'railway': 'rail', 'service': 'siding', 'usage': 'main'}, [0]), expected={'class': 9015001, 'subclass': 1888453557})
         self.check_not_err(n.way(data, {'railway': 'rail', 'usage': 'main'}, [0]), expected={'class': 9015001, 'subclass': 1888453557})
         self.check_not_err(n.way(data, {'railway': 'rail', 'service': 'yard', 'usage': 'military'}, [0]), expected={'class': 9015001, 'subclass': 1888453557})
-        self.check_err(n.way(data, {'railway': 'station'}, [0]), expected={'class': 9015002, 'subclass': 1498103253})
+        self.check_err(n.way(data, {'railway': 'station'}, [0]), expected={'class': 9015002, 'subclass': 610823238})
         self.check_not_err(n.way(data, {'railway': 'rail', 'railway:traffic_mode': 'passenger'}, [0]), expected={'class': 9015004, 'subclass': 1755442170})
         self.check_err(n.way(data, {'railway': 'rail', 'traffic_mode': 'passenger'}, [0]), expected={'class': 9015004, 'subclass': 1755442170})
         self.check_not_err(n.way(data, {'railway': 'rail'}, [0]), expected={'class': 9015004, 'subclass': 1755442170})
@@ -1679,48 +1911,66 @@ class Test(TestPluginMapcss):
         self.check_err(n.way(data, {'railway': 'rail', 'railway:traffic_mode': 'passenger', 'usage': 'freight'}, [0]), expected={'class': 9015005, 'subclass': 1212704987})
         self.check_not_err(n.way(data, {'railway': 'rail', 'usage': 'industrial'}, [0]), expected={'class': 9015005, 'subclass': 1212704987})
         self.check_not_err(n.way(data, {'railway': 'rail', 'usage': 'main'}, [0]), expected={'class': 9015005, 'subclass': 1212704987})
-        self.check_err(n.way(data, {'name': '14', 'railway': 'light_rail', 'railway:track_ref': '14'}, [0]), expected={'class': 9015007, 'subclass': 2091521035})
-        self.check_not_err(n.way(data, {'name': 'Gleis 14b', 'railway': 'rail', 'railway:track_ref': '14b'}, [0]), expected={'class': 9015007, 'subclass': 2091521035})
-        self.check_not_err(n.way(data, {'name': 'Gleis 14b', 'railway': 'rail'}, [0]), expected={'class': 9015007, 'subclass': 2091521035})
-        self.check_err(n.way(data, {'name': '14b', 'railway': 'rail', 'railway:track_ref': '14b'}, [0]), expected={'class': 9015007, 'subclass': 2091521035})
-        self.check_not_err(n.way(data, {'name': '3', 'railway': 'rail'}, [0]), expected={'class': 9015007, 'subclass': 2091521035})
-        self.check_err(n.way(data, {'name': '4', 'railway': 'rail', 'railway:track_ref': '4'}, [0]), expected={'class': 9015007, 'subclass': 2091521035})
-        self.check_err(n.way(data, {'name': '4a', 'railway': 'rail', 'railway:track_ref': '4a'}, [0]), expected={'class': 9015007, 'subclass': 2091521035})
-        self.check_err(n.way(data, {'name': '14', 'railway': 'light_rail'}, [0]), expected={'class': 9015007, 'subclass': 85438379})
-        self.check_not_err(n.way(data, {'name': '3', 'railway': 'platform'}, [0]), expected={'class': 9015007, 'subclass': 85438379})
-        self.check_not_err(n.way(data, {'name': 'Gleis 14b', 'railway': 'rail'}, [0]), expected={'class': 9015007, 'subclass': 85438379})
-        self.check_not_err(n.way(data, {'name': 'track 4b', 'railway': 'rail'}, [0]), expected={'class': 9015007, 'subclass': 85438379})
-        self.check_err(n.way(data, {'name': '14b', 'railway': 'rail'}, [0]), expected={'class': 9015007, 'subclass': 85438379})
-        self.check_err(n.way(data, {'name': '4', 'railway': 'rail'}, [0]), expected={'class': 9015007, 'subclass': 85438379})
-        self.check_err(n.way(data, {'name': '4a', 'railway': 'rail'}, [0]), expected={'class': 9015007, 'subclass': 85438379})
-        self.check_err(n.way(data, {'railway': 'light_rail', 'ref': '14', 'service': 'siding'}, [0]), expected={'class': 9015045, 'subclass': 194113748})
-        self.check_not_err(n.way(data, {'railway': 'platform', 'ref': '3'}, [0]), expected={'class': 9015045, 'subclass': 194113748})
-        self.check_not_err(n.way(data, {'railway': 'rail', 'ref': '1234'}, [0]), expected={'class': 9015045, 'subclass': 194113748})
-        self.check_err(n.way(data, {'railway': 'rail', 'ref': '4a', 'service': 'crossover'}, [0]), expected={'class': 9015045, 'subclass': 194113748})
-        self.check_not_err(n.way(data, {'railway': 'rail', 'railway:track_ref': '14b', 'service': 'siding'}, [0]), expected={'class': 9015045, 'subclass': 194113748})
-        self.check_err(n.way(data, {'railway': 'rail', 'ref': '4', 'service': 'siding'}, [0]), expected={'class': 9015045, 'subclass': 194113748})
-        self.check_err(n.way(data, {'railway': 'platform', 'railway:track_ref': '3', 'ref': '3'}, [0]), expected={'class': 9015008, 'subclass': 226422824})
-        self.check_not_err(n.way(data, {'railway': 'platform', 'railway:track_ref': '3', 'ref': '4'}, [0]), expected={'class': 9015008, 'subclass': 226422824})
-        self.check_err(n.way(data, {'railway': 'platform', 'railway:track_ref': '3'}, [0]), expected={'class': 9015008, 'subclass': 226422824})
-        self.check_not_err(n.way(data, {'railway': 'rail', 'railway:track_ref': '3'}, [0]), expected={'class': 9015008, 'subclass': 226422824})
-        self.check_not_err(n.way(data, {'railway': 'platform', 'railway:track_ref': '3', 'ref': '3'}, [0]), expected={'class': 9015008, 'subclass': 1676742857})
-        self.check_err(n.way(data, {'railway': 'platform', 'railway:track_ref': '3', 'ref': '4'}, [0]), expected={'class': 9015008, 'subclass': 1676742857})
-        self.check_not_err(n.way(data, {'railway': 'platform', 'railway:track_ref': '3'}, [0]), expected={'class': 9015008, 'subclass': 1676742857})
-        self.check_not_err(n.way(data, {'railway': 'rail', 'railway:track_ref': '3'}, [0]), expected={'class': 9015008, 'subclass': 1676742857})
-        self.check_err(n.way(data, {'name': 'Gleis 14b', 'railway': 'rail'}, [0]), expected={'class': 9015009, 'subclass': 1420092530})
-        self.check_not_err(n.way(data, {'name': '14b', 'railway': 'rail'}, [0]), expected={'class': 9015009, 'subclass': 1420092530})
-        self.check_err(n.way(data, {'railway': 'rail', 'ref': 'track 4b'}, [0]), expected={'class': 9015009, 'subclass': 1420092530})
-        self.check_err(n.way(data, {'description': 'Gleis 14b', 'name': 'Gleis 14b', 'railway': 'platform'}, [0]), expected={'class': 9015010, 'subclass': 1156420508})
-        self.check_err(n.way(data, {'name': 'Gleis 14b', 'railway': 'platform'}, [0]), expected={'class': 9015010, 'subclass': 1156420508})
-        self.check_not_err(n.way(data, {'description': 'other', 'name': '14b', 'railway': 'platform'}, [0]), expected={'class': 9015010, 'subclass': 1156420508})
-        self.check_not_err(n.way(data, {'name': '14b', 'railway': 'platform'}, [0]), expected={'class': 9015010, 'subclass': 1156420508})
-        self.check_err(n.way(data, {'railway': 'platform', 'ref': 'track 4b'}, [0]), expected={'class': 9015010, 'subclass': 1156420508})
-        self.check_err(n.way(data, {'railway': 'platform', 'ref': 'track 4b'}, [0]), expected={'class': 9015010, 'subclass': 1156420508})
-        self.check_not_err(n.way(data, {'name': '14b', 'railway': 'rail'}, [0]), expected={'class': 9015010, 'subclass': 1156420508})
-        self.check_err(n.way(data, {'description': 'other', 'name': 'Gleis 14b', 'railway': 'platform'}, [0]), expected={'class': 9015010, 'subclass': 1149450895})
-        self.check_not_err(n.way(data, {'description': '14b', 'name': '14b', 'railway': 'platform'}, [0]), expected={'class': 9015010, 'subclass': 1149450895})
-        self.check_not_err(n.way(data, {'name': '14b', 'railway': 'platform'}, [0]), expected={'class': 9015010, 'subclass': 1149450895})
-        self.check_err(n.way(data, {'description': 'other', 'railway': 'platform', 'ref': 'track 4b'}, [0]), expected={'class': 9015010, 'subclass': 1149450895})
+        self.check_err(n.way(data, {'name': '14', 'railway': 'light_rail', 'railway:track_ref': '14'}, [0]), expected={'class': 9015007, 'subclass': 1642887419})
+        self.check_not_err(n.way(data, {'name': 'Gleis 14b', 'railway': 'rail', 'railway:track_ref': '14b'}, [0]), expected={'class': 9015007, 'subclass': 1642887419})
+        self.check_not_err(n.way(data, {'name': 'Gleis 14b', 'railway': 'rail'}, [0]), expected={'class': 9015007, 'subclass': 1642887419})
+        self.check_err(n.way(data, {'name': '14b', 'railway': 'rail', 'railway:track_ref': '14b'}, [0]), expected={'class': 9015007, 'subclass': 1642887419})
+        self.check_not_err(n.way(data, {'name': '3', 'railway': 'rail'}, [0]), expected={'class': 9015007, 'subclass': 1642887419})
+        self.check_err(n.way(data, {'name': '4', 'railway': 'rail', 'railway:track_ref': '4'}, [0]), expected={'class': 9015007, 'subclass': 1642887419})
+        self.check_err(n.way(data, {'name': '4a', 'railway': 'rail', 'railway:track_ref': '4a'}, [0]), expected={'class': 9015007, 'subclass': 1642887419})
+        self.check_err(n.way(data, {'name': '14', 'railway': 'light_rail'}, [0]), expected={'class': 9015007, 'subclass': 1046448667})
+        self.check_not_err(n.way(data, {'name': '3', 'railway': 'platform'}, [0]), expected={'class': 9015007, 'subclass': 1046448667})
+        self.check_not_err(n.way(data, {'name': '3', 'railway': 'platform_edge'}, [0]), expected={'class': 9015007, 'subclass': 1046448667})
+        self.check_not_err(n.way(data, {'name': 'Gleis 14b', 'railway': 'rail'}, [0]), expected={'class': 9015007, 'subclass': 1046448667})
+        self.check_not_err(n.way(data, {'name': 'track 4b', 'railway': 'rail'}, [0]), expected={'class': 9015007, 'subclass': 1046448667})
+        self.check_err(n.way(data, {'name': '14b', 'railway': 'rail'}, [0]), expected={'class': 9015007, 'subclass': 1046448667})
+        self.check_err(n.way(data, {'name': '4', 'railway': 'rail'}, [0]), expected={'class': 9015007, 'subclass': 1046448667})
+        self.check_err(n.way(data, {'name': '4a', 'railway': 'rail'}, [0]), expected={'class': 9015007, 'subclass': 1046448667})
+        self.check_err(n.way(data, {'railway': 'light_rail', 'ref': '14', 'service': 'siding'}, [0]), expected={'class': 9015045, 'subclass': 2044248138})
+        self.check_not_err(n.way(data, {'railway': 'platform', 'ref': '3'}, [0]), expected={'class': 9015045, 'subclass': 2044248138})
+        self.check_not_err(n.way(data, {'railway': 'platform_edge', 'ref': '3'}, [0]), expected={'class': 9015045, 'subclass': 2044248138})
+        self.check_not_err(n.way(data, {'railway': 'rail', 'ref': '1234'}, [0]), expected={'class': 9015045, 'subclass': 2044248138})
+        self.check_err(n.way(data, {'railway': 'rail', 'ref': '4a', 'service': 'crossover'}, [0]), expected={'class': 9015045, 'subclass': 2044248138})
+        self.check_not_err(n.way(data, {'railway': 'rail', 'railway:track_ref': '14b', 'service': 'siding'}, [0]), expected={'class': 9015045, 'subclass': 2044248138})
+        self.check_err(n.way(data, {'railway': 'rail', 'ref': '4', 'service': 'siding'}, [0]), expected={'class': 9015045, 'subclass': 2044248138})
+        self.check_err(n.way(data, {'railway': 'platform', 'railway:track_ref': '3', 'ref': '3'}, [0]), expected={'class': 9015008, 'subclass': 1225277436})
+        self.check_not_err(n.way(data, {'railway': 'platform', 'railway:track_ref': '3', 'ref': '4'}, [0]), expected={'class': 9015008, 'subclass': 1225277436})
+        self.check_err(n.way(data, {'railway': 'platform', 'railway:track_ref': '3'}, [0]), expected={'class': 9015008, 'subclass': 1225277436})
+        self.check_err(n.way(data, {'railway': 'platform_edge', 'railway:track_ref': '3', 'ref': '3'}, [0]), expected={'class': 9015008, 'subclass': 1225277436})
+        self.check_not_err(n.way(data, {'railway': 'platform_edge', 'railway:track_ref': '3', 'ref': '4'}, [0]), expected={'class': 9015008, 'subclass': 1225277436})
+        self.check_err(n.way(data, {'railway': 'platform_edge', 'railway:track_ref': '3'}, [0]), expected={'class': 9015008, 'subclass': 1225277436})
+        self.check_not_err(n.way(data, {'railway': 'rail', 'railway:track_ref': '3'}, [0]), expected={'class': 9015008, 'subclass': 1225277436})
+        self.check_not_err(n.way(data, {'railway': 'platform', 'railway:track_ref': '3', 'ref': '3'}, [0]), expected={'class': 9015008, 'subclass': 197759443})
+        self.check_err(n.way(data, {'railway': 'platform', 'railway:track_ref': '3', 'ref': '4'}, [0]), expected={'class': 9015008, 'subclass': 197759443})
+        self.check_not_err(n.way(data, {'railway': 'platform', 'railway:track_ref': '3'}, [0]), expected={'class': 9015008, 'subclass': 197759443})
+        self.check_not_err(n.way(data, {'railway': 'platform_edge', 'railway:track_ref': '3', 'ref': '3'}, [0]), expected={'class': 9015008, 'subclass': 197759443})
+        self.check_err(n.way(data, {'railway': 'platform_edge', 'railway:track_ref': '3', 'ref': '4'}, [0]), expected={'class': 9015008, 'subclass': 197759443})
+        self.check_not_err(n.way(data, {'railway': 'platform_edge', 'railway:track_ref': '3'}, [0]), expected={'class': 9015008, 'subclass': 197759443})
+        self.check_not_err(n.way(data, {'railway': 'rail', 'railway:track_ref': '3'}, [0]), expected={'class': 9015008, 'subclass': 197759443})
+        self.check_err(n.way(data, {'name': 'Gleis 14b', 'railway': 'rail'}, [0]), expected={'class': 9015009, 'subclass': 1419534293})
+        self.check_not_err(n.way(data, {'name': '14b', 'railway': 'rail'}, [0]), expected={'class': 9015009, 'subclass': 1419534293})
+        self.check_err(n.way(data, {'railway': 'rail', 'ref': 'track 4b'}, [0]), expected={'class': 9015009, 'subclass': 1419534293})
+        self.check_err(n.way(data, {'description': 'Gleis 14b', 'name': 'Gleis 14b', 'railway': 'platform'}, [0]), expected={'class': 9015010, 'subclass': 1781916260})
+        self.check_err(n.way(data, {'name': 'Gleis 14b', 'railway': 'platform'}, [0]), expected={'class': 9015010, 'subclass': 1781916260})
+        self.check_not_err(n.way(data, {'description': 'other', 'name': '14b', 'railway': 'platform'}, [0]), expected={'class': 9015010, 'subclass': 1781916260})
+        self.check_not_err(n.way(data, {'name': '14b', 'railway': 'platform'}, [0]), expected={'class': 9015010, 'subclass': 1781916260})
+        self.check_err(n.way(data, {'railway': 'platform', 'ref': 'track 4b'}, [0]), expected={'class': 9015010, 'subclass': 1781916260})
+        self.check_err(n.way(data, {'railway': 'platform', 'ref': 'track 4b'}, [0]), expected={'class': 9015010, 'subclass': 1781916260})
+        self.check_err(n.way(data, {'description': 'Gleis 14b', 'name': 'Gleis 14b', 'railway': 'platform_edge'}, [0]), expected={'class': 9015010, 'subclass': 1781916260})
+        self.check_err(n.way(data, {'name': 'Gleis 14b', 'railway': 'platform_edge'}, [0]), expected={'class': 9015010, 'subclass': 1781916260})
+        self.check_not_err(n.way(data, {'description': 'other', 'name': '14b', 'railway': 'platform_edge'}, [0]), expected={'class': 9015010, 'subclass': 1781916260})
+        self.check_not_err(n.way(data, {'name': '14b', 'railway': 'platform_edge'}, [0]), expected={'class': 9015010, 'subclass': 1781916260})
+        self.check_err(n.way(data, {'railway': 'platform_edge', 'ref': 'track 4b'}, [0]), expected={'class': 9015010, 'subclass': 1781916260})
+        self.check_err(n.way(data, {'railway': 'platform_edge', 'ref': 'track 4b'}, [0]), expected={'class': 9015010, 'subclass': 1781916260})
+        self.check_not_err(n.way(data, {'name': '14b', 'railway': 'rail'}, [0]), expected={'class': 9015010, 'subclass': 1781916260})
+        self.check_err(n.way(data, {'description': 'other', 'name': 'Gleis 14b', 'railway': 'platform'}, [0]), expected={'class': 9015010, 'subclass': 640924794})
+        self.check_not_err(n.way(data, {'description': '14b', 'name': '14b', 'railway': 'platform'}, [0]), expected={'class': 9015010, 'subclass': 640924794})
+        self.check_not_err(n.way(data, {'name': '14b', 'railway': 'platform'}, [0]), expected={'class': 9015010, 'subclass': 640924794})
+        self.check_err(n.way(data, {'description': 'other', 'railway': 'platform', 'ref': 'track 4b'}, [0]), expected={'class': 9015010, 'subclass': 640924794})
+        self.check_err(n.way(data, {'description': 'other', 'name': 'Gleis 14b', 'railway': 'platform_edge'}, [0]), expected={'class': 9015010, 'subclass': 640924794})
+        self.check_not_err(n.way(data, {'description': '14b', 'name': '14b', 'railway': 'platform_edge'}, [0]), expected={'class': 9015010, 'subclass': 640924794})
+        self.check_not_err(n.way(data, {'name': '14b', 'railway': 'platform_edge'}, [0]), expected={'class': 9015010, 'subclass': 640924794})
+        self.check_err(n.way(data, {'description': 'other', 'railway': 'platform_edge', 'ref': 'track 4b'}, [0]), expected={'class': 9015010, 'subclass': 640924794})
         self.check_err(n.way(data, {'electrified': 'contact_line', 'power:type': 'overhead', 'railway': 'rail'}, [0]), expected={'class': 9015011, 'subclass': 1012477221})
         self.check_not_err(n.way(data, {'electrified': 'something', 'power:type': 'overhead', 'railway': 'rail'}, [0]), expected={'class': 9015011, 'subclass': 1012477221})
         self.check_not_err(n.way(data, {'electrified': 'something', 'power:type': 'overhead', 'railway': 'rail'}, [0]), expected={'class': 9015011, 'subclass': 1909233042})
@@ -1742,8 +1992,8 @@ class Test(TestPluginMapcss):
         self.check_not_err(n.way(data, {'railway': 'rail', 'tracks': '1'}, [0]), expected={'class': 9015016, 'subclass': 256757521})
         self.check_err(n.way(data, {'railway': 'rail', 'service': 'foo', 'tracks': '2'}, [0]), expected={'class': 9015016, 'subclass': 256757521})
         self.check_not_err(n.way(data, {'railway': 'rail', 'tracks': '2', 'usage': 'bar'}, [0]), expected={'class': 9015016, 'subclass': 256757521})
-        self.check_err(n.way(data, {'railway': 'crossing', 'railway:position:exact': '2.4'}, [0]), expected={'class': 9015017, 'subclass': 2146160181})
-        self.check_err(n.way(data, {'railway': 'level_crossing', 'railway:position:exact': '2.4'}, [0]), expected={'class': 9015017, 'subclass': 2146160181})
+        self.check_err(n.way(data, {'railway': 'crossing', 'railway:position:exact': '2.4'}, [0]), expected={'class': 9015017, 'subclass': 145776718})
+        self.check_err(n.way(data, {'railway': 'level_crossing', 'railway:position:exact': '2.4'}, [0]), expected={'class': 9015017, 'subclass': 145776718})
         self.check_not_err(n.way(data, {'radio': 'GSM', 'railway': 'rail'}, [0]), expected={'class': 9015018, 'subclass': 2078132492})
         self.check_not_err(n.way(data, {'radio': 'GSM-R', 'railway': 'rail', 'railway:radio': 'gsm'}, [0]), expected={'class': 9015018, 'subclass': 2078132492})
         self.check_err(n.way(data, {'radio': 'GSM-R', 'railway': 'rail', 'railway:radio': 'gsm-r'}, [0]), expected={'class': 9015018, 'subclass': 2078132492})
@@ -1752,26 +2002,26 @@ class Test(TestPluginMapcss):
         self.check_err(n.way(data, {'radio': 'GSM-R', 'railway': 'rail', 'railway:radio': 'gsm'}, [0]), expected={'class': 9015019, 'subclass': 406318522})
         self.check_not_err(n.way(data, {'radio': 'GSM-R', 'railway': 'rail', 'railway:radio': 'gsm-r'}, [0]), expected={'class': 9015019, 'subclass': 406318522})
         self.check_not_err(n.way(data, {'radio': 'GSM-R', 'railway': 'rail'}, [0]), expected={'class': 9015019, 'subclass': 406318522})
-        self.check_err(n.way(data, {'name': 'Bartunnel', 'railway': 'light_rail', 'tunnel:name': 'Bartunnel'}, [0]), expected={'class': 9015020, 'subclass': 1651250819})
-        self.check_not_err(n.way(data, {'name': 'Footunnel', 'railway': 'platform'}, [0]), expected={'class': 9015020, 'subclass': 1651250819})
-        self.check_err(n.way(data, {'name': 'Footunnel', 'railway': 'rail'}, [0]), expected={'class': 9015020, 'subclass': 1651250819})
-        self.check_not_err(n.way(data, {'railway': 'rail', 'tunnel:name': 'Baztunnel'}, [0]), expected={'class': 9015020, 'subclass': 1651250819})
-        self.check_err(n.way(data, {'railway': 'light_rail', 'tunnel:wikipedia': 'Bartunnel', 'wikipedia': 'Bartunnel'}, [0]), expected={'class': 9015021, 'subclass': 1581548500})
-        self.check_not_err(n.way(data, {'railway': 'platform', 'wikipedia': 'Footunnel'}, [0]), expected={'class': 9015021, 'subclass': 1581548500})
-        self.check_not_err(n.way(data, {'railway': 'rail', 'tunnel:wikipedia': 'Baztunnel'}, [0]), expected={'class': 9015021, 'subclass': 1581548500})
-        self.check_err(n.way(data, {'railway': 'rail', 'wikipedia': 'Footunnel'}, [0]), expected={'class': 9015021, 'subclass': 1581548500})
-        self.check_err(n.way(data, {'bridge:name': 'Bar bridge', 'name': 'Bar bridge', 'railway': 'light_rail'}, [0]), expected={'class': 9015022, 'subclass': 359430532})
-        self.check_not_err(n.way(data, {'name': 'Noltemeyerbrücke', 'railway': 'platform'}, [0]), expected={'class': 9015022, 'subclass': 359430532})
-        self.check_not_err(n.way(data, {'bridge:name': 'Foo-Viadukt', 'railway': 'rail'}, [0]), expected={'class': 9015022, 'subclass': 359430532})
-        self.check_err(n.way(data, {'name': 'Bay bridge', 'railway': 'rail'}, [0]), expected={'class': 9015022, 'subclass': 359430532})
-        self.check_err(n.way(data, {'name': 'Baz viaduct', 'railway': 'rail'}, [0]), expected={'class': 9015022, 'subclass': 359430532})
-        self.check_err(n.way(data, {'name': 'Foobrücke', 'railway': 'rail'}, [0]), expected={'class': 9015022, 'subclass': 359430532})
-        self.check_err(n.way(data, {'bridge:wikipedia': 'Bar bridge', 'railway': 'light_rail', 'wikipedia': 'Bar bridge'}, [0]), expected={'class': 9015023, 'subclass': 1594751596})
-        self.check_not_err(n.way(data, {'railway': 'platform', 'wikipedia': 'Foobrücke'}, [0]), expected={'class': 9015023, 'subclass': 1594751596})
-        self.check_not_err(n.way(data, {'bridge:wikipedia': 'Foo-Viadukt', 'railway': 'rail'}, [0]), expected={'class': 9015023, 'subclass': 1594751596})
-        self.check_err(n.way(data, {'railway': 'rail', 'wikipedia': 'Bay bridge'}, [0]), expected={'class': 9015023, 'subclass': 1594751596})
-        self.check_err(n.way(data, {'railway': 'rail', 'wikipedia': 'Baz viaduct'}, [0]), expected={'class': 9015023, 'subclass': 1594751596})
-        self.check_err(n.way(data, {'railway': 'rail', 'wikipedia': 'Foobrücke'}, [0]), expected={'class': 9015023, 'subclass': 1594751596})
+        self.check_err(n.way(data, {'name': 'Bartunnel', 'railway': 'light_rail', 'tunnel:name': 'Bartunnel'}, [0]), expected={'class': 9015020, 'subclass': 1130379741})
+        self.check_not_err(n.way(data, {'name': 'Footunnel', 'railway': 'platform'}, [0]), expected={'class': 9015020, 'subclass': 1130379741})
+        self.check_err(n.way(data, {'name': 'Footunnel', 'railway': 'rail'}, [0]), expected={'class': 9015020, 'subclass': 1130379741})
+        self.check_not_err(n.way(data, {'railway': 'rail', 'tunnel:name': 'Baztunnel'}, [0]), expected={'class': 9015020, 'subclass': 1130379741})
+        self.check_err(n.way(data, {'railway': 'light_rail', 'tunnel:wikipedia': 'Bartunnel', 'wikipedia': 'Bartunnel'}, [0]), expected={'class': 9015021, 'subclass': 333095636})
+        self.check_not_err(n.way(data, {'railway': 'platform', 'wikipedia': 'Footunnel'}, [0]), expected={'class': 9015021, 'subclass': 333095636})
+        self.check_not_err(n.way(data, {'railway': 'rail', 'tunnel:wikipedia': 'Baztunnel'}, [0]), expected={'class': 9015021, 'subclass': 333095636})
+        self.check_err(n.way(data, {'railway': 'rail', 'wikipedia': 'Footunnel'}, [0]), expected={'class': 9015021, 'subclass': 333095636})
+        self.check_err(n.way(data, {'bridge:name': 'Bar bridge', 'name': 'Bar bridge', 'railway': 'light_rail'}, [0]), expected={'class': 9015022, 'subclass': 1280170106})
+        self.check_not_err(n.way(data, {'name': 'Noltemeyerbrücke', 'railway': 'platform'}, [0]), expected={'class': 9015022, 'subclass': 1280170106})
+        self.check_not_err(n.way(data, {'bridge:name': 'Foo-Viadukt', 'railway': 'rail'}, [0]), expected={'class': 9015022, 'subclass': 1280170106})
+        self.check_err(n.way(data, {'name': 'Bay bridge', 'railway': 'rail'}, [0]), expected={'class': 9015022, 'subclass': 1280170106})
+        self.check_err(n.way(data, {'name': 'Baz viaduct', 'railway': 'rail'}, [0]), expected={'class': 9015022, 'subclass': 1280170106})
+        self.check_err(n.way(data, {'name': 'Foobrücke', 'railway': 'rail'}, [0]), expected={'class': 9015022, 'subclass': 1280170106})
+        self.check_err(n.way(data, {'bridge:wikipedia': 'Bar bridge', 'railway': 'light_rail', 'wikipedia': 'Bar bridge'}, [0]), expected={'class': 9015023, 'subclass': 2090973469})
+        self.check_not_err(n.way(data, {'railway': 'platform', 'wikipedia': 'Foobrücke'}, [0]), expected={'class': 9015023, 'subclass': 2090973469})
+        self.check_not_err(n.way(data, {'bridge:wikipedia': 'Foo-Viadukt', 'railway': 'rail'}, [0]), expected={'class': 9015023, 'subclass': 2090973469})
+        self.check_err(n.way(data, {'railway': 'rail', 'wikipedia': 'Bay bridge'}, [0]), expected={'class': 9015023, 'subclass': 2090973469})
+        self.check_err(n.way(data, {'railway': 'rail', 'wikipedia': 'Baz viaduct'}, [0]), expected={'class': 9015023, 'subclass': 2090973469})
+        self.check_err(n.way(data, {'railway': 'rail', 'wikipedia': 'Foobrücke'}, [0]), expected={'class': 9015023, 'subclass': 2090973469})
         self.check_not_err(n.way(data, {'highway': 'tertiary', 'lanes': '3', 'railway': 'abandoned'}, [0]), expected={'class': 9015024, 'subclass': 245965100})
         self.check_err(n.way(data, {'lanes': '2', 'railway': 'rail'}, [0]), expected={'class': 9015024, 'subclass': 245965100})
         self.check_not_err(n.way(data, {'railway': 'rail', 'tracks': '1'}, [0]), expected={'class': 9015024, 'subclass': 245965100})

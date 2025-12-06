@@ -1,13 +1,13 @@
 # Analyzer based on SQL query - The basics
 
-The database is a PostgreSQL with PostGIS spatial extension and hstore. It is know as [Osmosis](https://wiki.openstreetmap.org/wiki/Osmosis) schema and loaded by the tool of the same name.
+The database is a PostgreSQL with PostGIS spatial extension and hstore. It is known as [Osmosis](https://wiki.openstreetmap.org/wiki/Osmosis) schema and loaded by the tool of the same name.
 
 
 ## Database schema
 
 There is 3 main tables `nodes`, `ways` and `relations`.
 
-All table have in common:
+All tables have in common:
 * `id`: bigint
 * `version`: integer
 * `user_id`: integer, the value may not be available
@@ -68,9 +68,9 @@ Spatial index must be used to largely improve performance on spatial crossing qu
 
 ### Definition
 
-The analyzer inherit from class `Analyser_Osmosis`. It have to implement `__init__()` for defining Osmose issues classes using method `def_class` (see general documentation about this).
+The analyzer inherit from class `Analyser_Osmosis`. It has to implement `__init__()` for defining Osmose issues classes using method `def_class` (see general documentation about this).
 
-The analyzer also have to implement a non diff mode:
+The analyzer also has to implement a non diff mode:
 * `analyser_osmosis_common()`: run check not supporting diff mode.
 
 Or a diff mode, with this two methods:
@@ -109,10 +109,14 @@ The available value for the `data`, mapping OSM object id are:
 * `way_full`
 * `relation`
 * `relation_full`
+* `any_full` (N/W/R + id)
+* `any_id` (N/W/R + id)
+
 From array of (type: N/W/R, ids):
 * `array_full`
+* `array_id`
 
-Without `_full` variant, only the id is keep in the Osmose issue, not the tags and other attributes.
+Without the `_full` suffix, only the id is kept in the Osmose issue, not the tags and other attributes.
 
 When we want to create a new node object we can use:
 * `node_new`
@@ -133,6 +137,7 @@ ST_AsText(ST_Centroid(ways.linestring))
 
 SQL Helpers are available to compute a location from OSM objects:
 * `way_locate(linestring)`: extract position from central point on the linestring, avoid joining on `nodes`.
+* `polygon_locate(poly)`: get a position that lies within a (multi)polygon.
 * `relation_locate(id)`: loop over relation members to extract a location.
 * `any_locate(type N/W/R, id)`: get location of variable object types.
 * `array_locate(array[type N/W/R, id])`: get location of array of variable object types.
@@ -164,10 +169,12 @@ FROM
 #### Common Factorized tables
 May analyzers work on same topic. To avoid recomputing intermediate tables many time, and not always on the ways in interpreting OSM tags, some generic tables are available. There are computed only on request, but reused once it is done.
 
-The available common tables are (see full definition in Analyser_Osmosis.py):
-* highways: with tags normalization, levels classification and re projected in local country _projection_.
-* highway_ends: the start and ends of all highways ways.
-* buildings: from ways (and not from multipolygon relations), with tags normalization and re-projected in local country _projection_ as _polygons_.
+The available common tables are (see full definition in [Analyser_Osmosis.py](https://github.com/osmose-qa/osmose-backend/blob/master/analysers/Analyser_Osmosis.py)):
+* `highways`: with tags normalization, levels classification and re projected in local country _projection_.
+* `highway_ends`: the start and ends of all highways ways.
+* `buildings`: from ways (and not from multipolygon relations), with tags normalization and re-projected in local country _projection_ as _polygons_.
+* `multipolygons`: multipolygon relations with relation id, relation tags, geometry and projected geometry, and whether the multipolygon is valid.
+* `polygons`: valid polygons from relations and ways with osm object type, id, tags, geometry and projected geometry
 
 The dependencie on this common tables should be declared in the analyzer class:
 ```python

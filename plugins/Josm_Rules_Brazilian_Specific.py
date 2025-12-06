@@ -7,6 +7,10 @@ from plugins.PluginMapCSS import PluginMapCSS
 
 
 class Josm_Rules_Brazilian_Specific(PluginMapCSS):
+    # ------------------------------- IMPORTANT -------------------------------
+    # This file is generated automatically and should not be modified directly.
+    # Instead, modify the source mapcss file and regenerate this Python script.
+    # -------------------------------------------------------------------------
 
     MAPCSS_URL = 'https://github.com/OSMBrasil/validador-josm/blob/master/Rules_Brazilian-Specific.validator.mapcss'
 
@@ -62,6 +66,9 @@ class Josm_Rules_Brazilian_Specific(PluginMapCSS):
         self.errors[9018056] = self.def_class(item = 9018, level = 2, tags = ["tag"], title = mapcss.tr('{0} deve ser utilizado apenas no nó de saída da rodovia', mapcss._tag_uncapture(capture_tags, '{0.tag}')))
         self.errors[9018063] = self.def_class(item = 9018, level = 3, tags = ["tag"], title = mapcss.tr('uso incorreto de {0} com {1}', mapcss._tag_uncapture(capture_tags, '{0.tag}'), mapcss._tag_uncapture(capture_tags, '{1.tag}')))
         self.errors[9018064] = self.def_class(item = 9018, level = 3, tags = ["tag"], title = mapcss.tr('uso incorreto de {0}', mapcss._tag_uncapture(capture_tags, '{1.key}')))
+        self.errors[9018065] = self.def_class(item = 9018, level = 3, tags = ["tag"], title = mapcss.tr('ausência de wetland=*'))
+        self.errors[9018066] = self.def_class(item = 9018, level = 3, tags = ["tag"], title = mapcss.tr('\'\'{0}\'\' sem \'\'{1}\'\' definida', mapcss._tag_uncapture(capture_tags, '{0.tag}'), mapcss._tag_uncapture(capture_tags, '{1.key}')))
+        self.errors[9018067] = self.def_class(item = 9018, level = 3, tags = ["tag"], title = mapcss.tr('{0} inapropriada para \'\'{1}\'\'', mapcss._tag_uncapture(capture_tags, '{1.key}'), mapcss._tag_uncapture(capture_tags, '{0.tag}')))
 
         self.re_01454d46 = re.compile(r'(?i)\bmotel\b')
         self.re_044c8944 = re.compile(r'^(?i)(?u)(SENAC|SENAI|Serviço Nacional de Aprendizagem)')
@@ -84,6 +91,7 @@ class Josm_Rules_Brazilian_Specific(PluginMapCSS):
         self.re_160d1bfc = re.compile(r'^(?i)creche\b')
         self.re_178f5446 = re.compile(r'(?i)(^|.* )(Cel|Cmte|Cond|Conj|Dª|Dr|Eng|Gov|Hab|Jd|Jr|Marg|Mun|p\/|Pde|Pe|Pq|Pst|Pref|Profa|Profª|Prof|Res|s\/|Sr(a|ª)?|Sta|Sto|Ver)\.? .*')
         self.re_17fd35b3 = re.compile(r'^pt:')
+        self.re_1b6eb989 = re.compile(r'^(fine_gravel|gravel|pebbles|pebblestone|sand|shells|shingle|stones)$')
         self.re_1d232d4c = re.compile(r'^(?i)(?u)(Centro Universitário|Faculdades?|FATEC|Instituto Federal)\b')
         self.re_20188fb1 = re.compile(r'^[0-9]+( |-)*([A-Z])?$')
         self.re_20c7dd98 = re.compile(r'^(?i)(?u)(aldeia|borrach(aria|eiro)|bosque|capela|cemit(é|e)rio|c(ó|o)rrego|escola|estacionamento|fazenda|floresta|hospital|igreja|lago|lagoa|mata( nativa)?|praça|parque|parquinho|posto( de gasolina)?|riacho|rio|rodovi(á|a)ria|vila)$')
@@ -98,6 +106,7 @@ class Josm_Rules_Brazilian_Specific(PluginMapCSS):
         self.re_2fcb6bab = re.compile(r'^(?i)ciclovia .*')
         self.re_2ffc377d = re.compile(r'.* D(a|e|o)s? .*')
         self.re_31732cd0 = re.compile(r'(?i)(?u)^(Brasilg(á|a)s|Consigaz|Copagaz|Liquig(á|a)s|Minasg(á|a)s|Nacional G(á|a)s|Supergasbras|Ultragaz)$')
+        self.re_3570fd42 = re.compile(r'(?i)\bAPA\b')
         self.re_35bb0f2f = re.compile(r'^(?i)(?u)(auto(-| )?( moto )?escola|centro de formação de condutores|cfc|moto escola)\b')
         self.re_362f879f = re.compile(r'college|school')
         self.re_375e3de4 = re.compile(r'.*([A-Z]{2,3}-[0-9]{2,4}|SPM(-| )[0-9]{3} ?(D|E)?|SP(A|D|I)(-| )[0-9]{3}\/[0-9]{3}|[A-Z]{3}-[0-9]{3}\/[0-9]{3}).*')
@@ -111,6 +120,7 @@ class Josm_Rules_Brazilian_Specific(PluginMapCSS):
         self.re_4a8ca94e = re.compile(r'^(?i)(?u)praça.*')
         self.re_4bd3b925 = re.compile(r'^(?i)(?u)[a-z0-9]+_([a-z0-9]_?)+$')
         self.re_4cf86823 = re.compile(r'(?i)\bsaude\b')
+        self.re_509425de = re.compile(r'(?i)(?u)\bAPA\b|Área de Proteção Ambiental')
         self.re_524288b6 = re.compile(r'^BR[0-9]{14}$')
         self.re_52ab3b8b = re.compile(r'^(?i)(?u)((Posto|Unidade (Básica)?) de Sa(u|ú)de|UBS|PSF|hospital)$')
         self.re_53abc074 = re.compile(r'^(give_way|mini_roundabout|stop|turning_circle)$')
@@ -262,7 +272,7 @@ class Josm_Rules_Brazilian_Specific(PluginMapCSS):
                 err.append({'class': 9018002, 'subclass': 1104230922, 'text': mapcss.tr('local com nome supérfluo, incompleto ou descritivo')})
 
         # *[amenity=parking][name=~/(?i)^Estacionamento /][inside("BR")]
-        # Rule Blacklisted
+        # Rule Blacklisted (id: 1322492249)
 
         # *[designation=*"addr:housename"][inside("BR")]
         # *[ref=*designation][inside("BR")]
@@ -472,7 +482,7 @@ class Josm_Rules_Brazilian_Specific(PluginMapCSS):
         # *[place=city][!population][inside("BR")]
         # *[place=town][!population][inside("BR")]
         # *[place=village][!population][inside("BR")]
-        # Rule Blacklisted
+        # Rule Blacklisted (id: 339470124)
 
         # *[place=city][!name][inside("BR")]
         # *[place=town][!name][inside("BR")]
@@ -544,7 +554,7 @@ class Josm_Rules_Brazilian_Specific(PluginMapCSS):
             match = False
             if not match:
                 capture_tags = {}
-                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'place')) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 1, self.re_20fc5143), mapcss._tag_capture(capture_tags, 1, tags, 'name'))) and (not mapcss.regexp_test(mapcss._value_const_capture(capture_tags, 2, self.re_64387998, '^(?i)Bairro d(a|e|o)s?\b'), mapcss._tag_capture(capture_tags, 2, tags, 'name'))) and (mapcss.inside(self.father.config.options, 'BR')))
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'place')) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 1, self.re_20fc5143), mapcss._tag_capture(capture_tags, 1, tags, 'name'))) and (not mapcss.regexp_test(mapcss._value_const_capture(capture_tags, 2, self.re_64387998, '^(?i)Bairro d(a|e|o)s?\\b'), mapcss._tag_capture(capture_tags, 2, tags, 'name'))) and (mapcss.inside(self.father.config.options, 'BR')))
                 except mapcss.RuleAbort: pass
             if match:
                 # group:tr("Brasil - Verificar")
@@ -658,7 +668,7 @@ class Josm_Rules_Brazilian_Specific(PluginMapCSS):
         # *[name=~/^(?i)Catedral .*/][building][building!=cathedral][inside("BR")]
         # *[name=~/^(?i)Fazenda .*/][building][building!=farm][inside("BR")]
         # *[name=~/^(?i)Supermercado .*/][building][building!=supermarket][inside("BR")]
-        # Rule Blacklisted
+        # Rule Blacklisted (id: 1123790420)
 
         # *[name=~/^(?i)(?u)(AM(A|E)|(Posto|Unidade (Básica)?) de Sa(u|ú)de|UBS|PSF).*/][amenity=hospital][inside("BR")]
         if ('amenity' in keys and 'name' in keys):
@@ -758,13 +768,13 @@ class Josm_Rules_Brazilian_Specific(PluginMapCSS):
 
         # *[name=~/^(?U)(\p{Upper}| )+$/][inside("BR")]
         # *["addr:street"=~/^(?U)(\p{Upper}| )+$/][inside("BR")]
-        # Rule Blacklisted
+        # Rule Blacklisted (id: 951501764)
 
         # *["addr:postcode"=~/^[0-9]{8}$/][inside("BR")]
-        # Rule Blacklisted
+        # Rule Blacklisted (id: 1948798798)
 
         # *[postal_code=~/^[0-9]{8}$/][inside("BR")]
-        # Rule Blacklisted
+        # Rule Blacklisted (id: 733725137)
 
         # *["addr:postcode"=~/^[0-9]{5}( |\.)[0-9]{3}$/][inside("BR")]
         if ('addr:postcode' in keys):
@@ -800,7 +810,7 @@ class Josm_Rules_Brazilian_Specific(PluginMapCSS):
 
         # *["addr:postcode"]["addr:postcode"!~/^[0-9]{5}-[0-9]{3}$/][inside("BR")]
         # *[postal_code][postal_code!~/^[0-9]{5}-[0-9]{3}$/][inside("BR")]
-        # Rule Blacklisted
+        # Rule Blacklisted (id: 2074305530)
 
         # *[alt_source][source][inside("BR")]
         if ('alt_source' in keys and 'source' in keys):
@@ -970,7 +980,7 @@ class Josm_Rules_Brazilian_Specific(PluginMapCSS):
                 err.append({'class': 9018002, 'subclass': 1633437696, 'text': mapcss.tr('\'\'{0}\'\' não faz sentido em aeroporto', mapcss._tag_uncapture(capture_tags, '{1.key}'))})
 
         # node[surface][!traffic_calming][inside("BR")]
-        # Rule Blacklisted
+        # Rule Blacklisted (id: 282605167)
 
         # *[waterway][layer<0][!tunnel][inside("BR")]
         if ('layer' in keys and 'waterway' in keys):
@@ -997,7 +1007,7 @@ class Josm_Rules_Brazilian_Specific(PluginMapCSS):
                 err.append({'class': 9018002, 'subclass': 1870051659, 'text': mapcss.tr('{0} positivo de {1} com ausência de {2}', mapcss._tag_uncapture(capture_tags, '{1.key}'), mapcss._tag_uncapture(capture_tags, '{0.key}'), mapcss._tag_uncapture(capture_tags, '{2.key}'))})
 
         # *[layer][!building][!highway][man_made!=pipeline][!railway][!waterway][power!=line][inside("BR")]
-        # Rule Blacklisted
+        # Rule Blacklisted (id: 39095837)
 
         # *[name=~/^(?i)(?u)edifício.*/][!building][inside("BR")]
         if ('name' in keys):
@@ -1050,16 +1060,16 @@ class Josm_Rules_Brazilian_Specific(PluginMapCSS):
                 err.append({'class': 9018030, 'subclass': 1431112366, 'text': mapcss.tr('utilizar prefixo em português (pt:) para {0}', mapcss._tag_uncapture(capture_tags, '{0.key}'))})
 
         # *[name=~/.*\(.*\).*/][inside("BR")]
-        # Rule Blacklisted
+        # Rule Blacklisted (id: 2146320716)
 
         # *[name=~/ - /][inside("BR")]
-        # Rule Blacklisted
+        # Rule Blacklisted (id: 1840875080)
 
         # *[name=~/, /][inside("BR")]
-        # Rule Blacklisted
+        # Rule Blacklisted (id: 1508736498)
 
         # *[name=~/: /][inside("BR")]
-        # Rule Blacklisted
+        # Rule Blacklisted (id: 877403916)
 
         # *[name=~/ ou /][inside("BR")]
         if ('name' in keys):
@@ -1602,11 +1612,11 @@ class Josm_Rules_Brazilian_Specific(PluginMapCSS):
             match = False
             if not match:
                 capture_tags = {}
-                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'phone')) and (not mapcss.regexp_test(mapcss._value_const_capture(capture_tags, 1, self.re_243f4993, '^(\+55|0800)'), mapcss._tag_capture(capture_tags, 1, tags, 'phone'))) and (mapcss.inside(self.father.config.options, 'BR')))
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'phone')) and (not mapcss.regexp_test(mapcss._value_const_capture(capture_tags, 1, self.re_243f4993, '^(\\+55|0800)'), mapcss._tag_capture(capture_tags, 1, tags, 'phone'))) and (mapcss.inside(self.father.config.options, 'BR')))
                 except mapcss.RuleAbort: pass
             if not match:
                 capture_tags = {}
-                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'contact:phone')) and (not mapcss.regexp_test(mapcss._value_const_capture(capture_tags, 1, self.re_243f4993, '^(\+55|0800)'), mapcss._tag_capture(capture_tags, 1, tags, 'contact:phone'))) and (mapcss.inside(self.father.config.options, 'BR')))
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'contact:phone')) and (not mapcss.regexp_test(mapcss._value_const_capture(capture_tags, 1, self.re_243f4993, '^(\\+55|0800)'), mapcss._tag_capture(capture_tags, 1, tags, 'contact:phone'))) and (mapcss.inside(self.father.config.options, 'BR')))
                 except mapcss.RuleAbort: pass
             if match:
                 # group:tr("Brasil - Verificar")
@@ -1643,7 +1653,7 @@ class Josm_Rules_Brazilian_Specific(PluginMapCSS):
 
 
         # way[name=*ref][highway][inside("BR")]
-        # Rule Blacklisted
+        # Rule Blacklisted (id: 995006835)
 
         # way[highway][name=~/\b[A-Z]{2,4} (- )?[0-9]{2,3}\b/][inside("BR")]
         if ('highway' in keys and 'name' in keys):
@@ -1818,7 +1828,7 @@ class Josm_Rules_Brazilian_Specific(PluginMapCSS):
                 err.append({'class': 9018002, 'subclass': 1104230922, 'text': mapcss.tr('local com nome supérfluo, incompleto ou descritivo')})
 
         # *[amenity=parking][name=~/(?i)^Estacionamento /][inside("BR")]
-        # Rule Blacklisted
+        # Rule Blacklisted (id: 1322492249)
 
         # way[highway][type=route][inside("BR")]
         if ('highway' in keys and 'type' in keys):
@@ -1832,7 +1842,7 @@ class Josm_Rules_Brazilian_Specific(PluginMapCSS):
                 err.append({'class': 9018053, 'subclass': 1158257088, 'text': mapcss.tr('{0} não deve possuir {1}', mapcss._tag_uncapture(capture_tags, '{0.key}'), mapcss._tag_uncapture(capture_tags, '{1.tag}'))})
 
         # way[highway][highway!~/bus_stop|milestone|motorway_junction|traffic_signals/][ref][ref!~/^(([A-Z]{2,3}-[0-9]{2,4}|SPM(-| )[0-9]{3} ?(D|E)?|SP(A|D|I)(-| )[0-9]{3}\/[0-9]{3}|[A-Z]{3}-[0-9]{3}\/[0-9]{3});?)+$/][inside("BR")]
-        # Rule Blacklisted
+        # Rule Blacklisted (id: 481849808)
 
         # way[highway][!ref][name=~/.*([A-Z]{2,3}-[0-9]{2,4}|SPM(-| )[0-9]{3} ?(D|E)?|SP(A|D|I)(-| )[0-9]{3}\/[0-9]{3}|[A-Z]{3}-[0-9]{3}\/[0-9]{3}).*/][inside("BR")]
         if ('highway' in keys and 'name' in keys):
@@ -1873,7 +1883,7 @@ class Josm_Rules_Brazilian_Specific(PluginMapCSS):
         # *[name=*reg_name][inside("BR")]
         # *[name=*short_name][inside("BR")]
         # *[name=*sorting_name][inside("BR")]
-        # Rule Blacklisted
+        # Rule Blacklisted (id: 1279481357)
 
         # *[source=*name][inside("BR")]
         if ('source' in keys):
@@ -1913,10 +1923,10 @@ class Josm_Rules_Brazilian_Specific(PluginMapCSS):
                 err.append({'class': 9018009, 'subclass': 1818234763, 'text': mapcss.tr('{0} é uma chave utilizada apenas no Reino Unido', mapcss._tag_uncapture(capture_tags, '{0.key}'))})
 
         # way[highway=~/^(trunk|motorway)$/][!operator][inside("BR")]
-        # Rule Blacklisted
+        # Rule Blacklisted (id: 1594044971)
 
         # way[highway$=_link][name=~/(Alameda|Avenida|Rua|Travessa|Viela) .*/][inside("BR")]
-        # Rule Blacklisted
+        # Rule Blacklisted (id: 200264401)
 
         # way[highway][name=~/(Alameda|Avenida|Rua|Travessa|Viela) .*/][ref][inside("BR")]
         if ('highway' in keys and 'name' in keys and 'ref' in keys):
@@ -1981,7 +1991,7 @@ class Josm_Rules_Brazilian_Specific(PluginMapCSS):
         # *[place=city][!population][inside("BR")]
         # *[place=town][!population][inside("BR")]
         # *[place=village][!population][inside("BR")]
-        # Rule Blacklisted
+        # Rule Blacklisted (id: 339470124)
 
         # *[place=city][!name][inside("BR")]
         # *[place=town][!name][inside("BR")]
@@ -2003,6 +2013,27 @@ class Josm_Rules_Brazilian_Specific(PluginMapCSS):
             if match:
                 # throwWarning:tr("{0} sem nome","{0.value}")
                 err.append({'class': 9018012, 'subclass': 1473808194, 'text': mapcss.tr('{0} sem nome', mapcss._tag_uncapture(capture_tags, '{0.value}'))})
+
+        # area[place=~/village|town|city/]["addr:city"=*name][inside("BR")]
+        # area[place=suburb]["addr:suburb"=*name][inside("BR")]
+        if ('addr:city' in keys and 'place' in keys) or ('addr:suburb' in keys and 'place' in keys):
+            match = False
+            if not match:
+                capture_tags = {}
+                try: match = ((mapcss.regexp_test(mapcss._value_capture(capture_tags, 0, self.re_0db5b64e), mapcss._tag_capture(capture_tags, 0, tags, 'place'))) and (mapcss._tag_capture(capture_tags, 1, tags, 'addr:city') == mapcss._value_capture(capture_tags, 1, mapcss.tag(tags, 'name'))) and (mapcss.inside(self.father.config.options, 'BR')) and (mapcss._tag_capture(capture_tags, -1, tags, 'area') != mapcss._value_const_capture(capture_tags, -1, 'no', 'no')))
+                except mapcss.RuleAbort: pass
+            if not match:
+                capture_tags = {}
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'place') == mapcss._value_capture(capture_tags, 0, 'suburb')) and (mapcss._tag_capture(capture_tags, 1, tags, 'addr:suburb') == mapcss._value_capture(capture_tags, 1, mapcss.tag(tags, 'name'))) and (mapcss.inside(self.father.config.options, 'BR')) and (mapcss._tag_capture(capture_tags, -1, tags, 'area') != mapcss._value_const_capture(capture_tags, -1, 'no', 'no')))
+                except mapcss.RuleAbort: pass
+            if match:
+                # group:tr("Brasil - Correções e melhorias")
+                # throwError:tr("não deve possuir {0}","{1.key}")
+                # fixRemove:"{1.key}"
+                err.append({'class': 9018006, 'subclass': 1269075720, 'text': mapcss.tr('não deve possuir {0}', mapcss._tag_uncapture(capture_tags, '{1.key}')), 'allow_fix_override': True, 'fix': {
+                    '-': ([
+                    mapcss._tag_uncapture(capture_tags, '{1.key}')])
+                }})
 
         # *["addr:city"=~/(,|( |-) ?[A-Z]{2})/][inside("BR")]
         if ('addr:city' in keys):
@@ -2032,12 +2063,18 @@ class Josm_Rules_Brazilian_Specific(PluginMapCSS):
             match = False
             if not match:
                 capture_tags = {}
-                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'place')) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 1, self.re_20fc5143), mapcss._tag_capture(capture_tags, 1, tags, 'name'))) and (not mapcss.regexp_test(mapcss._value_const_capture(capture_tags, 2, self.re_64387998, '^(?i)Bairro d(a|e|o)s?\b'), mapcss._tag_capture(capture_tags, 2, tags, 'name'))) and (mapcss.inside(self.father.config.options, 'BR')))
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'place')) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 1, self.re_20fc5143), mapcss._tag_capture(capture_tags, 1, tags, 'name'))) and (not mapcss.regexp_test(mapcss._value_const_capture(capture_tags, 2, self.re_64387998, '^(?i)Bairro d(a|e|o)s?\\b'), mapcss._tag_capture(capture_tags, 2, tags, 'name'))) and (mapcss.inside(self.father.config.options, 'BR')))
                 except mapcss.RuleAbort: pass
             if match:
                 # group:tr("Brasil - Verificar")
                 # throwWarning:tr("objeto talvez não deva ter ''Bairro'' no nome")
                 err.append({'class': 9018002, 'subclass': 1441242115, 'text': mapcss.tr('objeto talvez não deva ter \'\'Bairro\'\' no nome')})
+
+        # area:closed[name=~/^(?i)(Ilha|Ilhota|Ilhote)\b/][!shop][!amenity][!building][place!=island][eval(areasize())>1000000][inside("BR")]
+        # Part of rule not implemented
+
+        # area:closed[name=~/^(?i)(Ilha|Ilhota|Ilhote)\b/][!shop][!amenity][!building][place!=islet][eval(areasize())<=1000000][inside("BR")]
+        # Part of rule not implemented
 
         # *[iata="0"][inside("BR")]
         if ('iata' in keys):
@@ -2134,7 +2171,7 @@ class Josm_Rules_Brazilian_Specific(PluginMapCSS):
         # *[name=~/^(?i)Catedral .*/][building][building!=cathedral][inside("BR")]
         # *[name=~/^(?i)Fazenda .*/][building][building!=farm][inside("BR")]
         # *[name=~/^(?i)Supermercado .*/][building][building!=supermarket][inside("BR")]
-        # Rule Blacklisted
+        # Rule Blacklisted (id: 1123790420)
 
         # *[name=~/^(?i)(?u)(AM(A|E)|(Posto|Unidade (Básica)?) de Sa(u|ú)de|UBS|PSF).*/][amenity=hospital][inside("BR")]
         if ('amenity' in keys and 'name' in keys):
@@ -2254,13 +2291,13 @@ class Josm_Rules_Brazilian_Specific(PluginMapCSS):
 
         # *[name=~/^(?U)(\p{Upper}| )+$/][inside("BR")]
         # *["addr:street"=~/^(?U)(\p{Upper}| )+$/][inside("BR")]
-        # Rule Blacklisted
+        # Rule Blacklisted (id: 951501764)
 
         # *["addr:postcode"=~/^[0-9]{8}$/][inside("BR")]
-        # Rule Blacklisted
+        # Rule Blacklisted (id: 1948798798)
 
         # *[postal_code=~/^[0-9]{8}$/][inside("BR")]
-        # Rule Blacklisted
+        # Rule Blacklisted (id: 733725137)
 
         # *["addr:postcode"=~/^[0-9]{5}( |\.)[0-9]{3}$/][inside("BR")]
         if ('addr:postcode' in keys):
@@ -2296,21 +2333,26 @@ class Josm_Rules_Brazilian_Specific(PluginMapCSS):
 
         # *["addr:postcode"]["addr:postcode"!~/^[0-9]{5}-[0-9]{3}$/][inside("BR")]
         # *[postal_code][postal_code!~/^[0-9]{5}-[0-9]{3}$/][inside("BR")]
-        # Rule Blacklisted
+        # Rule Blacklisted (id: 2074305530)
 
         # way[highway]["addr:postcode"][highway!=services][inside("BR")]
-        if ('addr:postcode' in keys and 'highway' in keys):
+        # area[place]["addr:postcode"][inside("BR")]
+        if ('addr:postcode' in keys and 'highway' in keys) or ('addr:postcode' in keys and 'place' in keys):
             match = False
             if not match:
                 capture_tags = {}
                 try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'highway')) and (mapcss._tag_capture(capture_tags, 1, tags, 'addr:postcode')) and (mapcss._tag_capture(capture_tags, 2, tags, 'highway') != mapcss._value_const_capture(capture_tags, 2, 'services', 'services')) and (mapcss.inside(self.father.config.options, 'BR')))
+                except mapcss.RuleAbort: pass
+            if not match:
+                capture_tags = {}
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'place')) and (mapcss._tag_capture(capture_tags, 1, tags, 'addr:postcode')) and (mapcss.inside(self.father.config.options, 'BR')) and (mapcss._tag_capture(capture_tags, -1, tags, 'area') != mapcss._value_const_capture(capture_tags, -1, 'no', 'no')))
                 except mapcss.RuleAbort: pass
             if match:
                 # group:tr("Brasil - Correções e melhorias")
                 # throwWarning:tr("uso incorreto de {0}","{1.key}","{0.key}")
                 # suggestAlternative:"postal_code"
                 # fixChangeKey:"{1.key} => postal_code"
-                err.append({'class': 9018006, 'subclass': 314748788, 'text': mapcss.tr('uso incorreto de {0}', mapcss._tag_uncapture(capture_tags, '{1.key}'), mapcss._tag_uncapture(capture_tags, '{0.key}')), 'allow_fix_override': True, 'fix': {
+                err.append({'class': 9018006, 'subclass': 1244917162, 'text': mapcss.tr('uso incorreto de {0}', mapcss._tag_uncapture(capture_tags, '{1.key}'), mapcss._tag_uncapture(capture_tags, '{0.key}')), 'allow_fix_override': True, 'fix': {
                     '+': dict([
                     [(mapcss._tag_uncapture(capture_tags, '{1.key} => postal_code')).split('=>', 1)[1].strip(), mapcss.tag(tags, (mapcss._tag_uncapture(capture_tags, '{1.key} => postal_code')).split('=>', 1)[0].strip())]]),
                     '-': ([
@@ -2469,18 +2511,18 @@ class Josm_Rules_Brazilian_Specific(PluginMapCSS):
                 err.append({'class': 9018002, 'subclass': 1633437696, 'text': mapcss.tr('\'\'{0}\'\' não faz sentido em aeroporto', mapcss._tag_uncapture(capture_tags, '{1.key}'))})
 
         # way[waterway][tunnel=yes][inside("BR")]
-        # Rule Blacklisted
+        # Rule Blacklisted (id: 1154433213)
 
         # way[highway][layer<0][!tunnel][inside("BR")]
         # *[waterway][layer<0][!tunnel][inside("BR")]
-        # Rule Blacklisted
+        # Rule Blacklisted (id: 1415734409)
 
         # way[highway][layer>0][!bridge][highway!=bus_stop][inside("BR")]
         # *[waterway][layer>0][!bridge][inside("BR")]
-        # Rule Blacklisted
+        # Rule Blacklisted (id: 58812649)
 
         # *[layer][!building][!highway][man_made!=pipeline][!railway][!waterway][power!=line][inside("BR")]
-        # Rule Blacklisted
+        # Rule Blacklisted (id: 39095837)
 
         # way[highway=motorway_junction][inside("BR")]
         if ('highway' in keys):
@@ -2569,7 +2611,7 @@ class Josm_Rules_Brazilian_Specific(PluginMapCSS):
                 err.append({'class': 9018030, 'subclass': 1431112366, 'text': mapcss.tr('utilizar prefixo em português (pt:) para {0}', mapcss._tag_uncapture(capture_tags, '{0.key}'))})
 
         # way[highway][lanes=1][!oneway?][!junction][!narrow][inside("BR")]
-        # Rule Blacklisted
+        # Rule Blacklisted (id: 226394604)
 
         # way[cycleway=lane]["cycleway:left"=lane][inside("BR")]
         # way[cycleway=lane]["cycleway:right"=lane][inside("BR")]
@@ -2589,16 +2631,16 @@ class Josm_Rules_Brazilian_Specific(PluginMapCSS):
                 err.append({'class': 9018063, 'subclass': 1071847858, 'text': mapcss.tr('uso incorreto de {0} com {1}', mapcss._tag_uncapture(capture_tags, '{0.tag}'), mapcss._tag_uncapture(capture_tags, '{1.tag}'))})
 
         # *[name=~/.*\(.*\).*/][inside("BR")]
-        # Rule Blacklisted
+        # Rule Blacklisted (id: 2146320716)
 
         # *[name=~/ - /][inside("BR")]
-        # Rule Blacklisted
+        # Rule Blacklisted (id: 1840875080)
 
         # *[name=~/, /][inside("BR")]
-        # Rule Blacklisted
+        # Rule Blacklisted (id: 1508736498)
 
         # *[name=~/: /][inside("BR")]
-        # Rule Blacklisted
+        # Rule Blacklisted (id: 877403916)
 
         # *[name=~/ ou /][inside("BR")]
         if ('name' in keys):
@@ -2701,6 +2743,35 @@ class Josm_Rules_Brazilian_Specific(PluginMapCSS):
                 # throwWarning:tr("ausência de boundary=protected_area")
                 err.append({'class': 9018035, 'subclass': 1649283274, 'text': mapcss.tr('ausência de boundary=protected_area')})
 
+        # area[boundary=protected_area][leisure=nature_reserve][name=~/(?i)(?u)\bAPA\b|Área de Proteção Ambiental/][inside("BR")]
+        if ('boundary' in keys and 'leisure' in keys and 'name' in keys):
+            match = False
+            if not match:
+                capture_tags = {}
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'boundary') == mapcss._value_capture(capture_tags, 0, 'protected_area')) and (mapcss._tag_capture(capture_tags, 1, tags, 'leisure') == mapcss._value_capture(capture_tags, 1, 'nature_reserve')) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 2, self.re_509425de), mapcss._tag_capture(capture_tags, 2, tags, 'name'))) and (mapcss.inside(self.father.config.options, 'BR')) and (mapcss._tag_capture(capture_tags, -1, tags, 'area') != mapcss._value_const_capture(capture_tags, -1, 'no', 'no')))
+                except mapcss.RuleAbort: pass
+            if match:
+                # group:tr("Brasil - Correções e melhorias")
+                # throwWarning:tr("APA não deve possuir {0}","{1.tag}")
+                # fixRemove:"leisure"
+                err.append({'class': 9018006, 'subclass': 318780762, 'text': mapcss.tr('APA não deve possuir {0}', mapcss._tag_uncapture(capture_tags, '{1.tag}')), 'allow_fix_override': True, 'fix': {
+                    '-': ([
+                    'leisure'])
+                }})
+
+        # area[boundary=protected_area][name=~/(?i)\bAPA\b/][inside("BR")]
+        if ('boundary' in keys and 'name' in keys):
+            match = False
+            if not match:
+                capture_tags = {}
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'boundary') == mapcss._value_capture(capture_tags, 0, 'protected_area')) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 1, self.re_3570fd42), mapcss._tag_capture(capture_tags, 1, tags, 'name'))) and (mapcss.inside(self.father.config.options, 'BR')) and (mapcss._tag_capture(capture_tags, -1, tags, 'area') != mapcss._value_const_capture(capture_tags, -1, 'no', 'no')))
+                except mapcss.RuleAbort: pass
+            if match:
+                # group:tr("Brasil - Verificar")
+                # throwWarning:tr("Utilizar o nome por extenso ao invés de ''APA''")
+                # suggestAlternative:"short_name"
+                err.append({'class': 9018002, 'subclass': 2108639028, 'text': mapcss.tr('Utilizar o nome por extenso ao invés de \'\'APA\'\'')})
+
         # *[name=~/.* D(a|e|o)s? .*/][inside("BR")]
         if ('name' in keys):
             match = False
@@ -2750,7 +2821,7 @@ class Josm_Rules_Brazilian_Specific(PluginMapCSS):
                 err.append({'class': 9018064, 'subclass': 1242889729, 'text': mapcss.tr('uso incorreto de {0}', mapcss._tag_uncapture(capture_tags, '{1.key}'))})
 
         # way[highway!=track][tracktype][inside("BR")]
-        # Rule Blacklisted
+        # Rule Blacklisted (id: 2012241162)
 
         # *[surface][eval(number_of_tags())=1][inside("BR")]
         if ('surface' in keys):
@@ -2791,9 +2862,42 @@ class Josm_Rules_Brazilian_Specific(PluginMapCSS):
                 # throwWarning:tr("a via deve ser ao menos tertiary")
                 err.append({'class': 9018002, 'subclass': 728045324, 'text': mapcss.tr('a via deve ser ao menos tertiary')})
 
+        # area[natural=wetland][!wetland][inside("BR")]
+        if ('natural' in keys):
+            match = False
+            if not match:
+                capture_tags = {}
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'natural') == mapcss._value_capture(capture_tags, 0, 'wetland')) and (not mapcss._tag_capture(capture_tags, 1, tags, 'wetland')) and (mapcss.inside(self.father.config.options, 'BR')) and (mapcss._tag_capture(capture_tags, -1, tags, 'area') != mapcss._value_const_capture(capture_tags, -1, 'no', 'no')))
+                except mapcss.RuleAbort: pass
+            if match:
+                # throwWarning:tr("ausência de wetland=*")
+                err.append({'class': 9018065, 'subclass': 1029145948, 'text': mapcss.tr('ausência de wetland=*')})
+
+        # area[natural=beach][!surface][inside("BR")]
+        if ('natural' in keys):
+            match = False
+            if not match:
+                capture_tags = {}
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'natural') == mapcss._value_capture(capture_tags, 0, 'beach')) and (not mapcss._tag_capture(capture_tags, 1, tags, 'surface')) and (mapcss.inside(self.father.config.options, 'BR')) and (mapcss._tag_capture(capture_tags, -1, tags, 'area') != mapcss._value_const_capture(capture_tags, -1, 'no', 'no')))
+                except mapcss.RuleAbort: pass
+            if match:
+                # throwWarning:tr("''{0}'' sem ''{1}'' definida","{0.tag}","{1.key}")
+                err.append({'class': 9018066, 'subclass': 653607218, 'text': mapcss.tr('\'\'{0}\'\' sem \'\'{1}\'\' definida', mapcss._tag_uncapture(capture_tags, '{0.tag}'), mapcss._tag_uncapture(capture_tags, '{1.key}'))})
+
+        # area[natural=beach][surface][surface!~/^(fine_gravel|gravel|pebbles|pebblestone|sand|shells|shingle|stones)$/][inside("BR")]
+        if ('natural' in keys and 'surface' in keys):
+            match = False
+            if not match:
+                capture_tags = {}
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'natural') == mapcss._value_capture(capture_tags, 0, 'beach')) and (mapcss._tag_capture(capture_tags, 1, tags, 'surface')) and (not mapcss.regexp_test(mapcss._value_const_capture(capture_tags, 2, self.re_1b6eb989, '^(fine_gravel|gravel|pebbles|pebblestone|sand|shells|shingle|stones)$'), mapcss._tag_capture(capture_tags, 2, tags, 'surface'))) and (mapcss.inside(self.father.config.options, 'BR')) and (mapcss._tag_capture(capture_tags, -1, tags, 'area') != mapcss._value_const_capture(capture_tags, -1, 'no', 'no')))
+                except mapcss.RuleAbort: pass
+            if match:
+                # throwWarning:tr("{0} inapropriada para ''{1}''","{1.key}","{0.tag}")
+                err.append({'class': 9018067, 'subclass': 231893104, 'text': mapcss.tr('{0} inapropriada para \'\'{1}\'\'', mapcss._tag_uncapture(capture_tags, '{1.key}'), mapcss._tag_uncapture(capture_tags, '{0.tag}'))})
+
         # way[bridge][!layer][inside("BR")]
         # way[tunnel][!layer][inside("BR")]
-        # Rule Blacklisted
+        # Rule Blacklisted (id: 1354724892)
 
         # *[leisure=pitch][sport=tennis][surface=unpaved][inside("BR")]
         if ('leisure' in keys and 'sport' in keys and 'surface' in keys):
@@ -2823,6 +2927,9 @@ class Josm_Rules_Brazilian_Specific(PluginMapCSS):
                 # group:tr("Brasil - Verificar")
                 # throwWarning:tr("adicionar ''area=yes'' caso esteja representando uma área")
                 err.append({'class': 9018002, 'subclass': 691633247, 'text': mapcss.tr('adicionar \'\'area=yes\'\' caso esteja representando uma área')})
+
+        # area[amenity=fuel][eval(areasize())>2500][inside("BR")]
+        # Part of rule not implemented
 
         # *[amenity=fuel][name=~/(?i)(?u)\b(Ale|BR|Esso|Ipiranga|Petrobr(á|a)s|Shell|Texaco)\b/][inside("BR")]
         if ('amenity' in keys and 'name' in keys):
@@ -3033,16 +3140,29 @@ class Josm_Rules_Brazilian_Specific(PluginMapCSS):
             match = False
             if not match:
                 capture_tags = {}
-                try: match = ((mapcss.regexp_test(mapcss._value_capture(capture_tags, 0, self.re_04873a60), mapcss._tag_capture(capture_tags, 0, tags, 'waterway'))) and (mapcss._tag_capture(capture_tags, 1, tags, 'name')) and (not mapcss.regexp_test(mapcss._value_const_capture(capture_tags, 2, self.re_280004fd, '^(?U)(Água|Arroio|Cabeceira|Córrego|Furo|Grota|Igarapé|Lajeado|Paraná|Restinga|Riacho|Ribeirão|Rio|Sanga)\b'), mapcss._tag_capture(capture_tags, 2, tags, 'name'))) and (mapcss.inside(self.father.config.options, 'BR')))
+                try: match = ((mapcss.regexp_test(mapcss._value_capture(capture_tags, 0, self.re_04873a60), mapcss._tag_capture(capture_tags, 0, tags, 'waterway'))) and (mapcss._tag_capture(capture_tags, 1, tags, 'name')) and (not mapcss.regexp_test(mapcss._value_const_capture(capture_tags, 2, self.re_280004fd, '^(?U)(Água|Arroio|Cabeceira|Córrego|Furo|Grota|Igarapé|Lajeado|Paraná|Restinga|Riacho|Ribeirão|Rio|Sanga)\\b'), mapcss._tag_capture(capture_tags, 2, tags, 'name'))) and (mapcss.inside(self.father.config.options, 'BR')))
                 except mapcss.RuleAbort: pass
             if not match:
                 capture_tags = {}
-                try: match = ((mapcss.regexp_test(mapcss._value_capture(capture_tags, 0, self.re_04873a60), mapcss._tag_capture(capture_tags, 0, tags, 'waterway'))) and (mapcss._tag_capture(capture_tags, 1, tags, 'alt_name')) and (not mapcss.regexp_test(mapcss._value_const_capture(capture_tags, 2, self.re_280004fd, '^(?U)(Água|Arroio|Cabeceira|Córrego|Furo|Grota|Igarapé|Lajeado|Paraná|Restinga|Riacho|Ribeirão|Rio|Sanga)\b'), mapcss._tag_capture(capture_tags, 2, tags, 'alt_name'))) and (mapcss.inside(self.father.config.options, 'BR')))
+                try: match = ((mapcss.regexp_test(mapcss._value_capture(capture_tags, 0, self.re_04873a60), mapcss._tag_capture(capture_tags, 0, tags, 'waterway'))) and (mapcss._tag_capture(capture_tags, 1, tags, 'alt_name')) and (not mapcss.regexp_test(mapcss._value_const_capture(capture_tags, 2, self.re_280004fd, '^(?U)(Água|Arroio|Cabeceira|Córrego|Furo|Grota|Igarapé|Lajeado|Paraná|Restinga|Riacho|Ribeirão|Rio|Sanga)\\b'), mapcss._tag_capture(capture_tags, 2, tags, 'alt_name'))) and (mapcss.inside(self.father.config.options, 'BR')))
                 except mapcss.RuleAbort: pass
             if match:
                 # group:tr("Brasil - Verificar")
                 # throwWarning:tr("{0} com possível nome errado/incompleto",tag(waterway))
                 err.append({'class': 9018002, 'subclass': 139982797, 'text': mapcss.tr('{0} com possível nome errado/incompleto', mapcss.tag(tags, 'waterway'))})
+
+        # area[place=square][leisure!=park][inside("BR")]
+        if ('place' in keys):
+            match = False
+            if not match:
+                capture_tags = {}
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'place') == mapcss._value_capture(capture_tags, 0, 'square')) and (mapcss._tag_capture(capture_tags, 1, tags, 'leisure') != mapcss._value_const_capture(capture_tags, 1, 'park', 'park')) and (mapcss.inside(self.father.config.options, 'BR')) and (mapcss._tag_capture(capture_tags, -1, tags, 'area') != mapcss._value_const_capture(capture_tags, -1, 'no', 'no')))
+                except mapcss.RuleAbort: pass
+            if match:
+                # group:tr("Brasil - Verificar")
+                # throwWarning:tr("{0} deve ser usado em praças pavimentadas (plaza)","{0.tag}")
+                # suggestAlternative:"leisure=park"
+                err.append({'class': 9018002, 'subclass': 758716021, 'text': mapcss.tr('{0} deve ser usado em praças pavimentadas (plaza)', mapcss._tag_uncapture(capture_tags, '{0.tag}'))})
 
         # *[name=~/(?i)\bcoreto\b/][leisure!=bandstand][leisure!=park][inside("BR")]
         if ('name' in keys):
@@ -3131,17 +3251,20 @@ class Josm_Rules_Brazilian_Specific(PluginMapCSS):
                     (mapcss.concat('ref:vatin=', mapcss.upper(mapcss.tag(tags, 'ref:vatin')))).split('=', 1)])
                 }})
 
+        # area:closed[building=~/^(apartments|house|residential|dormitory|yes)$/][eval(areasize())>5000][inside("BR")]
+        # Part of rule not implemented
+
         # *[phone][phone!~/^(\+55|0800)/][inside("BR")]
         # *["contact:phone"]["contact:phone"!~/^(\+55|0800)/][inside("BR")]
         if ('contact:phone' in keys) or ('phone' in keys):
             match = False
             if not match:
                 capture_tags = {}
-                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'phone')) and (not mapcss.regexp_test(mapcss._value_const_capture(capture_tags, 1, self.re_243f4993, '^(\+55|0800)'), mapcss._tag_capture(capture_tags, 1, tags, 'phone'))) and (mapcss.inside(self.father.config.options, 'BR')))
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'phone')) and (not mapcss.regexp_test(mapcss._value_const_capture(capture_tags, 1, self.re_243f4993, '^(\\+55|0800)'), mapcss._tag_capture(capture_tags, 1, tags, 'phone'))) and (mapcss.inside(self.father.config.options, 'BR')))
                 except mapcss.RuleAbort: pass
             if not match:
                 capture_tags = {}
-                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'contact:phone')) and (not mapcss.regexp_test(mapcss._value_const_capture(capture_tags, 1, self.re_243f4993, '^(\+55|0800)'), mapcss._tag_capture(capture_tags, 1, tags, 'contact:phone'))) and (mapcss.inside(self.father.config.options, 'BR')))
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'contact:phone')) and (not mapcss.regexp_test(mapcss._value_const_capture(capture_tags, 1, self.re_243f4993, '^(\\+55|0800)'), mapcss._tag_capture(capture_tags, 1, tags, 'contact:phone'))) and (mapcss.inside(self.father.config.options, 'BR')))
                 except mapcss.RuleAbort: pass
             if match:
                 # group:tr("Brasil - Verificar")
@@ -3295,7 +3418,7 @@ class Josm_Rules_Brazilian_Specific(PluginMapCSS):
                 err.append({'class': 9018002, 'subclass': 1104230922, 'text': mapcss.tr('local com nome supérfluo, incompleto ou descritivo')})
 
         # *[amenity=parking][name=~/(?i)^Estacionamento /][inside("BR")]
-        # Rule Blacklisted
+        # Rule Blacklisted (id: 1322492249)
 
         # relation[type=route][highway][inside("BR")]
         if ('highway' in keys and 'type' in keys):
@@ -3477,7 +3600,7 @@ class Josm_Rules_Brazilian_Specific(PluginMapCSS):
         # *[place=city][!population][inside("BR")]
         # *[place=town][!population][inside("BR")]
         # *[place=village][!population][inside("BR")]
-        # Rule Blacklisted
+        # Rule Blacklisted (id: 339470124)
 
         # *[place=city][!name][inside("BR")]
         # *[place=town][!name][inside("BR")]
@@ -3499,6 +3622,27 @@ class Josm_Rules_Brazilian_Specific(PluginMapCSS):
             if match:
                 # throwWarning:tr("{0} sem nome","{0.value}")
                 err.append({'class': 9018012, 'subclass': 1473808194, 'text': mapcss.tr('{0} sem nome', mapcss._tag_uncapture(capture_tags, '{0.value}'))})
+
+        # area[place=~/village|town|city/]["addr:city"=*name][inside("BR")]
+        # area[place=suburb]["addr:suburb"=*name][inside("BR")]
+        if ('addr:city' in keys and 'place' in keys and 'type' in keys) or ('addr:suburb' in keys and 'place' in keys and 'type' in keys):
+            match = False
+            if not match:
+                capture_tags = {}
+                try: match = ((mapcss.regexp_test(mapcss._value_capture(capture_tags, 0, self.re_0db5b64e), mapcss._tag_capture(capture_tags, 0, tags, 'place'))) and (mapcss._tag_capture(capture_tags, 1, tags, 'addr:city') == mapcss._value_capture(capture_tags, 1, mapcss.tag(tags, 'name'))) and (mapcss.inside(self.father.config.options, 'BR')) and (mapcss._tag_capture(capture_tags, -1, tags, 'type') == mapcss._value_capture(capture_tags, -1, 'multipolygon')))
+                except mapcss.RuleAbort: pass
+            if not match:
+                capture_tags = {}
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'place') == mapcss._value_capture(capture_tags, 0, 'suburb')) and (mapcss._tag_capture(capture_tags, 1, tags, 'addr:suburb') == mapcss._value_capture(capture_tags, 1, mapcss.tag(tags, 'name'))) and (mapcss.inside(self.father.config.options, 'BR')) and (mapcss._tag_capture(capture_tags, -1, tags, 'type') == mapcss._value_capture(capture_tags, -1, 'multipolygon')))
+                except mapcss.RuleAbort: pass
+            if match:
+                # group:tr("Brasil - Correções e melhorias")
+                # throwError:tr("não deve possuir {0}","{1.key}")
+                # fixRemove:"{1.key}"
+                err.append({'class': 9018006, 'subclass': 1269075720, 'text': mapcss.tr('não deve possuir {0}', mapcss._tag_uncapture(capture_tags, '{1.key}')), 'allow_fix_override': True, 'fix': {
+                    '-': ([
+                    mapcss._tag_uncapture(capture_tags, '{1.key}')])
+                }})
 
         # *["addr:city"=~/(,|( |-) ?[A-Z]{2})/][inside("BR")]
         if ('addr:city' in keys):
@@ -3528,12 +3672,18 @@ class Josm_Rules_Brazilian_Specific(PluginMapCSS):
             match = False
             if not match:
                 capture_tags = {}
-                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'place')) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 1, self.re_20fc5143), mapcss._tag_capture(capture_tags, 1, tags, 'name'))) and (not mapcss.regexp_test(mapcss._value_const_capture(capture_tags, 2, self.re_64387998, '^(?i)Bairro d(a|e|o)s?\b'), mapcss._tag_capture(capture_tags, 2, tags, 'name'))) and (mapcss.inside(self.father.config.options, 'BR')))
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'place')) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 1, self.re_20fc5143), mapcss._tag_capture(capture_tags, 1, tags, 'name'))) and (not mapcss.regexp_test(mapcss._value_const_capture(capture_tags, 2, self.re_64387998, '^(?i)Bairro d(a|e|o)s?\\b'), mapcss._tag_capture(capture_tags, 2, tags, 'name'))) and (mapcss.inside(self.father.config.options, 'BR')))
                 except mapcss.RuleAbort: pass
             if match:
                 # group:tr("Brasil - Verificar")
                 # throwWarning:tr("objeto talvez não deva ter ''Bairro'' no nome")
                 err.append({'class': 9018002, 'subclass': 1441242115, 'text': mapcss.tr('objeto talvez não deva ter \'\'Bairro\'\' no nome')})
+
+        # area:closed[name=~/^(?i)(Ilha|Ilhota|Ilhote)\b/][!shop][!amenity][!building][place!=island][eval(areasize())>1000000][inside("BR")]
+        # Part of rule not implemented
+
+        # area:closed[name=~/^(?i)(Ilha|Ilhota|Ilhote)\b/][!shop][!amenity][!building][place!=islet][eval(areasize())<=1000000][inside("BR")]
+        # Part of rule not implemented
 
         # *[iata="0"][inside("BR")]
         if ('iata' in keys):
@@ -3630,7 +3780,7 @@ class Josm_Rules_Brazilian_Specific(PluginMapCSS):
         # *[name=~/^(?i)Catedral .*/][building][building!=cathedral][inside("BR")]
         # *[name=~/^(?i)Fazenda .*/][building][building!=farm][inside("BR")]
         # *[name=~/^(?i)Supermercado .*/][building][building!=supermarket][inside("BR")]
-        # Rule Blacklisted
+        # Rule Blacklisted (id: 1123790420)
 
         # *[name=~/^(?i)(?u)(AM(A|E)|(Posto|Unidade (Básica)?) de Sa(u|ú)de|UBS|PSF).*/][amenity=hospital][inside("BR")]
         if ('amenity' in keys and 'name' in keys):
@@ -3755,13 +3905,13 @@ class Josm_Rules_Brazilian_Specific(PluginMapCSS):
 
         # *[name=~/^(?U)(\p{Upper}| )+$/][inside("BR")]
         # *["addr:street"=~/^(?U)(\p{Upper}| )+$/][inside("BR")]
-        # Rule Blacklisted
+        # Rule Blacklisted (id: 951501764)
 
         # *["addr:postcode"=~/^[0-9]{8}$/][inside("BR")]
-        # Rule Blacklisted
+        # Rule Blacklisted (id: 1948798798)
 
         # *[postal_code=~/^[0-9]{8}$/][inside("BR")]
-        # Rule Blacklisted
+        # Rule Blacklisted (id: 733725137)
 
         # *["addr:postcode"=~/^[0-9]{5}( |\.)[0-9]{3}$/][inside("BR")]
         if ('addr:postcode' in keys):
@@ -3797,7 +3947,26 @@ class Josm_Rules_Brazilian_Specific(PluginMapCSS):
 
         # *["addr:postcode"]["addr:postcode"!~/^[0-9]{5}-[0-9]{3}$/][inside("BR")]
         # *[postal_code][postal_code!~/^[0-9]{5}-[0-9]{3}$/][inside("BR")]
-        # Rule Blacklisted
+        # Rule Blacklisted (id: 2074305530)
+
+        # area[place]["addr:postcode"][inside("BR")]
+        if ('addr:postcode' in keys and 'place' in keys and 'type' in keys):
+            match = False
+            if not match:
+                capture_tags = {}
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'place')) and (mapcss._tag_capture(capture_tags, 1, tags, 'addr:postcode')) and (mapcss.inside(self.father.config.options, 'BR')) and (mapcss._tag_capture(capture_tags, -1, tags, 'type') == mapcss._value_capture(capture_tags, -1, 'multipolygon')))
+                except mapcss.RuleAbort: pass
+            if match:
+                # group:tr("Brasil - Correções e melhorias")
+                # throwWarning:tr("uso incorreto de {0}","{1.key}","{0.key}")
+                # suggestAlternative:"postal_code"
+                # fixChangeKey:"{1.key} => postal_code"
+                err.append({'class': 9018006, 'subclass': 2091974121, 'text': mapcss.tr('uso incorreto de {0}', mapcss._tag_uncapture(capture_tags, '{1.key}'), mapcss._tag_uncapture(capture_tags, '{0.key}')), 'allow_fix_override': True, 'fix': {
+                    '+': dict([
+                    [(mapcss._tag_uncapture(capture_tags, '{1.key} => postal_code')).split('=>', 1)[1].strip(), mapcss.tag(tags, (mapcss._tag_uncapture(capture_tags, '{1.key} => postal_code')).split('=>', 1)[0].strip())]]),
+                    '-': ([
+                    (mapcss._tag_uncapture(capture_tags, '{1.key} => postal_code')).split('=>', 1)[0].strip()])
+                }})
 
         # *[alt_source][source][inside("BR")]
         if ('alt_source' in keys and 'source' in keys):
@@ -3975,7 +4144,7 @@ class Josm_Rules_Brazilian_Specific(PluginMapCSS):
                 err.append({'class': 9018002, 'subclass': 1870051659, 'text': mapcss.tr('{0} positivo de {1} com ausência de {2}', mapcss._tag_uncapture(capture_tags, '{1.key}'), mapcss._tag_uncapture(capture_tags, '{0.key}'), mapcss._tag_uncapture(capture_tags, '{2.key}'))})
 
         # *[layer][!building][!highway][man_made!=pipeline][!railway][!waterway][power!=line][inside("BR")]
-        # Rule Blacklisted
+        # Rule Blacklisted (id: 39095837)
 
         # *[name=~/^(?i)(?u)edifício.*/][!building][inside("BR")]
         if ('name' in keys):
@@ -4028,16 +4197,16 @@ class Josm_Rules_Brazilian_Specific(PluginMapCSS):
                 err.append({'class': 9018030, 'subclass': 1431112366, 'text': mapcss.tr('utilizar prefixo em português (pt:) para {0}', mapcss._tag_uncapture(capture_tags, '{0.key}'))})
 
         # *[name=~/.*\(.*\).*/][inside("BR")]
-        # Rule Blacklisted
+        # Rule Blacklisted (id: 2146320716)
 
         # *[name=~/ - /][inside("BR")]
-        # Rule Blacklisted
+        # Rule Blacklisted (id: 1840875080)
 
         # *[name=~/, /][inside("BR")]
-        # Rule Blacklisted
+        # Rule Blacklisted (id: 1508736498)
 
         # *[name=~/: /][inside("BR")]
-        # Rule Blacklisted
+        # Rule Blacklisted (id: 877403916)
 
         # *[name=~/ ou /][inside("BR")]
         if ('name' in keys):
@@ -4182,6 +4351,35 @@ class Josm_Rules_Brazilian_Specific(PluginMapCSS):
                 # throwWarning:tr("ausência de boundary=protected_area")
                 err.append({'class': 9018035, 'subclass': 1649283274, 'text': mapcss.tr('ausência de boundary=protected_area')})
 
+        # area[boundary=protected_area][leisure=nature_reserve][name=~/(?i)(?u)\bAPA\b|Área de Proteção Ambiental/][inside("BR")]
+        if ('boundary' in keys and 'leisure' in keys and 'name' in keys and 'type' in keys):
+            match = False
+            if not match:
+                capture_tags = {}
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'boundary') == mapcss._value_capture(capture_tags, 0, 'protected_area')) and (mapcss._tag_capture(capture_tags, 1, tags, 'leisure') == mapcss._value_capture(capture_tags, 1, 'nature_reserve')) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 2, self.re_509425de), mapcss._tag_capture(capture_tags, 2, tags, 'name'))) and (mapcss.inside(self.father.config.options, 'BR')) and (mapcss._tag_capture(capture_tags, -1, tags, 'type') == mapcss._value_capture(capture_tags, -1, 'multipolygon')))
+                except mapcss.RuleAbort: pass
+            if match:
+                # group:tr("Brasil - Correções e melhorias")
+                # throwWarning:tr("APA não deve possuir {0}","{1.tag}")
+                # fixRemove:"leisure"
+                err.append({'class': 9018006, 'subclass': 318780762, 'text': mapcss.tr('APA não deve possuir {0}', mapcss._tag_uncapture(capture_tags, '{1.tag}')), 'allow_fix_override': True, 'fix': {
+                    '-': ([
+                    'leisure'])
+                }})
+
+        # area[boundary=protected_area][name=~/(?i)\bAPA\b/][inside("BR")]
+        if ('boundary' in keys and 'name' in keys and 'type' in keys):
+            match = False
+            if not match:
+                capture_tags = {}
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'boundary') == mapcss._value_capture(capture_tags, 0, 'protected_area')) and (mapcss.regexp_test(mapcss._value_capture(capture_tags, 1, self.re_3570fd42), mapcss._tag_capture(capture_tags, 1, tags, 'name'))) and (mapcss.inside(self.father.config.options, 'BR')) and (mapcss._tag_capture(capture_tags, -1, tags, 'type') == mapcss._value_capture(capture_tags, -1, 'multipolygon')))
+                except mapcss.RuleAbort: pass
+            if match:
+                # group:tr("Brasil - Verificar")
+                # throwWarning:tr("Utilizar o nome por extenso ao invés de ''APA''")
+                # suggestAlternative:"short_name"
+                err.append({'class': 9018002, 'subclass': 2108639028, 'text': mapcss.tr('Utilizar o nome por extenso ao invés de \'\'APA\'\'')})
+
         # relation[destination][type!=waterway][inside("BR")]
         if ('destination' in keys):
             match = False
@@ -4256,6 +4454,39 @@ class Josm_Rules_Brazilian_Specific(PluginMapCSS):
                 # throwWarning:tr("objeto incompleto: possui apenas {0} e {1}","{0.key}","{1.key}")
                 err.append({'class': 9018042, 'subclass': 585137381, 'text': mapcss.tr('objeto incompleto: possui apenas {0} e {1}', mapcss._tag_uncapture(capture_tags, '{0.key}'), mapcss._tag_uncapture(capture_tags, '{1.key}'))})
 
+        # area[natural=wetland][!wetland][inside("BR")]
+        if ('natural' in keys and 'type' in keys):
+            match = False
+            if not match:
+                capture_tags = {}
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'natural') == mapcss._value_capture(capture_tags, 0, 'wetland')) and (not mapcss._tag_capture(capture_tags, 1, tags, 'wetland')) and (mapcss.inside(self.father.config.options, 'BR')) and (mapcss._tag_capture(capture_tags, -1, tags, 'type') == mapcss._value_capture(capture_tags, -1, 'multipolygon')))
+                except mapcss.RuleAbort: pass
+            if match:
+                # throwWarning:tr("ausência de wetland=*")
+                err.append({'class': 9018065, 'subclass': 1029145948, 'text': mapcss.tr('ausência de wetland=*')})
+
+        # area[natural=beach][!surface][inside("BR")]
+        if ('natural' in keys and 'type' in keys):
+            match = False
+            if not match:
+                capture_tags = {}
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'natural') == mapcss._value_capture(capture_tags, 0, 'beach')) and (not mapcss._tag_capture(capture_tags, 1, tags, 'surface')) and (mapcss.inside(self.father.config.options, 'BR')) and (mapcss._tag_capture(capture_tags, -1, tags, 'type') == mapcss._value_capture(capture_tags, -1, 'multipolygon')))
+                except mapcss.RuleAbort: pass
+            if match:
+                # throwWarning:tr("''{0}'' sem ''{1}'' definida","{0.tag}","{1.key}")
+                err.append({'class': 9018066, 'subclass': 653607218, 'text': mapcss.tr('\'\'{0}\'\' sem \'\'{1}\'\' definida', mapcss._tag_uncapture(capture_tags, '{0.tag}'), mapcss._tag_uncapture(capture_tags, '{1.key}'))})
+
+        # area[natural=beach][surface][surface!~/^(fine_gravel|gravel|pebbles|pebblestone|sand|shells|shingle|stones)$/][inside("BR")]
+        if ('natural' in keys and 'surface' in keys and 'type' in keys):
+            match = False
+            if not match:
+                capture_tags = {}
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'natural') == mapcss._value_capture(capture_tags, 0, 'beach')) and (mapcss._tag_capture(capture_tags, 1, tags, 'surface')) and (not mapcss.regexp_test(mapcss._value_const_capture(capture_tags, 2, self.re_1b6eb989, '^(fine_gravel|gravel|pebbles|pebblestone|sand|shells|shingle|stones)$'), mapcss._tag_capture(capture_tags, 2, tags, 'surface'))) and (mapcss.inside(self.father.config.options, 'BR')) and (mapcss._tag_capture(capture_tags, -1, tags, 'type') == mapcss._value_capture(capture_tags, -1, 'multipolygon')))
+                except mapcss.RuleAbort: pass
+            if match:
+                # throwWarning:tr("{0} inapropriada para ''{1}''","{1.key}","{0.tag}")
+                err.append({'class': 9018067, 'subclass': 231893104, 'text': mapcss.tr('{0} inapropriada para \'\'{1}\'\'', mapcss._tag_uncapture(capture_tags, '{1.key}'), mapcss._tag_uncapture(capture_tags, '{0.tag}'))})
+
         # *[leisure=pitch][sport=tennis][surface=unpaved][inside("BR")]
         if ('leisure' in keys and 'sport' in keys and 'surface' in keys):
             match = False
@@ -4272,6 +4503,9 @@ class Josm_Rules_Brazilian_Specific(PluginMapCSS):
                     '+': dict([
                     ['surface','clay']])
                 }})
+
+        # area[amenity=fuel][eval(areasize())>2500][inside("BR")]
+        # Part of rule not implemented
 
         # *[amenity=fuel][name=~/(?i)(?u)\b(Ale|BR|Esso|Ipiranga|Petrobr(á|a)s|Shell|Texaco)\b/][inside("BR")]
         if ('amenity' in keys and 'name' in keys):
@@ -4476,6 +4710,19 @@ class Josm_Rules_Brazilian_Specific(PluginMapCSS):
                 # suggestAlternative:"shop=tyres"
                 err.append({'class': 9018002, 'subclass': 755877630, 'text': mapcss.tr('borracharia sem \'\'shop=tyres\'\'')})
 
+        # area[place=square][leisure!=park][inside("BR")]
+        if ('place' in keys and 'type' in keys):
+            match = False
+            if not match:
+                capture_tags = {}
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'place') == mapcss._value_capture(capture_tags, 0, 'square')) and (mapcss._tag_capture(capture_tags, 1, tags, 'leisure') != mapcss._value_const_capture(capture_tags, 1, 'park', 'park')) and (mapcss.inside(self.father.config.options, 'BR')) and (mapcss._tag_capture(capture_tags, -1, tags, 'type') == mapcss._value_capture(capture_tags, -1, 'multipolygon')))
+                except mapcss.RuleAbort: pass
+            if match:
+                # group:tr("Brasil - Verificar")
+                # throwWarning:tr("{0} deve ser usado em praças pavimentadas (plaza)","{0.tag}")
+                # suggestAlternative:"leisure=park"
+                err.append({'class': 9018002, 'subclass': 758716021, 'text': mapcss.tr('{0} deve ser usado em praças pavimentadas (plaza)', mapcss._tag_uncapture(capture_tags, '{0.tag}'))})
+
         # *[name=~/(?i)\bcoreto\b/][leisure!=bandstand][leisure!=park][inside("BR")]
         if ('name' in keys):
             match = False
@@ -4563,17 +4810,20 @@ class Josm_Rules_Brazilian_Specific(PluginMapCSS):
                     (mapcss.concat('ref:vatin=', mapcss.upper(mapcss.tag(tags, 'ref:vatin')))).split('=', 1)])
                 }})
 
+        # area:closed[building=~/^(apartments|house|residential|dormitory|yes)$/][eval(areasize())>5000][inside("BR")]
+        # Part of rule not implemented
+
         # *[phone][phone!~/^(\+55|0800)/][inside("BR")]
         # *["contact:phone"]["contact:phone"!~/^(\+55|0800)/][inside("BR")]
         if ('contact:phone' in keys) or ('phone' in keys):
             match = False
             if not match:
                 capture_tags = {}
-                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'phone')) and (not mapcss.regexp_test(mapcss._value_const_capture(capture_tags, 1, self.re_243f4993, '^(\+55|0800)'), mapcss._tag_capture(capture_tags, 1, tags, 'phone'))) and (mapcss.inside(self.father.config.options, 'BR')))
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'phone')) and (not mapcss.regexp_test(mapcss._value_const_capture(capture_tags, 1, self.re_243f4993, '^(\\+55|0800)'), mapcss._tag_capture(capture_tags, 1, tags, 'phone'))) and (mapcss.inside(self.father.config.options, 'BR')))
                 except mapcss.RuleAbort: pass
             if not match:
                 capture_tags = {}
-                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'contact:phone')) and (not mapcss.regexp_test(mapcss._value_const_capture(capture_tags, 1, self.re_243f4993, '^(\+55|0800)'), mapcss._tag_capture(capture_tags, 1, tags, 'contact:phone'))) and (mapcss.inside(self.father.config.options, 'BR')))
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'contact:phone')) and (not mapcss.regexp_test(mapcss._value_const_capture(capture_tags, 1, self.re_243f4993, '^(\\+55|0800)'), mapcss._tag_capture(capture_tags, 1, tags, 'contact:phone'))) and (mapcss.inside(self.father.config.options, 'BR')))
                 except mapcss.RuleAbort: pass
             if match:
                 # group:tr("Brasil - Verificar")
@@ -4602,20 +4852,3 @@ class Josm_Rules_Brazilian_Specific(PluginMapCSS):
                 }})
 
         return err
-
-
-from plugins.PluginMapCSS import TestPluginMapcss
-
-
-class Test(TestPluginMapcss):
-    def test(self):
-        n = Josm_Rules_Brazilian_Specific(None)
-        class _config:
-            options = {"country": None, "language": None}
-        class father:
-            config = _config()
-        n.father = father()
-        n.init(None)
-        data = {'id': 0, 'lat': 0, 'lon': 0}
-
-

@@ -53,9 +53,4 @@ class Analyser_Merge_Public_Equipment_FR_Nantes_Toilets(Analyser_Merge_Point):
                         "amenity": "toilets",
                         "access": "yes"},
                     static2 = {"source": self.source},
-                    mapping1 = {
-                        "name": 'nom',
-                        "ref": 'id',
-                        "operator": 'exploitant',
-                        "opening_hours": lambda res: "24/7" if res['horaire_d_ouverture'] == u'24/24' else None,
-                        "wheelchair": lambda res: "yes" if res['accessible_pmr'] == u'oui' else "no" if res['accessible_pmr'] == u'non' else None } )))
+                    mapping1 = {"name": 'nom'} )))

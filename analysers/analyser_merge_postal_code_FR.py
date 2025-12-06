@@ -21,7 +21,7 @@
 ###########################################################################
 
 from modules.OsmoseTranslation import T_
-from .Analyser_Merge import Analyser_Merge_Point, SourceOpenDataSoft, CSV, Load_XY, Conflate, Select, Mapping
+from .Analyser_Merge import Analyser_Merge_Point, SourceDataFair, CSV, Load_XY, Conflate, Select, Mapping
 
 
 class Analyser_Merge_Postal_Code_FR(Analyser_Merge_Point):
@@ -33,12 +33,14 @@ class Analyser_Merge_Postal_Code_FR(Analyser_Merge_Point):
             title = T_('Postal code, integration suggestion'))
 
         self.init(
-            "https://datanova.legroupe.laposte.fr/explore/dataset/laposte_hexasmal",
+            "https://datanova.laposte.fr/datasets/laposte-hexasmal",
             "Base officielle des codes postaux",
-            CSV(SourceOpenDataSoft(
+            CSV(SourceDataFair(
                 attribution="La Poste",
-                url="https://datanova.legroupe.laposte.fr/explore/dataset/laposte_hexasmal")),
-            Load_XY(srid = False),
+                url="https://datanova.laposte.fr/datasets/laposte-hexasmal", file_name="019HexaSmal.csv",
+                encoding="LATIN1"),
+                srid = False),
+            Load_XY(),
             Conflate(
                 select = Select(
                     types = ["relations"],
@@ -51,6 +53,6 @@ class Analyser_Merge_Postal_Code_FR(Analyser_Merge_Point):
                 mapping = Mapping(
                     static2 = {"source:postal_code": self.source},
                     mapping1 = {
-                        "ref:INSEE": "Code_commune_INSEE",
+                        "ref:INSEE": "#Code_commune_INSEE",
                         "postal_code": "Code_postal"},
-                text = lambda tags, fields: {"en": "Postal code {0} for {1} (INSEE:{2})".format(fields["Code_postal"], (fields["Nom_commune"] or "").strip(), fields["Code_commune_INSEE"])} )))
+                text = lambda tags, fields: {"en": "Postal code {0} for {1} (INSEE:{2})".format(fields["Code_postal"], (fields["Nom_de_la_commune"] or "").strip(), fields["#Code_commune_INSEE"])} )))

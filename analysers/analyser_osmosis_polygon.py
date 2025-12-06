@@ -26,13 +26,14 @@ from .Analyser_Osmosis import Analyser_Osmosis
 sql10 = """
 SELECT
     id,
-    regexp_replace(ST_IsValidReason(ST_MakePolygon(linestring)), '[^[]+\\[([^]]+).*', 'POINT(\\1)'),
-    ST_IsValidReason(ST_MakePolygon(linestring)) AS detail
+    ST_AsText((ST_IsValidDetail(ST_MakePolygon(linestring))).location),
+    (ST_IsValidDetail(ST_MakePolygon(linestring))).reason
 FROM
     {0}ways
 WHERE
     NOT is_polygon AND
-    NOT (tags?'attraction' AND tags->'attraction' = 'roller_coaster') AND
+    NOT (tags?'roller_coaster' AND tags->'roller_coaster' = 'track') AND -- permit self-intersecting ways
+    NOT (tags?'highway' AND tags->'highway' = 'raceway') AND -- permit self-intersecting ways
     nodes[1] = nodes[array_length(nodes,1)] AND
     ST_NumPoints(linestring) > 3 AND
     ST_IsClosed(linestring) AND
@@ -63,18 +64,34 @@ GROUP BY
 sql21 = """
 SELECT
     id,
-    regexp_replace(ST_IsValidReason(ST_MakePolygon(linestring)), '[^[]+\\[([^]]+).*', 'POINT(\\1)') AS detail,
-    ST_IsValidReason(ST_MakePolygon(linestring)) AS detail
+    ST_AsText((ST_IsValidDetail(ST_MakePolygon(linestring))).location),
+    (ST_IsValidDetail(ST_MakePolygon(linestring))).reason
 FROM
     {0}_{1}_relation_linestrings
 WHERE
     (ST_NumGeometries(linestring) IS NULL OR ST_NumGeometries(linestring) = 1) AND
     ST_NumPoints(linestring) > 3 AND
     ST_IsClosed(linestring) AND
-   NOT ST_IsValid(ST_MakePolygon(linestring))
+    NOT ST_IsValid(ST_MakePolygon(linestring))
 """
 
+
+sql30 = """
+SELECT
+    id,
+    ST_AsText((ST_IsValidDetail(poly)).location),
+    (ST_IsValidDetail(poly)).reason
+FROM
+    {0}multipolygons
+WHERE
+    NOT is_valid
+"""
+
+
 class Analyser_Osmosis_Polygon(Analyser_Osmosis):
+
+    requires_tables_full = ['multipolygons']
+    requires_tables_diff = ['touched_multipolygons']
 
     def __init__(self, config, logger = None):
         Analyser_Osmosis.__init__(self, config, logger)
@@ -83,23 +100,24 @@ class Analyser_Osmosis_Polygon(Analyser_Osmosis):
 '''The polygon intersects itself. The marker points directly to the
 error area of the crossing.'''),
             fix = T_(
-'''Find where the polygon intersects itself (ie it forms an '8') and
+'''Find where the polygon intersects itself (i.e. it forms an '8') and
 correct geometry for a single loop (a '0') or by removing nodes or
 changing the order of these nodes, by adding new nodes or by creating
 multiple polygons.'''),
             trap = T_(
 '''Make sure the nodes to move do not belong to other way.'''),
-            example = T_(
-'''![](https://wiki.openstreetmap.org/w/images/9/9a/Osmose-eg-error-1040.png)'''))
+            example = {"en": "![](https://wiki.openstreetmap.org/w/images/9/9a/Osmose-eg-error-1040.png)"})
         self.classs_change[1] = self.def_class(item = 1040, level = 1, tags = ['geom', 'fix:chair'], title = T_('Invalid polygon'), **doc)
         self.classs_change[2] = self.def_class(item = 1040, level = 1, tags = ['geom', 'fix:chair'], title = T_('Invalid multipolygon'), **doc)
         self.callback10 = lambda res: {"class":1, "data":[self.way_full, self.positionAsText], "text": {"en": res[2]}}
-        self.callback20 = lambda res: {"class":2, "data":[self.relation, self.positionAsText], "text": {"en": res[2]}}
+        self.callback20 = lambda res: {"class":2, "subclass": 0, "data":[self.relation, self.positionAsText], "text": {"en": res[2]}}
+        self.callback30 = lambda res: {"class":2, "subclass": 1, "data":[self.relation, self.positionAsText], "text": {"en": res[2]}}
 
     def analyser_osmosis_full(self):
         self.run(sql10.format(""), self.callback10)
         self.run(sql20.format("", ""))
         self.run(sql21.format("", ""), self.callback20)
+        self.run(sql30.format(""), self.callback30)
 
     def analyser_osmosis_diff(self):
         self.run(sql10.format("touched_"), self.callback10)
@@ -107,3 +125,4 @@ multiple polygons.'''),
         self.run(sql21.format("touched_", ""), self.callback20)
         self.run(sql20.format("not_touched_", "touched_"))
         self.run(sql21.format("not_touched_", "touched_"), self.callback20)
+        self.run(sql30.format("touched_"), self.callback30)

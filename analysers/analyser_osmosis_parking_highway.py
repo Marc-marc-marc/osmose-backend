@@ -27,7 +27,8 @@ sql10 = """
 CREATE TEMP TABLE park_highway AS
 SELECT
   id,
-  linestring
+  linestring,
+  tags->'access' AS access
 FROM
   highways
 WHERE
@@ -40,47 +41,125 @@ CREATE INDEX park_highway_linestring_idx ON park_highway USING gist(linestring)
 """
 
 sql12 = """
+CREATE TEMP TABLE parkings AS
 SELECT
-  pr.id,
-  ST_AsText(ST_Centroid(pr.linestring)),
+  type || id as type_id,
+  tags,
+  poly
+FROM
+  polygons
+WHERE
+  tags?'amenity' AND
+  tags->'amenity' = 'parking' AND
+  (NOT tags?'parking' OR tags->'parking' NOT IN ('street_side', 'lane', 'layby', 'half_on_kerb', 'on_kerb'))
+"""
+
+sql13 = """
+SELECT
+  pr.type_id,
+  ST_AsText(ST_PointOnSurface(pr.poly)),
   pr.tags->'park_ride' != 'no'
 FROM
-  ways AS pr
-  LEFT JOIN park_highway as highway ON
-    ST_Intersects(pr.linestring, highway.linestring)
+  parkings AS pr
+  LEFT JOIN park_highway AS highway ON
+    ST_Intersects(pr.poly, highway.linestring)
 WHERE
-  ST_NPoints(pr.linestring) >= 2 AND
-  pr.tags != ''::hstore AND
-  pr.tags?'amenity' AND
-  pr.tags->'amenity' = 'parking' AND
-  (NOT pr.tags?'parking' OR pr.tags->'parking' NOT IN ('street_side', 'lane')) AND
-  highway.id IS NULL
+  highway.id IS NULL AND
+  (
+    pr.tags?'parking' OR
+    (pr.tags?'park_ride' AND pr.tags->'park_ride' != 'no')
+  )
+"""
+
+
+sql20 = """
+SELECT
+  parking.type_id,
+  array_agg('W' || parking_way.id),
+  ST_AsText(ST_PointOnSurface(parking.poly)),
+  array_agg(parking_way.access),
+  parking.tags->'access'
+FROM
+  parkings AS parking
+  JOIN park_highway AS parking_way ON
+    ST_Intersects(parking.poly, parking_way.linestring) AND
+    NOT ST_Contains(parking.poly, parking_way.linestring)
+WHERE
+  NOT parking.tags?'access' OR
+  (
+    parking.tags->'access' NOT IN ('private', 'permit', 'delivery', 'customers', 'no') AND
+    parking.tags->'access' NOT LIKE '%;%'
+  )
+GROUP BY
+  parking.type_id,
+  parking.tags,
+  parking.poly
+HAVING
+  array_agg(parking_way.access) <@ array['private', 'permit', 'delivery', 'customers']
 """
 
 class Analyser_Osmosis_Parking_highway(Analyser_Osmosis):
 
-    requires_tables_common = ['highways']
+    requires_tables_common = ['highways', 'polygons']
 
     def __init__(self, config, logger = None):
         Analyser_Osmosis.__init__(self, config, logger)
-        self.classs[1] = self.def_class(item = 3161, level = 1, tags = ['highway', 'fix:chair'],
+        self.classs[1] = self.def_class(item = 3161, level = 1, tags = ['highway', 'fix:chair', 'parking'],
             title = T_('Missing access way to parking'),
             detail = T_('There should be a `highway` feature leading to this parking facility to allow for correct routing.'))
-        self.classs[2] = self.def_class(item = 3161, level = 3, tags = ['highway', 'fix:chair'],
+        self.classs[2] = self.def_class(item = 3161, level = 3, tags = ['highway', 'fix:chair', 'parking'],
             title = T_('Missing access way to parking'),
             detail = T_(
 '''There should be a `highway` feature leading to this parking facility
 to allow for correct routing. Add a road or check if `parking=*` is
-correct. If it is a street side parking (`parking=street_side`) or lane,
+correct. If it is a street side parking (`parking=street_side`), layby (`parking=layby`) or lane,
 then add appropriate tags.
 
 See [parking](https://wiki.openstreetmap.org/wiki/Key:parking) tag on the wiki.'''))
+        self.classs[3] = self.def_class(item = 3161, level = 3, tags = ['highway', 'parking'],
+            title = T_('Inconsistent access of parking'),
+            detail = T_('''The `access` tag of the parking does not match the `access` tag of the ways inside the parking.
+As a result, this public parking space can only be reached via limited-access roads.'''),
+            fix = T_('Check which access restrictions are correct and apply them accordingly to the highways and the parking.'),
+            trap = T_('A parking may be partially publicly accessible and partially private.'))
 
     def analyser_osmosis_common(self):
-        self.run(sql10.format(""))
-        self.run(sql11.format(""))
-        self.run(sql12, lambda res: {
+        self.run(sql10)
+        self.run(sql11)
+        self.run(sql12)
+        self.run(sql13.format(proj=self.config.options["proj"]), lambda res: {
             "class": 1 if res[2] else 2,
-            "data": [self.way_full, self.positionAsText],
-            "fix": {"+": {"parking": "street_side"}},
+            "data": [self.any_full, self.positionAsText]
         })
+        self.run(sql20, lambda res: {
+            "class": 3,
+            "data": [self.any_full, self.array_full, self.positionAsText],
+            "text": T_("highway: `access={0}` - parking: `access={1}`", '/'.join(set(res[3])), res[4] if res[4] else '')
+        })
+
+
+
+###########################################################################
+
+from .Analyser_Osmosis import TestAnalyserOsmosis
+
+class Test(TestAnalyserOsmosis):
+    @classmethod
+    def setup_class(cls):
+        from modules import config
+        TestAnalyserOsmosis.setup_class()
+        cls.analyser_conf = cls.load_osm("tests/osmosis_parking_highway.osm",
+                                         config.dir_tmp + "/tests/osmosis_parking_highway.test.xml",
+                                         {"proj": 2154}) # Random proj to satisfy highway table generation
+
+    def test_classes(self):
+        with Analyser_Osmosis_Parking_highway(self.analyser_conf, self.logger) as a:
+            a.analyser()
+
+        self.root_err = self.load_errors()
+        self.check_err(cl="1", elems=[("way", "101")])
+        self.check_err(cl="2", elems=[("way", "124")])
+        self.check_err(cl="2", elems=[("way", "125")])
+        self.check_err(cl="3", elems=[("way", "103"), ("way", "102")])
+        self.check_err(cl="3", elems=[("way", "118"), ("way", "119"), ("way", "120")])
+        self.check_num_err(5)

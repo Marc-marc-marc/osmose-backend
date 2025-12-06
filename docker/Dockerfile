@@ -1,4 +1,4 @@
-FROM python:3.9
+FROM python:3.13
 
 RUN apt-get update && \
     apt-get -y dist-upgrade && \
@@ -13,16 +13,18 @@ RUN apt-get update && \
         git \
         libarchive-dev \
         libboost-python-dev \
+        libicu-dev \
         libosmpbf-dev \
         libprotobuf-dev \
         locales \
         make \
-        openjdk-11-jre-headless \
+        openjdk-21-jre-headless \
         pkg-config \
         postgis \
         postgresql-client \
         protobuf-compiler \
         python3-dev \
+        python3-icu \
         python3-pip \
         python3-setuptools \
         python3-wheel \

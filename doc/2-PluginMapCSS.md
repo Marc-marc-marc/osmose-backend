@@ -1,4 +1,4 @@
-# Plugin based on MapCCS - The basics
+# Plugin based on MapCSS - The basics
 
 The MapCSS is easier to understand and write than Python. The [definition of the MapCSS language](https://josm.openstreetmap.de/wiki/Help/Styles/MapCSSImplementation) is from JOSM. The MapCSS code can also be run and [shared with the JOSM validator](https://josm.openstreetmap.de/wiki/Rules).
 
@@ -97,7 +97,10 @@ The rules selectors can apply on OSM objects filtered by type or not. The common
 The wildcard selector is for all at once:
 * `*`
 
-Note: JOSM also have an `area` type. But it is not implemented in Osmose-QA, and such selector are ignored.
+A wildcard for ways and multipolygon relations:
+* `area`
+
+Note: for consistency with the implementation in JOSM, `area` does not imply that the way is closed. It is good to combine it with the pseudo class selector `:closed` (see below) to ensure it only matches closed ways and multipolygons.
 
 #### Condition on tags
 
@@ -116,7 +119,7 @@ Note: the conditions related to multiple objects are not implement on Osmose-QA.
 
 #### Functions
 
-Functions may be used in selector (and properties, see below). Thank to these it is possible to rework string, number, regex... all the details are on the [JOSM documentation](https://josm.openstreetmap.de/wiki/Help/Styles/MapCSSImplementation#Evalexpressions). The full list of implemented function in Osmose-QA can be found in the [source code](https://github.com/osm-fr/osmose-backend/blob/master/mapcss/mapcss_lib.py).
+Functions may be used in selector (and properties, see below). Thank to these it is possible to rework string, number, regex... all the details are on the [JOSM documentation](https://josm.openstreetmap.de/wiki/Help/Styles/MapCSSImplementation#Evalexpressions). The full list of implemented function in Osmose-QA can be found in the [source code](https://github.com/osmose-qa/osmose-backend/blob/master/mapcss/mapcss_lib.py).
 
 One of the most present function is `tr()` for translation. Fist parameter of the `tr()` will be send to translator, and replaced by translation at runtime.
 
@@ -206,22 +209,41 @@ A free text on how to fix can also be present:
 
 #### Osmose-QA Properties
 
-Osmose-QA have two optional extensions, ignored by JOSM.
+Osmose-QA has a few optional extensions, which are ignored by JOSM.
 
 ```css
     -osmoseTags: list("highway", "emergency");
 ```
-These Osmose-QA tags extent the ones define in the `meta` section.
+These Osmose-QA tags extend the ones defined in the `meta` section.
 
 ```css
     -osmoseItemClassLevel: "4030/40301/2";
 ```
-Set the Osmose-QA class definition fields: `item`, `class` id, and `level`. When defined, override the default level of `throw`.
+Set the Osmose-QA class definition fields: `item`, `class` id, and `level`. When defined, it overrides the default level of `throw*`.
 
-If required a sub class id can also be defined with `[class]:[subclass]`:
+If required, a sub class id can also be defined with `[class]:[subclass]`:
 ```css
     -osmoseItemClassLevel: "4030/40301:887554/2";
 ```
+
+Additionally, the following four properties can be used to give extra information regarding an issue:
+```css
+    -osmoseDetail: "Message containing extra details about the issue.";
+    -osmoseExample: "Message containing an example related to the issue.";
+    -osmoseFix: "Message containing a description of how to fix an issue.";
+    -osmoseTrap: "Message warning about potential mistakes.";
+```
+These are purely textual and will not affect any auto-fix. They support translations, placeholders and markdown formatting. For example:
+```css
+    -osmoseFix: tr("Create two separate objects, one with `{0}` and one with `{1}`.", "highway=*", "building=*");
+```
+
+Lastly, one can add a link to a relevant webpage with additional resources (such as the wiki) using the extension `-osmoseResource`:
+```css
+    -osmoseResource: "https://wiki.openstreetmap.org/wiki/Useful_Page";
+```
+
+Note that `-osmoseTags`, `-osmoseDetail`, `-osmoseExample`, `-osmoseFix`, `-osmoseTrap` and `-osmoseResource` apply to all rules that share the same class.
 
 ### Set, define MapCSS class
 

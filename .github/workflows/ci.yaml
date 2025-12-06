@@ -6,7 +6,7 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     container:
-      image: python:3.9
+      image: python:3.13
       env:
         USER: root
 
@@ -31,7 +31,7 @@ jobs:
           flex \
           bison
 
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
 
     - name: Setup env
       run: |
@@ -42,7 +42,7 @@ jobs:
         cd modules/osm_pbf_parser && make && cd ../../
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
 
@@ -62,13 +62,13 @@ jobs:
   tests:
     runs-on: ubuntu-latest
     container:
-      image: python:3.9
+      image: python:3.13
       env:
         USER: root
 
     services:
       postgres:
-        image: postgis/postgis:13-3.0-alpine
+        image: postgis/postgis:16-3.5-alpine
         env:
           POSTGRES_PASSWORD: -osmose-
 
@@ -98,7 +98,7 @@ jobs:
           flex \
           bison
 
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
 
     - name: Setup env
       run: |
@@ -109,7 +109,7 @@ jobs:
         cd modules/osm_pbf_parser && make && cd ../../
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
 
@@ -139,13 +139,13 @@ jobs:
   optional_tests:
     runs-on: ubuntu-latest
     container:
-      image: python:3.9
+      image: python:3.13
       env:
         USER: root
 
     services:
       postgres:
-        image: postgis/postgis:13-3.0-alpine
+        image: postgis/postgis:17-3.5-alpine
         env:
           POSTGRES_PASSWORD: -osmose-
 
@@ -175,7 +175,7 @@ jobs:
           flex \
           bison
 
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
 
     - name: Setup env
       run: |
@@ -186,7 +186,7 @@ jobs:
         cd modules/osm_pbf_parser && make && cd ../../
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
 

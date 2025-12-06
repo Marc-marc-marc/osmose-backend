@@ -67,8 +67,8 @@ class TagFix_Tree_Lang_fr(Plugin):
         self.errors[3120] = self.def_class(item = 3120, level = 3, tags = ['natural', 'fix:imagery'],
             title = T_('Tree tagging'),
             detail = T_(
-'''To characterize the trees `natural=tree`, there are two main tag:
-`type` and `species`.'''),
+'''To characterize the trees `natural=tree`, there are two main tags:
+`genus` and `species`.'''),
             fix = T_(
 '''Put the right data in the correct tag, in this case species.'''),
             trap = T_(
@@ -92,14 +92,13 @@ class TagFix_Tree_Lang_fr(Plugin):
                 err.append(c)
 
         if 'type' in tags:
+            # type is a deprecated tag, but the new tag isn't used with French tree names
             c = self.check('type', tags['type'], 2)
             if c:
                 err.append(c)
-            elif tags['type'] not in ('broad_leaved', 'broad_leafed', 'conifer', 'palm'):
-                err.append({"class": 3120, "subclass": 3, "text": T_("Bad tag type=\"{0}\"", tags["type"])})
 
         if 'denotation' in tags:
-            if tags['denotation'] not in ('cluster', 'avenue', 'urban', 'natural_monument', 'park', 'landmark'):
+            if tags['denotation'] not in ('avenue', 'urban', 'natural_monument', 'landmark', 'agricultural','park','garden'):
                 err.append({"class": 3120, "subclass": 4, "text": T_("Bad tag denotation=\"{0}\"", tags["denotation"])})
 
         return err
@@ -130,11 +129,8 @@ class Test(TestPluginCommon):
         for d in [u"anything", u"Pin Sylvestre", u"Frêne commun", u"Chêne vert"]:
             self.check_err(a.node(None, {"natural":"tree", "denotation":d}), ("denotation='{0}'".format(d)))
 
-        for d in [u"cluster", u"park"]:
+        for d in [u"landmark", u"agricultural"]:
             assert not a.node(None, {"natural":"tree", "denotation":d}), ("denotation='{0}'".format(d))
-
-        for d in [u"anything", u"Pin Sylvestre", u"Frêne commun", u"Chêne vert"]:
-            self.check_err(a.node(None, {"natural":"tree", "type":d}), ("type='{0}'".format(d)))
 
         for d in [u"broad_leafed", u"conifer"]:
             assert not a.node(None, {"natural":"tree", "type":d}), ("type='{0}'".format(d))

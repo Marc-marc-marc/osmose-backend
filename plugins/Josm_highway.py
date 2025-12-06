@@ -7,6 +7,10 @@ from plugins.PluginMapCSS import PluginMapCSS
 
 
 class Josm_highway(PluginMapCSS):
+    # ------------------------------- IMPORTANT -------------------------------
+    # This file is generated automatically and should not be modified directly.
+    # Instead, modify the source mapcss file and regenerate this Python script.
+    # -------------------------------------------------------------------------
 
     MAPCSS_URL = 'https://josm.openstreetmap.de/browser/josm/trunk/resources/data/validator/highway.mapcss'
 
@@ -276,10 +280,8 @@ class Josm_highway(PluginMapCSS):
                 # assertNoMatch:"way highway=cycleway bicycle=yes"
                 # assertMatch:"way highway=cycleway cycleway=lane"
                 # assertNoMatch:"way highway=cycleway"
-                # assertNoMatch:"way highway=cycleway"
                 # assertNoMatch:"way highway=footway foot=yes"
                 # assertMatch:"way highway=footway maxspeed=20"
-                # assertNoMatch:"way highway=footway"
                 # assertNoMatch:"way highway=footway"
                 # assertNoMatch:"way highway=residential cycleway=lane"
                 # assertNoMatch:"way highway=residential maxspeed=20"
@@ -440,27 +442,27 @@ class Josm_highway(PluginMapCSS):
                 except mapcss.RuleAbort: pass
             if not match:
                 capture_tags = {}
-                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'turn:lanes')) and (not mapcss.regexp_test(mapcss._value_const_capture(capture_tags, 1, self.re_23c50386, '^(|none|((sharp_|slight_|merge_to_|slide_)?(left|right)|reverse|through)(;((sharp_|slight_|merge_to_|slide_)?(left|right)|reverse|through))*)(\|(|none|((sharp_|slight_|merge_to_|slide_)?(left|right)|reverse|through)(;((sharp_|slight_|merge_to_|slide_)?(left|right)|reverse|through))*))*$'), mapcss._tag_capture(capture_tags, 1, tags, 'turn:lanes'))))
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'turn:lanes')) and (not mapcss.regexp_test(mapcss._value_const_capture(capture_tags, 1, self.re_23c50386, '^(|none|((sharp_|slight_|merge_to_|slide_)?(left|right)|reverse|through)(;((sharp_|slight_|merge_to_|slide_)?(left|right)|reverse|through))*)(\\|(|none|((sharp_|slight_|merge_to_|slide_)?(left|right)|reverse|through)(;((sharp_|slight_|merge_to_|slide_)?(left|right)|reverse|through))*))*$'), mapcss._tag_capture(capture_tags, 1, tags, 'turn:lanes'))))
                 except mapcss.RuleAbort: pass
             if not match:
                 capture_tags = {}
-                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'turn:lanes:forward')) and (not mapcss.regexp_test(mapcss._value_const_capture(capture_tags, 1, self.re_23c50386, '^(|none|((sharp_|slight_|merge_to_|slide_)?(left|right)|reverse|through)(;((sharp_|slight_|merge_to_|slide_)?(left|right)|reverse|through))*)(\|(|none|((sharp_|slight_|merge_to_|slide_)?(left|right)|reverse|through)(;((sharp_|slight_|merge_to_|slide_)?(left|right)|reverse|through))*))*$'), mapcss._tag_capture(capture_tags, 1, tags, 'turn:lanes:forward'))))
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'turn:lanes:forward')) and (not mapcss.regexp_test(mapcss._value_const_capture(capture_tags, 1, self.re_23c50386, '^(|none|((sharp_|slight_|merge_to_|slide_)?(left|right)|reverse|through)(;((sharp_|slight_|merge_to_|slide_)?(left|right)|reverse|through))*)(\\|(|none|((sharp_|slight_|merge_to_|slide_)?(left|right)|reverse|through)(;((sharp_|slight_|merge_to_|slide_)?(left|right)|reverse|through))*))*$'), mapcss._tag_capture(capture_tags, 1, tags, 'turn:lanes:forward'))))
                 except mapcss.RuleAbort: pass
             if not match:
                 capture_tags = {}
-                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'turn:lanes:backward')) and (not mapcss.regexp_test(mapcss._value_const_capture(capture_tags, 1, self.re_23c50386, '^(|none|((sharp_|slight_|merge_to_|slide_)?(left|right)|reverse|through)(;((sharp_|slight_|merge_to_|slide_)?(left|right)|reverse|through))*)(\|(|none|((sharp_|slight_|merge_to_|slide_)?(left|right)|reverse|through)(;((sharp_|slight_|merge_to_|slide_)?(left|right)|reverse|through))*))*$'), mapcss._tag_capture(capture_tags, 1, tags, 'turn:lanes:backward'))))
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'turn:lanes:backward')) and (not mapcss.regexp_test(mapcss._value_const_capture(capture_tags, 1, self.re_23c50386, '^(|none|((sharp_|slight_|merge_to_|slide_)?(left|right)|reverse|through)(;((sharp_|slight_|merge_to_|slide_)?(left|right)|reverse|through))*)(\\|(|none|((sharp_|slight_|merge_to_|slide_)?(left|right)|reverse|through)(;((sharp_|slight_|merge_to_|slide_)?(left|right)|reverse|through))*))*$'), mapcss._tag_capture(capture_tags, 1, tags, 'turn:lanes:backward'))))
                 except mapcss.RuleAbort: pass
             if not match:
                 capture_tags = {}
-                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'turn:lanes:both_ways')) and (not mapcss.regexp_test(mapcss._value_const_capture(capture_tags, 1, self.re_23c50386, '^(|none|((sharp_|slight_|merge_to_|slide_)?(left|right)|reverse|through)(;((sharp_|slight_|merge_to_|slide_)?(left|right)|reverse|through))*)(\|(|none|((sharp_|slight_|merge_to_|slide_)?(left|right)|reverse|through)(;((sharp_|slight_|merge_to_|slide_)?(left|right)|reverse|through))*))*$'), mapcss._tag_capture(capture_tags, 1, tags, 'turn:lanes:both_ways'))))
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'turn:lanes:both_ways')) and (not mapcss.regexp_test(mapcss._value_const_capture(capture_tags, 1, self.re_23c50386, '^(|none|((sharp_|slight_|merge_to_|slide_)?(left|right)|reverse|through)(;((sharp_|slight_|merge_to_|slide_)?(left|right)|reverse|through))*)(\\|(|none|((sharp_|slight_|merge_to_|slide_)?(left|right)|reverse|through)(;((sharp_|slight_|merge_to_|slide_)?(left|right)|reverse|through))*))*$'), mapcss._tag_capture(capture_tags, 1, tags, 'turn:lanes:both_ways'))))
                 except mapcss.RuleAbort: pass
             if not match:
                 capture_tags = {}
-                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'turn:lanes:both_ways:forward')) and (not mapcss.regexp_test(mapcss._value_const_capture(capture_tags, 1, self.re_23c50386, '^(|none|((sharp_|slight_|merge_to_|slide_)?(left|right)|reverse|through)(;((sharp_|slight_|merge_to_|slide_)?(left|right)|reverse|through))*)(\|(|none|((sharp_|slight_|merge_to_|slide_)?(left|right)|reverse|through)(;((sharp_|slight_|merge_to_|slide_)?(left|right)|reverse|through))*))*$'), mapcss._tag_capture(capture_tags, 1, tags, 'turn:lanes:both_ways:forward'))))
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'turn:lanes:both_ways:forward')) and (not mapcss.regexp_test(mapcss._value_const_capture(capture_tags, 1, self.re_23c50386, '^(|none|((sharp_|slight_|merge_to_|slide_)?(left|right)|reverse|through)(;((sharp_|slight_|merge_to_|slide_)?(left|right)|reverse|through))*)(\\|(|none|((sharp_|slight_|merge_to_|slide_)?(left|right)|reverse|through)(;((sharp_|slight_|merge_to_|slide_)?(left|right)|reverse|through))*))*$'), mapcss._tag_capture(capture_tags, 1, tags, 'turn:lanes:both_ways:forward'))))
                 except mapcss.RuleAbort: pass
             if not match:
                 capture_tags = {}
-                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'turn:lanes:both_ways:backward')) and (not mapcss.regexp_test(mapcss._value_const_capture(capture_tags, 1, self.re_23c50386, '^(|none|((sharp_|slight_|merge_to_|slide_)?(left|right)|reverse|through)(;((sharp_|slight_|merge_to_|slide_)?(left|right)|reverse|through))*)(\|(|none|((sharp_|slight_|merge_to_|slide_)?(left|right)|reverse|through)(;((sharp_|slight_|merge_to_|slide_)?(left|right)|reverse|through))*))*$'), mapcss._tag_capture(capture_tags, 1, tags, 'turn:lanes:both_ways:backward'))))
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'turn:lanes:both_ways:backward')) and (not mapcss.regexp_test(mapcss._value_const_capture(capture_tags, 1, self.re_23c50386, '^(|none|((sharp_|slight_|merge_to_|slide_)?(left|right)|reverse|through)(;((sharp_|slight_|merge_to_|slide_)?(left|right)|reverse|through))*)(\\|(|none|((sharp_|slight_|merge_to_|slide_)?(left|right)|reverse|through)(;((sharp_|slight_|merge_to_|slide_)?(left|right)|reverse|through))*))*$'), mapcss._tag_capture(capture_tags, 1, tags, 'turn:lanes:both_ways:backward'))))
                 except mapcss.RuleAbort: pass
             if match:
                 # throwWarning:tr("unusual value of {0}","{0.key}")
@@ -584,10 +586,8 @@ class Test(TestPluginMapcss):
         self.check_not_err(n.way(data, {'bicycle': 'yes', 'highway': 'cycleway'}, [0]), expected={'class': 9004013, 'subclass': 469607562})
         self.check_err(n.way(data, {'cycleway': 'lane', 'highway': 'cycleway'}, [0]), expected={'class': 9004013, 'subclass': 469607562})
         self.check_not_err(n.way(data, {'highway': 'cycleway'}, [0]), expected={'class': 9004013, 'subclass': 469607562})
-        self.check_not_err(n.way(data, {'highway': 'cycleway'}, [0]), expected={'class': 9004013, 'subclass': 469607562})
         self.check_not_err(n.way(data, {'foot': 'yes', 'highway': 'footway'}, [0]), expected={'class': 9004013, 'subclass': 469607562})
         self.check_err(n.way(data, {'highway': 'footway', 'maxspeed': '20'}, [0]), expected={'class': 9004013, 'subclass': 469607562})
-        self.check_not_err(n.way(data, {'highway': 'footway'}, [0]), expected={'class': 9004013, 'subclass': 469607562})
         self.check_not_err(n.way(data, {'highway': 'footway'}, [0]), expected={'class': 9004013, 'subclass': 469607562})
         self.check_not_err(n.way(data, {'cycleway': 'lane', 'highway': 'residential'}, [0]), expected={'class': 9004013, 'subclass': 469607562})
         self.check_not_err(n.way(data, {'highway': 'residential', 'maxspeed': '20'}, [0]), expected={'class': 9004013, 'subclass': 469607562})

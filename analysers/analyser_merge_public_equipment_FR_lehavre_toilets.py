@@ -36,8 +36,7 @@ class Analyser_Merge_Public_Equipment_FR_LeHavre_Toilets(Analyser_Merge_Point):
             GeoJSON(Source(attribution = 'Ville du Havre', millesime = '04/2022',
                     fileUrl ='https://data.lehavreseinemetropole.fr/api/v1/file/data/159/SANITAIRE/json', zip = 'OD.SANITAIRE.json'),
                 extractor = lambda geojson: geojson),
-            Load_XY("geom_x", "geom_y",
-                srid = 3950),
+            Load_XY("geom_x", "geom_y"),
             Conflate(
                 select = Select(
                     types = ["nodes", "ways"],
