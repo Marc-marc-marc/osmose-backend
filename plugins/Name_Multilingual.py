@@ -50,13 +50,49 @@ class Name_Multilingual(Plugin):
                 name = tags.get("name")
                 if name is not None and ("-" in name or "(" in name):
                     return []
-                separator = " / " if name is None or " / " in name else "/"
-                return [
-                    {"name": tags["name:"+lang[0]].strip()},
-                    {"name": tags["name:"+lang[1]].strip()},
-                    {"name": tags["name:"+lang[0]].strip() + separator + tags["name:"+lang[1].strip()]},
-                    {"name": tags["name:"+lang[1]].strip() + separator + tags["name:"+lang[0].strip()]},
-                ] if tags.get("name:"+lang[0]) and tags.get("name:"+lang[1]) and tags["name:"+lang[0]].strip() != tags["name:"+lang[1]].strip() else [{"name": tags.get("name:"+lang[0], tags.get("name:"+lang[1])).strip()}]
+
+                separator = " / "
+                str1 = tags.get("name:" + lang[0])
+                str2 = tags.get("name:" + lang[1])
+                combined = self.merge_sp_eu(str1, str2)
+
+                if name and (
+                    name == str1
+                    or name == str2
+                    or name == f"{str1}{separator}{str2}"
+                    or name == f"{str2}{separator}{str1}"
+                    or name == combined
+                ):
+                    return []
+
+                value = []
+
+                if name and "/" in name and separator not in name:
+                    value.append({"name": name.replace("/", separator)})
+                elif not name and (str1 or str2):
+                    value.append({"name": (str1 or str2).strip()})
+                elif combined:
+                    value.append({"name": combined})
+                elif str1 and str2 and not combined:
+                    a, b = str1.strip(), str2.strip()
+                    value.append({"name": a + separator + b})
+                    value.append({"name": b + separator + a})
+                elif not combined and separator not in name:
+                    def append(a, b, tag):
+                        value.append({tag: a})
+                        merged = self.merge_sp_eu(a, b)
+                        if merged:
+                            value.append({"name": merged, tag: a})
+                        else:
+                            a_s, b_s = a.strip(), b.strip()
+                            value.append({"name": a_s + separator + b_s, tag: a})
+                            value.append({"name": b_s + separator + a_s, tag: a})
+                    if name and str1 and name != str1:
+                        append(name, str1, f"name:{lang[1]}")
+                    if name and str2 and name != str2:
+                        append(name, str2, f"name:{lang[0]}")
+
+                return value
             self.aggregator = aggregator
             self.split = self.split_sp_eu
         elif style == "sp_ast":
@@ -69,6 +105,7 @@ class Name_Multilingual(Plugin):
                     {"name": tags["name:"+lang[0]].strip()},
                     {"name": tags["name:"+lang[1]].strip()},
                     {"name": tags["name:"+lang[0]].strip() + separator + tags["name:"+lang[1].strip()]},
+                    {"name": tags["name:"+lang[1]].strip() + separator + tags["name:"+lang[0].strip()]},
                 ] if tags.get("name:"+lang[0]) and tags.get("name:"+lang[1]) and tags["name:"+lang[0]].strip() != tags["name:"+lang[1]].strip() else [{"name": tags.get("name:"+lang[0], tags.get("name:"+lang[1])).strip()}]
             self.aggregator = aggregator
             self.split = self.split_sp_ast
@@ -96,6 +133,9 @@ class Name_Multilingual(Plugin):
         self.lang_regex_script = list(map(lambda l: [l, regex.compile(r"^[\p{{Common}}{0}]+$".format(gen_regex(language2scripts[l])), flags=regex.V1)], lang))
 
     def filter_fix_already_existing(self, names, s):
+        if self.father.config.options.get("multilingual_style") == "sp_eu":
+            return []
+
         return list(filter(
             lambda d: len(d) > 0,
             map(
@@ -175,6 +215,32 @@ class Name_Multilingual(Plugin):
     def split_sp_eu(self, name):
         if "-" not in name and "(" not in name:
             return self.split_delimitor(name, '/', False)
+
+    def merge_sp_eu(self, str1, str2):
+        if not str1 or not str2:
+            return None
+        if len(str1.split()) < 2 or len(str2.split()) < 2:
+            return None
+        words1 = str1.split()
+        words2 = str2.split()
+        merged = None
+        # Try to find overlap: end of str1 matches start of str2
+        for i in range(len(words1)):
+            if words1[i:] == words2[:len(words1) - i]:
+                merged = str1 + " " + " ".join(words2[len(words1) - i:])
+                break
+        # If not found, try the reverse order
+        if not merged:
+            for i in range(len(words2)):
+                if words2[i:] == words1[:len(words2) - i]:
+                    merged = str2 + " " + " ".join(words1[len(words2) - i:])
+                    break
+        # Validate length: merged string must be shorter than sum of both parts
+        # Otherwise, it means there was no real fusion (just concatenation or repetition)
+        if merged and len(merged) < (len(str1) + len(str2)):
+            return merged
+
+        return None
 
     def split_sp_ast(self, name):
         if "-" not in name and "(" not in name:
@@ -347,3 +413,39 @@ class Test(TestPluginCommon):
 
         assert not self.p.way(None, {"name": u"Avenue جادة", "name:fr": u"Avenue", "name:ar": u"جادة"}, None)
         assert not self.p.way(None, {"name": u"Avenue 17 / جادة 17", "name:fr": u"Avenue 17", "name:ar": u"جادة 17"}, None)
+
+    def test_eu(self):
+        TestPluginCommon.setUp(self)
+        self.p = Name_Multilingual(None)
+        class _config:
+            options = {"language": ["es", "eu"], "multilingual_style": "sp_eu"}
+        class father:
+            config = _config()
+        self.p.father = father()
+        self.p.init(None)
+
+        # single: name equals name:eu
+        assert not self.p.way(None, {"name": "Errenteria", "name:es": "Renteria", "name:eu": "Errenteria"}, None)
+        # single: name equals name:es
+        assert not self.p.way(None, {"name": "Carretera de Montoria", "name:es": "Carretera de Montoria", "name:eu": "Montoriako etorbidea"}, None)
+        # combined: single word
+        assert not self.p.way(None, {"name": "Carretera Ollaretxe errepidea", "name:es": "Carretera Ollaretxe", "name:eu": "Ollaretxe errepidea"}, None)
+        # combined: multiple words merged
+        assert not self.p.way(None, {"name": "Calle Ramon y Cajal kalea", "name:es": "Calle Ramon y Cajal", "name:eu": "Ramon y Cajal kalea"}, None)
+        # combined: multiple words unmerged
+        assert not self.p.way(None, {"name": "Colegio de Educación Infantil Izarra Haur Hezkuntzako Ikastetxea", "name:es": "Colegio de Educación Infantil Izarra", "name:eu": "Izarra Haur Hezkuntzako Ikastetxea"}, None)
+        # slash: first name:eu, then name:es
+        assert not self.p.way(None, {"name": "Kale Nagusia / Calle Mayor", "name:es": "Calle Mayor", "name:eu": "Kale Nagusia"}, None)
+        # slash: first name:es, then name:eu
+        assert not self.p.way(None, {"name": "Calle Islas Canarias / Kanariar Uharteen kalea", "name:es": "Calle Islas Canarias", "name:eu": "Kanariar Uharteen kalea"}, None)
+        # slash: no language tags
+        assert not self.p.way(None, {"name": "Vicente Blasco Ibañez kalea / Calle Vicente Blasco Ibáñez"}, None)
+
+        # not matching: name != name:eu
+        assert self.p.way(None, {"name": "Calle San Diego", "name:eu": "San Diego kalea"}, None)
+        # not matching: name != name:es
+        assert self.p.way(None, {"name": "Kale Nagusia", "name:es": "Calle Mayor"}, None)
+        # not matching: name != (name:es + name:eu || name:eu + name:es)
+        assert self.p.way(None, {"name": "Calle Islas Canarias / Kanariar Uharteen kalea", "name:es": "Calle Canarias", "name:eu": "Kanarias kalea"}, None)
+        # bad separator
+        assert self.p.way(None, {"name": "Doneztebe/Santesteban", "name:eu": "Doneztebe", "name:es": "Santesteban"}, None)

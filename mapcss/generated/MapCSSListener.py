@@ -44,6 +44,15 @@ class MapCSSListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by MapCSSParser#parent_child_selector_operator.
+    def enterParent_child_selector_operator(self, ctx:MapCSSParser.Parent_child_selector_operatorContext):
+        pass
+
+    # Exit a parse tree produced by MapCSSParser#parent_child_selector_operator.
+    def exitParent_child_selector_operator(self, ctx:MapCSSParser.Parent_child_selector_operatorContext):
+        pass
+
+
     # Enter a parse tree produced by MapCSSParser#simple_selector_operator.
     def enterSimple_selector_operator(self, ctx:MapCSSParser.Simple_selector_operatorContext):
         pass
@@ -230,6 +239,51 @@ class MapCSSListener(ParseTreeListener):
 
     # Exit a parse tree produced by MapCSSParser#single_value.
     def exitSingle_value(self, ctx:MapCSSParser.Single_valueContext):
+        pass
+
+
+    # Enter a parse tree produced by MapCSSParser#supports_block.
+    def enterSupports_block(self, ctx:MapCSSParser.Supports_blockContext):
+        pass
+
+    # Exit a parse tree produced by MapCSSParser#supports_block.
+    def exitSupports_block(self, ctx:MapCSSParser.Supports_blockContext):
+        pass
+
+
+    # Enter a parse tree produced by MapCSSParser#supports_rule.
+    def enterSupports_rule(self, ctx:MapCSSParser.Supports_ruleContext):
+        pass
+
+    # Exit a parse tree produced by MapCSSParser#supports_rule.
+    def exitSupports_rule(self, ctx:MapCSSParser.Supports_ruleContext):
+        pass
+
+
+    # Enter a parse tree produced by MapCSSParser#supports_condition.
+    def enterSupports_condition(self, ctx:MapCSSParser.Supports_conditionContext):
+        pass
+
+    # Exit a parse tree produced by MapCSSParser#supports_condition.
+    def exitSupports_condition(self, ctx:MapCSSParser.Supports_conditionContext):
+        pass
+
+
+    # Enter a parse tree produced by MapCSSParser#supports_in_parens.
+    def enterSupports_in_parens(self, ctx:MapCSSParser.Supports_in_parensContext):
+        pass
+
+    # Exit a parse tree produced by MapCSSParser#supports_in_parens.
+    def exitSupports_in_parens(self, ctx:MapCSSParser.Supports_in_parensContext):
+        pass
+
+
+    # Enter a parse tree produced by MapCSSParser#supports_declaration.
+    def enterSupports_declaration(self, ctx:MapCSSParser.Supports_declarationContext):
+        pass
+
+    # Exit a parse tree produced by MapCSSParser#supports_declaration.
+    def exitSupports_declaration(self, ctx:MapCSSParser.Supports_declarationContext):
         pass
 
 

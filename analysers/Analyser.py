@@ -49,7 +49,7 @@ class Analyser(object):
         # Check keys
         diff_keys = set(kwargs.keys()) - set(['item', 'id', 'level', 'tags', 'title', 'detail', 'fix', 'trap', 'example', 'source', 'resource'])
         if len(diff_keys) > 0:
-            raise Exception('Unknow key ' + ', '.join(diff_keys))
+            raise Exception('Unknown key ' + ', '.join(diff_keys))
 
         if 'source' not in kwargs:
             caller = getframeinfo(stack()[back_in_stack][0])
@@ -313,6 +313,34 @@ class TestAnalyser(unittest.TestCase):
         if name_analyser == "analyser" and "delete" in a["analysers"][name_analyser]:
             del a["analysers"][name_analyser]["delete"]
 
+    @staticmethod
+    def shorten_coordinates_list(a):
+        # Make sure that lat/lon are comparable by round them to N decimals
+        for k in range(len(a)):
+            if hasattr(a[k], 'items'):
+                a[k] = TestAnalyser.shorten_coordinates(a[k])
+            elif isinstance(a[k], list):
+                a[k] = TestAnalyser.shorten_coordinates_list(a[k])
+        return a
+
+    @staticmethod
+    def shorten_coordinates(a):
+        # Make sure that lat/lon are comparable by round them to N decimals
+        for k in a.keys():
+            if k == "@lat" or k == "@lon":
+                if isinstance(a[k], float):
+                    a[k] = round(a[k], 13)
+                elif isinstance(a[k], str):
+                    try:
+                        a[k] = str(round(float(a[k]), 13))
+                    except:
+                        pass
+            elif hasattr(a[k], 'items'):
+                a[k] = TestAnalyser.shorten_coordinates(a[k])
+            elif isinstance(a[k], list):
+                a[k] = TestAnalyser.shorten_coordinates_list(a[k])
+        return a
+
     def compare_results(self, orig_xml=None, checked_xml=None, convert_checked_to_normal=False):
         if orig_xml is None:
             raise  # TODO
@@ -333,6 +361,9 @@ class TestAnalyser(unittest.TestCase):
         TestAnalyser.remove_non_checked_entries(a)
         TestAnalyser.remove_non_checked_entries(b)
 
+        a = TestAnalyser.shorten_coordinates(a)
+        b = TestAnalyser.shorten_coordinates(b)
+
         if a != b:
             s = TestAnalyser.compare_dict(a, b)
             print(s)
@@ -345,7 +376,7 @@ class TestAnalyser(unittest.TestCase):
         tree = ET.parse(self.xml_res_file)
         return tree.getroot()
 
-    def check_err(self, cl=None, lat=None, lon=None, elems=None):
+    def check_err(self, cl=None, lat=None, lon=None, elems=None, fixes=None):
         for e in self.root_err.find("analyser").findall('error'):
             if cl is not None and e.attrib["class"] != cl:
                 continue
@@ -359,6 +390,25 @@ class TestAnalyser(unittest.TestCase):
                     for err_elem in e.findall(t):
                         xml_elems.append((t, err_elem.attrib["id"]))
                 if set(elems) != set(xml_elems):
+                    continue
+            if fixes is not None:
+                # input: [ {"+": {k1:v1, k2:v2}, "-": [k1, k1], "~": {k1:v1, k2:v2}} , ...]
+                xml_elems = []
+                if e.find('fixes') is not None:
+                    for f in e.find('fixes').findall('fix'):
+                        fixactions = {"+": {}, "-": [], "~": {}}
+                        for t in ("node", "way", "relation"):
+                            for fi in f.findall(t):
+                                for fix in fi.findall("tag"):
+                                    if fix.attrib["action"] == "delete":
+                                        fixactions["-"].append(fix.attrib["k"])
+                                    elif fix.attrib["action"] == "modify":
+                                        fixactions["~"][fix.attrib["k"]] = fix.attrib["v"]
+                                    elif fix.attrib["action"] == "create":
+                                        fixactions["+"][fix.attrib["k"]] = fix.attrib["v"]
+                        fixactions = {k:v for k,v in fixactions.items() if len(v)}
+                        xml_elems.append(fixactions)
+                if fixes != xml_elems:
                     continue
             return True
 
@@ -381,6 +431,17 @@ class TestAnalyser(unittest.TestCase):
         if max is not None:
             self.assertLessEqual(xml_num, max, "Found {0} errors instead of <= {1}".format(xml_num, max))
 
+        # Check if errors are also unique (see #1887)
+        if root_analyser is not None:
+            err_semihash = list(# assumes source and item are identical
+                map(lambda e: 'cl=' + e.attrib.get('class', '') +
+                              ' subcl=' + e.attrib.get('subclass', '') + ' ' +
+                              ' '.join(map(lambda elem: 'r' + elem.attrib.get('id', ''), e.findall('relation'))) + ' ' +
+                              ' '.join(map(lambda elem: 'w' + elem.attrib.get('id', ''), e.findall('way'))) + ' ' +
+                              ' '.join(map(lambda elem: 'n' + elem.attrib.get('id', ''), e.findall('node'))),
+                    root_analyser.findall('error')))
+            non_unique = set([x for x in err_semihash if err_semihash.count(x) > 1])
+            assert len(non_unique) == 0, "Multiple errors having the same (sub)class and elements\n- " + '\n- '.join(non_unique)
 
 ###########################################################################
 
@@ -404,6 +465,67 @@ class Test(unittest.TestCase):
         self.assertEqual(a.compare_dict({1:{3:4}, 2:2}, {1:{4:5}, 2:2}), u"key '3' is missing from b [.1]")
         self.assertEqual(a.compare_dict({1:{   }, 2:2}, {1:{3:4}, 2:2}), u"key '3' is missing from a [.1]")
         self.assertEqual(a.compare_dict({1:{3:4}, 2:2}, {1:{   }, 2:2}), u"key '3' is missing from b [.1]")
+
+    def test_coordinates(self):
+        a = TestAnalyser
+        self.assertEqual(a.compare_dict({"@lat":43.9533100018163, "@lon":10}, {"@lat":43.9533100018163, "@lon":10}), u"")
+
+        t0 = a.shorten_coordinates({"@lat": 43.9533100018163, "@lon": 10})
+        t1 = a.shorten_coordinates({"@lat": 43.9533100018163, "@lon": 10})
+        self.assertEqual(a.compare_dict(t0, t1), u"")
+
+        t0 = a.shorten_coordinates({"@lat": 43.9533100018163,  "@lon": 10})
+        t1 = a.shorten_coordinates({"@lat": 43.95331000181634, "@lon": 10})
+        self.assertEqual(a.compare_dict(t0, t1), u"")
+
+        t0 = a.shorten_coordinates({"@lat": 43.9533100018163,   "@lon": 10})
+        t1 = a.shorten_coordinates({"@lat": 43.953310001816334, "@lon": 10})
+        self.assertEqual(a.compare_dict(t0, t1), u"")
+
+        t0 = a.shorten_coordinates({1: {"@lat": 43.9533100018163,  "@lon": 10}})
+        t1 = a.shorten_coordinates({1: {"@lat": 43.95331000181634, "@lon": 10}})
+        self.assertEqual(a.compare_dict(t0, t1), u"")
+
+        t0 = a.shorten_coordinates({1: [{"@lat": 43.9533100018163,  "@lon": 10},]})
+        t1 = a.shorten_coordinates({1: [{"@lat": 43.95331000181634, "@lon": 10},]})
+        self.assertEqual(a.compare_dict(t0, t1), u"")
+
+        t0 = a.shorten_coordinates({"@lat": "43.9533100018163",   "@lon": 10})
+        t1 = a.shorten_coordinates({"@lat": "43.953310001816334", "@lon": 10})
+        self.assertEqual(a.compare_dict(t0, t1), u"")
+
+        t0 = a.shorten_coordinates({"@lat": 43.953310001816,   "@lon": 10})
+        t1 = a.shorten_coordinates({"@lat": 43.95331000181634, "@lon": 10})
+        self.assertEqual(a.compare_dict(t0, t1), u"key '@lat' is different: '43.953310001816' != '43.9533100018163' []")
+
+        t0 = a.shorten_coordinates({"@lat": 43.95331000181634, "@lon": 43.953310001816})
+        t1 = a.shorten_coordinates({"@lat": 43.95331000181634, "@lon": 43.95331000181634})
+        self.assertEqual(a.compare_dict(t0, t1), u"key '@lon' is different: '43.953310001816' != '43.9533100018163' []")
+
+        t0 = a.shorten_coordinates({"@lat": 43.95331000181634, "@lon": 45.95331000181634})
+        t1 = a.shorten_coordinates({"@lat": 43.95331000181634, "@lon": 43.95331000181634})
+        self.assertEqual(a.compare_dict(t0, t1), u"key '@lon' is different: '45.9533100018163' != '43.9533100018163' []")
+
+        t0 = a.shorten_coordinates({1: {"@lat": 43.953310001816,   "@lon": 10}})
+        t1 = a.shorten_coordinates({1: {"@lat": 43.95331000181634, "@lon": 10}})
+        self.assertEqual(a.compare_dict(t0, t1), u"key '@lat' is different: '43.953310001816' != '43.9533100018163' [.1]")
+
+        t0 = a.shorten_coordinates({1: [{"@lat": 43.953310001816,   "@lon": 10},]})
+        t1 = a.shorten_coordinates({1: [{"@lat": 43.95331000181634, "@lon": 10},]})
+        self.assertEqual(a.compare_dict(t0, t1), u"key '@lat' is different: '43.953310001816' != '43.9533100018163' [.1.0]")
+
+        t0 = a.shorten_coordinates({1: [{"@lat": "43.953310001816",   "@lon": 10},]})
+        t1 = a.shorten_coordinates({1: [{"@lat": "43.95331000181634", "@lon": 10},]})
+        self.assertEqual(a.compare_dict(t0, t1), u"key '@lat' is different: '43.953310001816' != '43.9533100018163' [.1.0]")
+
+        # only @lat/@lon should be modified
+        t0 = a.shorten_coordinates({"other": 43.9533100018163, "@lon": 10})
+        t1 = a.shorten_coordinates({"other": 43.9533100018163, "@lon": 10})
+        self.assertEqual(a.compare_dict(t0, t1), u"")
+
+        t0 = a.shorten_coordinates({"other": 43.9533100018163,  "@lon": 10})
+        t1 = a.shorten_coordinates({"other": 43.95331000181634, "@lon": 10})
+        self.assertEqual(a.compare_dict(t0, t1), u"key 'other' is different: '43.9533100018163' != '43.95331000181634' []")
 
     def test_merge_doc(self):
         self.assertEqual(Analyser.merge_doc({'en': 'a'}, {'en': 'b'}), {'en': 'a\n\nb'})

@@ -27,6 +27,7 @@ from modules.languages import language2scripts, gen_regex
 from modules import confusables
 from modules.py3 import ilen
 from modules.Stablehash import stablehash64
+from plugins.modules.name_suggestion_index import whitelist_from_nsi
 
 
 class Name_Script(Plugin):
@@ -34,7 +35,7 @@ class Name_Script(Plugin):
     def init(self, logger):
         Plugin.init(self, logger)
         self.errors[50701] = self.def_class(item = 5070, level = 2, tags = ['name', 'fix:chair'],
-            title = T_('Some value chars does not match the language charset'),
+            title = T_("Some characters don't match the language charset"),
             detail = T_(
 '''Words are not written in the appropriate alphabet of the
 language.'''),
@@ -45,10 +46,9 @@ transliterated, and needs to be changed back to the original alphabet.
 untranslated name) or `name:en=Peace` (translated) or `name:ar=سلام`
 (original).'''))
         self.errors[50702] = self.def_class(item = 5070, level = 2, tags = ['name', 'fix:chair'],
-            title = T_('Non printable char'),
+            title = T_('Non-printable character'),
             detail = T_(
-'''A non-printable character such as linefeed (0x000a) has been
-used.'''),
+'''A non-printable character has been used.'''),
             fix = T_(
 '''Remove the character.'''))
         self.errors[50703] = self.def_class(item = 5070, level = 2, tags = ['name', 'fix:chair'],
@@ -102,6 +102,7 @@ appropriate.'''),
             for language in languages:
                 if not self.lang[language]:
                     languages = None
+                    break
 
             # Build default regex
             if languages:
@@ -117,6 +118,10 @@ appropriate.'''),
 
         self.names = [u"name", u"name_1", u"name_2", u"alt_name", u"loc_name", u"old_name", u"official_name", u"short_name"]
 
+        self.whitelist_names = set()
+        if country:
+            self.whitelist_names = whitelist_from_nsi(country)
+
     def node(self, data, tags):
         err = []
         for key, value in tags.items():
@@ -125,7 +130,7 @@ appropriate.'''),
                 err.append({"class": 50702, "subclass": 0 + stablehash64(key), "text": T_("\"{0}\" unexpected non printable char ({1}, 0x{2:04x}) in key at position {3}", key, unicodedata.name(m.group(0), ''), ord(m.group(0)), m.start() + 1)})
                 break
 
-            m = self.non_printable.search(value)
+            m = self.non_printable.search(value.replace('\n', ' '))
             if m:
                 err.append({"class": 50702, "subclass": 1 + stablehash64(key), "text": T_("\"{0}\"=\"{1}\" unexpected non printable char ({2}, 0x{3:04x}) in value at position {4}", key, value, unicodedata.name(m.group(0), ''), ord(m.group(0)), m.start() + 1)})
                 break
@@ -157,7 +162,7 @@ appropriate.'''),
                 break
 
             if self.default:
-                if key in self.names:
+                if key in self.names and not any(map(lambda whitelist: whitelist in value, self.whitelist_names)):
                     s = self.non_letter.sub(u" ", value)
                     s = self.alone_char.sub(u"", s)
                     s = self.roman_number.sub(u"", s)
@@ -224,10 +229,28 @@ class Test(TestPluginCommon):
         a.father = father()
         a.init(None)
 
-        assert not a.node(None, {u"name": u"test ь"})
-        assert not a.node(None, {u"name": u"Sacré-Cœur"})
+        assert not a.node(None, {"name": u"test ь"})
+        assert not a.node(None, {"name": u"Sacré-Cœur"})
 
-        self.check_err(a.node(None, {u"name:uk": u"Sacré-Cœur"}))
+        assert not a.node(None, {"inscription": "Statue build in celebration of\nOsmose and OSM"})
+
+        self.check_err(a.node(None, {"name:uk": u"Sacré-Cœur"}))
+        self.check_err(a.node(None, {"inscription": "Special bell character \a"}))
+
+    def test_NL(self):
+        a = Name_Script(None)
+        class _config:
+            options = {"country": "NL-GE", "language": "nl"}
+        class father:
+            config = _config()
+        a.father = father()
+        a.init(None)
+
+        assert not a.node(None, {u"name": u"Søstrene Grene"}) # in NSI
+        assert not a.node(None, {u"name": u"Søstrene Grene Netherlands"}) # Partial name matches with NSI, assume local office
+        assert not a.node(None, {u"name": u"İşbank"}) # in NSI
+
+        self.check_err(a.node(None, {u"name": u"Abcdefghijklmnø"}))
 
     def test_fr(self):
         a = Name_Script(None)

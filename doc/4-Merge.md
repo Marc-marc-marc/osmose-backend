@@ -20,7 +20,7 @@ We aim here to have configuration over code. Nevertheless this configuration is 
 The configuration can be seen as a chain:
 - Content is fetched from a `Source`: remote or local file or archive.
 - File format reader: the `Parser` with implementation available for multiple formats like CSV, JSON, GeoJSON, GTFS, SHP... It imports the data into the database.
-- The reader make data available to `Load`. Thos one pre-process and filters data to a convenient schema.
+- The reader make data available to `Load`. This one pre-process and filters data to a convenient schema.
 - The `Conflate` allows to compare and report from
   - the OSM data filtered by `Select`,
   - the OpenData converted to OSM tags with `Mapping`
@@ -33,10 +33,10 @@ The support of the diff mode is not implemented.
 ## Classes of issues
 
 Like other analyzer merge must define classes, picked from these available helpers:
-- `def_class_missing_official`: OpenData set contains an object, but no matching one found in OSM. By convention the item number look like `8yy0` and class `id` is 1.
-- `def_class_missing_osm`: OSM contains an object, but no matching one found in the OpenData set. By convention the item number look like `7xxx` and class `id` is 2.
-- `def_class_possible_merge`: A probable matching object found. By convention the item number look like `8yy1` and class `id` is 3.
-- `def_class_update_official`: An OSM object matchs the OpenData one, close location and same reference value. But new tags or values from OpenData are available. By convention the item number look like `8yy2` and class `id` is 4.
+- `def_class_missing_official`: OpenData set contains an object, but no matching one found in OSM. By convention the item number looks like `8yy0` and class `id` is 1.
+- `def_class_missing_osm`: OSM contains an object, but no matching one found in the OpenData set. By convention the item number looks like `7xxx` and class `id` is 2.
+- `def_class_possible_merge`: A probable matching object found. By convention the item number looks like `8yy1` and class `id` is 3.
+- `def_class_update_official`: An OSM object matchs the OpenData one, close location and same reference value. But new tags or values from OpenData are available. By convention the item number looks like `8yy2` and class `id` is 4.
 - `def_class_moved_official`: The matching OSM found, but not at the same location as OpenData. Not for main use case.
 
 All classes of issues are optional, but the main used one is `def_class_missing_official`.
@@ -171,6 +171,9 @@ from .Analyser_Merge import CSV
     )
 ```
 
+Common option to all parsers:
+- `srid`: SIRD code of the data coordinates. Overwrite the projection of geometry, by default projection comes from parsed content, or if no fallback to 4326.
+
 
 ## Load
 
@@ -211,9 +214,6 @@ A common usage is to split a unique coordinate field:
 Helpers function are also available:
 - `Load_XY.float_comma`: Convert decimal comma to dot separated.
 - `Load_XY.degree`: Convert coordinate in degree, minute, second to decimal degrees.
-
-Overwrite the projection of geometry, by default projection comes from parsed content, or if no fallback to 4326.
-- `srid`: SIRD code of the data coordinates.
 
 ### Data Table
 The names of the attributes are generally given with the data. If it is not the case an SQL table definition can be given with parameter `create`.

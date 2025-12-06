@@ -22,6 +22,8 @@
 from shapely.wkt import loads
 from shapely.geometry import MultiPolygon
 from modules import downloader
+import pyproj
+from shapely.ops import transform
 
 
 class Polygon:
@@ -34,12 +36,25 @@ class Polygon:
         polygon_url = u"http://polygons.openstreetmap.fr/"
         for id in polygon_id:
             url = polygon_url + "index.py?id="+str(id)
-            s = downloader.urlread(url, cache_delay)
+            downloader.urlread(url, cache_delay)
         url = polygon_url + "get_wkt.py?params=0&id=" + ",".join(map(str, polygon_id))
-        s = downloader.urlread(url, cache_delay)
-        if s.startswith("SRID="):
-            s = s.split(";", 1)[1]
-        self.polygon = loads(s)
+        wkt = downloader.urlread(url, cache_delay)
+        if wkt.startswith("SRID="):
+            wkt = wkt.split(";", 1)[1]
+        self.polygon = loads(wkt)
+
+    def as_simplified_wkt(self, out_src, metric_src) -> str:
+        wgs84 = pyproj.CRS('EPSG:4326')
+        metric_src = pyproj.CRS(f'EPSG:{metric_src}')
+        out_src = pyproj.CRS(f'EPSG:{out_src}')
+        project_metric = pyproj.Transformer.from_crs(wgs84, metric_src, always_xy=True).transform
+        project_out = pyproj.Transformer.from_crs(metric_src, out_src, always_xy=True).transform
+
+        out_poly = transform(project_metric, self.polygon)
+        out_poly = out_poly.buffer(5000).simplify(5000)
+
+        out_poly = transform(project_out, out_poly)
+        return out_poly
 
     def bboxes(self):
         bbox = self.polygon.bounds
@@ -48,7 +63,7 @@ class Polygon:
         else: # Cross the 180°
             negative = []
             positive = []
-            for polygon in self.polygon:
+            for polygon in self.polygon.geoms:
                 sub_bbox = polygon.bounds
                 if sub_bbox[0] < 0:
                     negative.append(polygon)

@@ -36,12 +36,12 @@ class TagFix_Wikipedia(Plugin):
         detail = T_(
 '''Replace the faulty value by the value displayed at the top of the
 article on Wikipedia, preceded by the language code and the separator ':'
-(in the absence of linguistic code, the item will be searched by default
+(in the absence of a language code, the item will be searched by default
 on the English Wikipedia, but it is advisable in this case to explicitly
-indicate the lingusitique code "en" if the article mentioned is in
-English, the language codes supported are those editions of Wikipedia in
+indicate the language code \"en\" if the article mentioned is in
+English, the language codes supported are those editions of Wikipedia. In
 some cases they are different from the standard language codes BCP47 used
-a suffixes in other key OSM as "name:[LANG]=*").''')
+as suffixes in other keys such as \"name:[LANG]=*\").''')
         self.errors[30310] = self.def_class(item = 3031, level = 2, tags = ['value', 'wikipedia', 'fix:chair'],
             title = T_('Not a Wikipedia URL'),
             detail = detail)
@@ -54,8 +54,8 @@ mentioned and not the URL of the page.'''),
         self.errors[30312] = self.def_class(item = 3031, level = 2, tags = ['value', 'wikipedia', 'fix:chair'],
             title = T_('Missing Wikipedia language before article title'),
             detail = self.merge_doc(T_(
-'''The title must be preceded by the term "en:" when the article is on
-the English Wikipedia or the linguistic code of the Wikipedia site.'''),
+'''The title must be preceded by the language code "en:", when the article is on
+the English Wikipedia, or the respective language code if the article is in a different language.'''),
                 detail),
             example = {'en':
 '''`wikipedia=en:Paris`'''})
@@ -92,8 +92,6 @@ the article. Same for accented letters. Letter must be readable.'''),
 
         self.Country = self.father.config.options.get("country")
         self.Language = self.father.config.options.get("language")
-        if isinstance(self.Language, list):
-            self.Language = None
 
     def human_readable(self, string):
         try:
@@ -110,7 +108,7 @@ the article. Same for accented letters. Letter must be readable.'''),
                 # tag 'wikipedia' starts with 'http://' but it's not a wikipedia url
                 return [{"class": 30310, "subclass": 0}]
             elif m:
-                # tag 'wikipedia' seams to be an url
+                # tag 'wikipedia' seems to be an url
                 return [{"class": 30311, "subclass": 1, "text": T_("Use wikipedia={0}:*", m.group(2)),
                          "fix": {wikipediaTag: "{0}:{1}".format(m.group(2), self.human_readable(m.group(3)))} }]
 
@@ -144,7 +142,8 @@ the article. Same for accented letters. Letter must be readable.'''),
                     except:
                         interwiki = None
 
-                if interwiki and suffix in interwiki and interwiki[suffix] == self.human_readable(tags[tag]):
+                if (interwiki and suffix in interwiki and interwiki[suffix] == self.human_readable(tags[tag]) and
+                    (not isinstance(self.Language, list) or suffix not in self.Language)):
                     err.append({"class": 30317, "subclass": stablehash64(tag), "fix": [
                         {'-': [tag]},
                         {'-': [tag], '~': {wikipediaTag: suffix+':'+interwiki[suffix]}}
@@ -168,7 +167,7 @@ the article. Same for accented letters. Letter must be readable.'''),
                 err.append({"class": 30315, "subclass": stablehash64(tag), "text": T_("Invalid wikipedia suffix '{0}'", suffix) })
 
         if missing_primary != []:
-            if self.Language:
+            if self.Language and not isinstance(self.Language, list):
                 missing_primary = sorted(missing_primary, key=lambda x: x['+'][wikipediaTag][0:2] if x['+'][wikipediaTag][0:2] != self.Language.split('_')[0] else '')
             err.append({"class": 30314, "subclass": 4, "fix": missing_primary})
 
@@ -366,6 +365,20 @@ class Test(TestPluginCommon):
         if err:  # pragma: no cover
             print("{0} errors".format(err))
         assert not err
+
+    def test_sardegna(self):
+        # See Github #1953, in some multilingual regions having multiple tags can be the resolution against edit wars
+        # Using Sardegna (Italy) for the test purely because it's multilingual
+        self.analyser = TagFix_Wikipedia(None)
+        class _config:
+            options = {"language": ["it", "sc", "ca", "co", "lij"], "project": "openstreetmap", "country": "IT"}
+        class father:
+            config = _config()
+        self.analyser.father = father()
+        self.analyser.init(None)
+
+        assert not self.analyser.node(None, {"wikipedia": "it:Olzai", "wikipedia:sc": "Ortzai"})
+        assert self.analyser.node(None, {"wikipedia": "it:Olzai", "wikipedia:sc": "Ortzai", "wikipedia:nl": "Olzai"})
 
     def test_UA(self):
         self.analyser = TagFix_Wikipedia(None)

@@ -57,14 +57,14 @@ However, this should probably still conform to the typical format used for value
             'information', 'intermittent', 'internet_access',
             'junction',
             'kerb',
-            'landuse', 'leaf_type', 'leaf_cycle', 'leisure', 'location',
+            'landuse', 'leisure', 'location',
             'material', 'man_made', 'meadow', 'military', 'mooring', 'mountain_pass',
             'natural', 'noexit',
             'office',
             'parking', 'place', 'power', 'public_transport',
             'railway', 'ramp', 'religion', 'route', 'route_master',
             'sac_scale', 'seasonal', 'service', 'shelter', 'shop', 'shoulder', 'sidewalk', 'smoothness', 'sport', 'surface',
-            'tactile_paving', 'toll', 'tourism', 'tracktype', 'traffic_calming', 'trail_visibility', 'traffic_signals', 'tunnel',
+            'tactile_paving', 'toll', 'tourism', 'traffic_calming', 'trail_visibility', 'traffic_signals', 'tunnel',
             'usage', 'utility',
             'wall', 'water', 'waterway', 'wetland', 'wheelchair', 'wood'
         ))
@@ -95,12 +95,15 @@ However, this should probably still conform to the typical format used for value
         self.allow_closed = { "area": ( "yes", "no", ),
                             "backrest": ( "yes", "no", ),
                             "conveying": ( "yes", "forward", "backward", "no", "reversible", ),
-                            "crossing": ( "traffic_signals", "uncontrolled", "unmarked", "no", "marked", "zebra", ),
+                            "crossing": ( "traffic_signals", "uncontrolled", "unmarked", "no", "marked", "zebra", "informal", ),
                             "lane_markings": ( "yes", "no", ),
                             "narrow": ( "yes", "no", ),
                             "oneway": ( "yes", "no", "1", "-1", "reversible", "alternating"),
                             "segregated": ( "yes", "no", ),
                             "trolley_wire": ( "yes", "no", ),
+                            "tracktype":  ( "grade1", "grade2", "grade3", "grade4", "grade5", ),
+                            "leaf_type":  ( "broadleaved", "needleleaved", "mixed", "leafless", "palm", ), # palm formally not documented
+                            "leaf_cycle":  ( "evergreen", "deciduous", "semi_evergreen", "semi_deciduous", "mixed", ),
                           }
         self.check_list_closed = set(self.allow_closed.keys())
 
@@ -122,8 +125,15 @@ However, this should probably still conform to the typical format used for value
                 err.append({"class": 3040, "subclass": stablehash64(k), "text": T_("Concerns tag: `{0}`", '='.join([k, tags[k]])) })
 
         for k in keyss:
-            if tags[k] == "unknown":
+            if tags[k] in ("unknown", "*"):
                 err.append({"class": 40613, "subclass": stablehash64(k), "text": T_("Concerns tag: `{0}`", '='.join([k, tags[k]])) })
+            elif len(tags[k].strip()) == 0 and k not in check_list_open and k not in self.check_list_closed:
+                err.append({
+                    "class": 3040,
+                    "subclass": stablehash64(k),
+                    "text": T_("Concerns tag: `{0}`", '='.join([k, tags[k]])),
+                    "fix": {"-": [k]}
+                })
 
         return err
 
@@ -154,6 +164,10 @@ class Test(TestPluginCommon):
                   {"sport": "rugby-union;shot-put;long_jump"}, # bad;whitelisted;good
                   {"sport": "rugby_union;shot-put;long-jump"}, # good;whitelisted;bad
                   {"access": "unknown"},
+                  {"tracktype": "gradde1"},
+                  {"leaf_cycle": ""},
+                  {"wetland": ""},
+                  {"random_key": ""},
                  ]:
             self.check_err(a.node(None, t), t)
             self.check_err(a.way(None, t, None), t)

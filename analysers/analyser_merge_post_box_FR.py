@@ -21,7 +21,7 @@
 ###########################################################################
 
 from modules.OsmoseTranslation import T_
-from .Analyser_Merge import Analyser_Merge_Point, SourceOpenDataSoft, CSV, Load_XY, Conflate, Select, Mapping
+from .Analyser_Merge import Analyser_Merge_Point, SourceDataFair, CSV, Load_XY, Conflate, Select, Mapping
 
 
 class Analyser_Merge_Post_box_FR(Analyser_Merge_Point):
@@ -35,14 +35,14 @@ class Analyser_Merge_Post_box_FR(Analyser_Merge_Point):
             title = T_('Post box, integration suggestion'))
 
         self.init(
-            "https://datanova.legroupe.laposte.fr/explore/dataset/laposte_boiterue",
-            "Liste des boîtes aux lettres de rue France métropolitaine et DOM",
-            CSV(SourceOpenDataSoft(
-                attribution = "data.gouv.fr:LaPoste",
-                url="https://datanova.legroupe.laposte.fr/explore/dataset/laposte_boiterue")),
-            Load_XY("Latlong", "Latlong",
-                xFunction = lambda x: x and x.split(',')[1],
-                yFunction = lambda y: y and y.split(',')[0]),
+            "https://datanova.laposte.fr/datasets/laposte-boiterue",
+            "Liste des boîtes aux lettres de rue - France métropolitaine et DOM avec heure limite de dépôt",
+            CSV(
+                SourceDataFair(
+                    attribution = "La Poste",
+                    url="https://datanova.laposte.fr/datasets/laposte-boiterue", file_name="BAL_de_rues_janv2025.csv"),
+                separator = ","),
+            Load_XY("VA_COORD_ADR_X", "VA_COORD_ADR_Y"),
             Conflate(
                 select = Select(
                     types = ["nodes"],
@@ -52,7 +52,8 @@ class Analyser_Merge_Post_box_FR(Analyser_Merge_Point):
                 mapping = Mapping(
                     static1 = {
                         "amenity": "post_box",
-                        "operator": "La Poste"},
+                        "operator": "La Poste",
+                        "operator:wikidata": "Q373724"},
                     static2 = {"source": self.source},
                     mapping1 = {"ref": "CO_MUP"},
                 text = lambda tags, fields: {"en": ", ".join(filter(lambda x: x, [fields["VA_NO_VOIE"], fields["LB_EXTENSION"], fields["LB_VOIE_EXT"], fields["CO_POSTAL"], fields["LB_COM"]]))} )))

@@ -137,16 +137,16 @@ class Analyser_Osmosis_Boundary_Administrative(Analyser_Osmosis):
         self.classs[2] = self.def_class(item = 6060, level = 1, tags = ['boundary', 'geom', 'fix:chair'],
             title = T_('Boundary intersection'),
             detail = T_(
-'''An area is marked as belonging to several city at once.'''),
+'''An area is marked as belonging to several cities at once.'''),
             fix = T_(
-'''Check how this area should be owned.'''))
+'''Check what city this area belongs to.'''))
         self.classs_change[3] = self.def_class(item = 6060, level = 2, tags = ['boundary', 'geom', 'fix:chair'],
             title = T_('Lone boundary fragment'),
             detail = T_(
-'''Unconnected boundary fragment, a way with a boundary tag not part of a
-boundary relation.'''),
+'''Unconnected boundary fragment, a way with a `boundary` tag not part of a
+`boundary` relation.'''),
             fix = T_(
-'''Delete the way, remove boundary tag or add to a relation.'''))
+'''Delete the way, remove the `boundary` tag or add the way to a relation.'''))
 
         self.callback40 = lambda res: {"class":2, "subclass": stablehash64(res[2]), "data":[self.relation_full, self.relation_full, self.positionAsText]}
         self.callback50 = lambda res: {"class":3, "data":[self.way_full, self.positionAsText]}

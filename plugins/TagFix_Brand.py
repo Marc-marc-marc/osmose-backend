@@ -22,9 +22,7 @@
 from modules.OsmoseTranslation import T_
 from plugins.Plugin import TestPluginCommon
 from plugins.Plugin import Plugin
-from modules.downloader import urlread
-import json
-
+from plugins.modules.name_suggestion_index import download_nsi, nsi_rule_applies
 
 class TagFix_Brand(Plugin):
 
@@ -50,17 +48,11 @@ If not, see if you can improve the [name-suggestion-index project](https://githu
 
         if not self.father.config.options.get("country"):
             return False
-        self.country_code = self.father.config.options.get("country").split("-")[0].lower()
+        self.country_code = self.father.config.options.get("country")
 
-        nsi = self._download_nsi()
+        nsi = download_nsi()
         self.brands_from_nsi = self._parse_category_from_nsi(nsi, "brands/", "brand")
         self.operators_from_nsi = self._parse_category_from_nsi(nsi, "operators/", "operator")
-
-    def _download_nsi(self):
-        nsi_url = "https://raw.githubusercontent.com/osmlab/name-suggestion-index/main/dist/nsi.json"
-        json_str = urlread(nsi_url, 30)
-        results = json.loads(json_str)
-        return results['nsi']
 
     def _parse_category_from_nsi(self, nsi, nsiprefix, key):
         additional_presets = {}
@@ -68,13 +60,8 @@ If not, see if you can improve the [name-suggestion-index project](https://githu
             if tag.startswith(nsiprefix) and "items" in details:
                 nsi_name = tag[len(nsiprefix):]
                 for preset in details["items"]:
-                    if "locationSet" in preset:
-                        if ("include" in preset["locationSet"] and
-                                self.country_code not in preset["locationSet"]["include"] and
-                                "001" not in preset["locationSet"]["include"]):
-                            continue
-                        if "exclude" in preset["locationSet"] and self.country_code in preset["locationSet"]["exclude"]:
-                            continue
+                    if "locationSet" in preset and not nsi_rule_applies(preset["locationSet"], self.country_code):
+                        continue
                     if "matchTags" in preset:
                         for additional_tag in preset["matchTags"]:
                             nsi_key = "{}|{}".format(additional_tag, preset["tags"][key])
@@ -102,7 +89,8 @@ If not, see if you can improve the [name-suggestion-index project](https://githu
                         for tag in brands_tags:
                             if not tags.get(tag):
                                 tags_to_add[tag] = brands_tags[tag]
-                        if tags_to_add:
+                        if (tags_to_add and
+                          (not "brand:wikidata" in brands_tags or not "not:brand:wikidata" in tags or brands_tags["brand:wikidata"] != tags["not:brand:wikidata"])):
                             return {"class": 31301, "subclass": 0, "fix": {"+": tags_to_add}}
 
         if "operator" in tags and not "operator:wikidata" in tags:
@@ -115,7 +103,8 @@ If not, see if you can improve the [name-suggestion-index project](https://githu
                         for tag in operators_tags:
                             if not tags.get(tag):
                                 tags_to_add[tag] = operators_tags[tag]
-                        if tags_to_add:
+                        if (tags_to_add and
+                          (not "operator:wikidata" in operators_tags or not "not:operator:wikidata" in tags or operators_tags["operator:wikidata"] != tags["not:operator:wikidata"])):
                             return {"class": 31302, "subclass": 0, "fix": {"+": tags_to_add}}
 
     def way(self, data, tags, nds):
@@ -141,14 +130,46 @@ class Test(TestPluginCommon):
         # Brands
         assert a.node(None, {"name": "Kiabi", "shop": "clothes"})
         assert a.node(None, {"name": "Kiabi", "shop": "clothes", "brand": "Kiabi"})
+        assert a.node(None, {"name": "Kiabi", "shop": "clothes", "brand": "Kiabi", "not:brand:wikidata": "Q1234567"})
         assert not a.node(None, {"brand": "Kiabi", "shop": "clothes", "name": "Kiabi","brand:wikidata": "Q3196299"})
+        assert not a.node(None, {"brand": "Kiabi", "shop": "clothes", "name": "Kiabi","not:brand:wikidata": "Q3196299"})
+        assert not a.node(None, {"shop": "clothes", "name": "Kiabi","not:brand:wikidata": "Q3196299"})
+        assert not a.node(None, {"shop": "clothes", "name": "Kiabi","not:brand:wikidata": "Q3196299", "brand:wikidata": "Q1234567"})
         assert not a.node(None, {"name": "National Bank", "amenity": "bank", "atm": "yes"})
+        assert a.node(None, {"name": "La Place", "amenity": "restaurant"}) # as 'fra' rather than 'FR' in NSI
 
-        # Operators
+        # Operator only for FR-pac
+        assert not a.node(None, {"name": "Beautify fire station", "amenity": "fire_station", "operator": "Bataillon de marins-pompiers de Marseille"})
+
+    def test_FR13(self):
+        a = TagFix_Brand(None)
+        class _config:
+            options = {"country": "FR-13"}
+        class father:
+            config = _config()
+        a.father = father()
+        a.init(None)
+
+        # Operator only enabled for FR-pac, which contains FR-13
         assert a.node(None, {"name": "Beautify fire station", "amenity": "fire_station", "operator": "Bataillon de marins-pompiers de Marseille"})
         assert not a.node(None, {"name": "Beautify fire station", "amenity": "fire_station", "operator": "Bataillon de marins-pompiers de Marseille", "operator:wikidata": "Q2891011"})
-        assert not a.node(None, {"name": "Beautify fire station", "amenity": "fire_station", "operator": "Unknown firestation"})
 
+    def test_LU(self):
+        a = TagFix_Brand(None)
+        class _config:
+            options = {"country": "LU"}
+        class father:
+            config = _config()
+        a.father = father()
+        a.init(None)
+
+        # Operators
+        assert a.node(None, {"amenity": "fire_station", "operator": "CGDIS"})
+        assert not a.node(None, {"amenity": "fire_station", "operator": "CGDIS", "operator:wikidata": "Q55334052"})
+        assert not a.node(None, {"amenity": "fire_station", "not:operator:wikidata": "Q55334052"})
+        assert not a.node(None, {"amenity": "fire_station", "operator": "Unknown firestation"})
+
+        assert not a.node(None, {"name": "La Place", "amenity": "restaurant"}) # as 'fra' rather than 'FR' in NSI
 
     def test_CA(self):
         a = TagFix_Brand(None)
@@ -159,4 +180,41 @@ class Test(TestPluginCommon):
         a.father = father()
         a.init(None)
 
+        # Include CA, exclude CA-QC
         assert a.node(None, {"name": "National Bank", "amenity": "bank", "atm": "yes"})
+
+    def test_CA_ON(self):
+        a = TagFix_Brand(None)
+        class _config:
+            options = {"country": "CA-ON"}
+        class father:
+            config = _config()
+        a.father = father()
+        a.init(None)
+
+        # Include CA, exclude CA-QC
+        assert a.node(None, {"name": "National Bank", "amenity": "bank", "atm": "yes"})
+
+    def test_CA_QC_LAN(self):
+        a = TagFix_Brand(None)
+        class _config:
+            options = {"country": "CA-QC-LAN"}
+        class father:
+            config = _config()
+        a.father = father()
+        a.init(None)
+
+        # Include CA, exclude CA-QC
+        assert not a.node(None, {"name": "National Bank", "amenity": "bank", "atm": "yes"})
+
+    def test_CA_QC(self):
+        a = TagFix_Brand(None)
+        class _config:
+            options = {"country": "CA-QC"}
+        class father:
+            config = _config()
+        a.father = father()
+        a.init(None)
+
+        # Include CA, exclude CA-QC
+        assert not a.node(None, {"name": "National Bank", "amenity": "bank", "atm": "yes"})

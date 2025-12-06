@@ -10,6 +10,7 @@ class MapCSSListenerL(MapCSSListener):
     # Enter a parse tree produced by MapCSSParser#stylesheet.
     def enterStylesheet(self, ctx:MapCSSParser.StylesheetContext):
         self.rules: List[Dict] = []
+        self.supportCondition = None
 
     # Exit a parse tree produced by MapCSSParser#stylesheet.
     def exitStylesheet(self, ctx:MapCSSParser.StylesheetContext):
@@ -24,7 +25,7 @@ class MapCSSListenerL(MapCSSListener):
 
     # Exit a parse tree produced by MapCSSParser#rule_.
     def exitRule_(self, ctx:MapCSSParser.Rule_Context):
-        self.rules.append({'type': 'rule', 'selectors': self.selectors or self.attribute_selectors, 'declarations': self.declarations})
+        self.rules.append({'type': 'rule', 'selectors': self.selectors or self.attribute_selectors, 'declarations': self.declarations, 'in_supports_declaration': self.supportCondition is not None})
 
 
     # Enter a parse tree produced by MapCSSParser#selector.
@@ -39,7 +40,7 @@ class MapCSSListenerL(MapCSSListener):
             'type': 'selector',
             'text': ctx.getText(),
             'simple_selectors': self.simple_selectors,
-            'operator': (ctx.simple_selector_operator() and ctx.simple_selector_operator().getText()) or (ctx.OP_GT() and ctx.OP_GT().getText()),
+            'operator': (ctx.simple_selector_operator() and ctx.simple_selector_operator().getText()) or (ctx.parent_child_selector_operator() and ctx.parent_child_selector_operator().getText()),
             'link_selectors': self.link_selectors,
             'pseudo_class': self.pseudo_class})
 
@@ -107,7 +108,6 @@ class MapCSSListenerL(MapCSSListener):
             'question_mark': not (not (ctx.QUESTION_MARK())),
             'question_mark_negated': not (not (ctx.QUESTION_MARK_NEGATED())),
             'selector_index': self.selector_index}
-        self.selector_index += 1
 
 
 #    # Enter a parse tree produced by MapCSSParser#class_selector.
@@ -198,6 +198,9 @@ class MapCSSListenerL(MapCSSListener):
                 [],
             'selector_index': self.selector_index
         })
+
+    # Exit a parse tree produced by MapCSSParser#attribute_selector.
+    def exitAttribute_selector(self, ctx:MapCSSParser.Attribute_selectorContext):
         self.selector_index += 1
 
 
@@ -302,3 +305,9 @@ class MapCSSListenerL(MapCSSListener):
             'derefered': not (not (ctx.OP_MUL())),
             'value': (ctx.v and ctx.v.text) or v['osmtag'] or v['quoted'] or v['regexExpression'][0]
         }
+
+    def exitSupports_rule(self, ctx:MapCSSParser.Supports_ruleContext):
+        self.supportCondition = ctx.supports_condition().getText()
+
+    def exitSupports_block(self, ctx:MapCSSParser.Supports_blockContext):
+        self.supportCondition = None

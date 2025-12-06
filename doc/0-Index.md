@@ -59,7 +59,7 @@ The issues are defined and produced by analyzers (and plugins).
 
 ### Classes of issues
 A class of issue is a definition of the issues the analyzer will yield.
-The classes of issues are defined by the following fields :
+The classes of issues are defined by the following fields:
 
 * `id`: each class of issue should have an unique `id` in the scope of the analyzer. Note: all plugins are in the same scope of the `Analyser_Sax`.
 
@@ -127,7 +127,7 @@ The main steps of running Osmose-QA are:
   * Upload the result to the Frontend
 * Destroy the database
 
-All the process is handled by the command `osmose_run.py`. Some complementary utilities can found in the `tools` directory.
+All the process is handled by the command `osmose_run.py`. Some complementary utilities can be found in the `tools` directory.
 
 For help run:
 ```
@@ -146,7 +146,7 @@ TODO diff, change mode, resume mode.
 ### Environment
 There are multiple way to run Osmose-QA Backend and test your code. The easier to setup is by using with Docker. Docker avoid you to deals with install process and dependencies.
 
-[Jupyter](https://en.wikipedia.org/wiki/Project_Jupyter) can be used from Docker to have web shell on Osmose-QA and make this doc interactive (the `*.ipynb` part). A static view of the Jupyter notebook can also be view online at [Github repository](https://github.com/osm-fr/osmose-backend/tree/master/doc).
+[Jupyter](https://en.wikipedia.org/wiki/Project_Jupyter) can be used from Docker to have web shell on Osmose-QA and make this doc interactive (the `*.ipynb` part). A static view of the Jupyter notebook can also be view online at [Github repository](https://github.com/osmose-qa/osmose-backend/tree/master/doc).
 
 Lastly, if you don’t support Docker and love the old school way, you can directly use Python Virtualenv. You will also have to install and setup PostgreSQL yourself.
 

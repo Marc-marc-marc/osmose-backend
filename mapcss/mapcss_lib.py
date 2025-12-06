@@ -1,7 +1,8 @@
 #-*- coding: utf-8 -*-
-import requests.utils
+from urllib.parse import unquote
 import re
 from modules.OsmoseTranslation import T_
+from plugins.modules.units import convertToUnit
 
 # Utils
 
@@ -59,7 +60,7 @@ class str_value_(str):
         elif o.__class__ == int:
             return str_value(o - self.to_n())
         else:
-            raise NotImplementedError
+            return NotImplemented
 
     def __sub__(self, o):
         if self.none:
@@ -67,7 +68,7 @@ class str_value_(str):
         elif o.__class__ == int:
             return str_value(self.to_n() - o)
         else:
-            raise NotImplementedError
+            return NotImplemented
 
     def __rmul__(self, o):
         if self.none:
@@ -75,7 +76,7 @@ class str_value_(str):
         elif o.__class__ == int:
             return str_value(o * self.to_n())
         else:
-            raise NotImplementedError
+            return NotImplemented
 
     def __mul__(self, o):
         if self.none:
@@ -83,15 +84,15 @@ class str_value_(str):
         elif o.__class__ == int:
             return str_value(self.to_n() * o)
         else:
-            raise NotImplementedError
+            return NotImplemented
 
-    def __rdiv__(self, o):
+    def __rtruediv__(self, o):
         if self.none:
             return None_value
         elif o.__class__ == int:
             return str_value(float(o) / self.to_n())
         else:
-            raise NotImplementedError
+            return NotImplemented
 
     def __truediv__(self, o):
         if self.none:
@@ -99,55 +100,57 @@ class str_value_(str):
         elif o.__class__ == int:
             return str_value(float(self.to_n()) / o)
         else:
-            raise NotImplementedError
+            return NotImplemented
 
     def __lt__(self, o):
         if self.none:
             return False
-        elif o.__class__ == int:
+        elif o.__class__ in (int, float):
             return self.to_n() < o
         else:
-            return super(str_value_, self).__lt__(o)
+            return self.to_n() < str_value(o).to_n()
 
     def __le__(self, o):
         if self.none:
             return False
-        elif o.__class__ == int:
+        elif o.__class__ in (int, float):
             return self.to_n() <= o
         else:
-            return super(str_value_, self).__le__(o)
+            return self.to_n() <= str_value(o).to_n()
 
     def __eq__(self, o):
         if self.none:
             return False
         elif o.__class__ == int:
-            return self.to_n() == o
-        else:
-            return super(str_value_, self).__eq__(o)
+            try:
+                return self.to_n() == o
+            except RuleAbort: pass # Couldn't convert to numeric
+        return super(str_value_, self).__eq__(o)
 
     def __ne__(self, o):
         if self.none:
             return True
         elif o.__class__ == int:
-            return self.to_n() != o
-        else:
-            return super(str_value_, self).__ne__(o)
+            try:
+                return self.to_n() != o
+            except RuleAbort: pass # Couldn't convert to numeric
+        return super(str_value_, self).__ne__(o)
 
     def __gt__(self, o):
         if self.none:
             return False
-        elif o.__class__ == int:
+        elif o.__class__ in (int, float):
             return self.to_n() > o
         else:
-            return super(str_value_, self).__gt__(o)
+            return self.to_n() > str_value(o).to_n()
 
     def __ge__(self, o):
         if self.none:
             return False
-        elif o.__class__ == int:
+        elif o.__class__ in (int, float):
             return self.to_n() >= o
         else:
-            return super(str_value_, self).__ge__(o)
+            return self.to_n() >= str_value(o).to_n()
 
     def __bool__(self):
         if self.none:
@@ -169,9 +172,6 @@ class str_value_(str):
         return str.__hash__(self)
 
 None_value = str_value(None)
-
-def flatten(z):
-    return [x for y in z for x in y]
 
 uncapture_param_re = re.compile(r'\{([0-9]+\.[a-z]+)\}')
 def _uncapture_param(capture, a):
@@ -210,7 +210,7 @@ def string_contains(subject, string):
 
 def list_contains(subject, string):
     if subject is not None and string is not None:
-        return string in subject and string in subject.split(";")
+        return string in subject and any(map(lambda s: s.strip() == string, subject.split(";")))
 
 def at(asset_lat, asset_lon, lat, lon):
     return asset_lat == lat and asset_lon == lon
@@ -391,14 +391,18 @@ def count(lst):
 #any(obj1, obj2, ...)
 #    returns the first object which is not null (formerly coalesce, [since 7164])
 def any_(*args):
-    if args is not None:
-        return next(item for item in args if item is not None)
+    try:
+        if args is not None:
+            return next(item for item in args if item is not None and (not isinstance(item, str_value_) or not item.none))
+    except StopIteration:
+        # All arguments are None
+        return None_value
 
 #concat(str1, str2, ...)
 #    assemble the strings to one
 def concat(*args):
     if args is not None:
-        return str_value(''.join(args))
+        return str_value(''.join(filter(lambda arg: arg is not None and (not isinstance(arg, str_value_) or not arg.none), args)))
 
 #join(sep, str1, str2, ...)
 #    join strings, whith sep as separator [since 6737]
@@ -430,6 +434,12 @@ def trim(string):
     if string is not None:
         return str_value(string.strip())
 
+#trim_list(list_name)
+#    remove leading and trailing whitespace from a list of strings, will remove entries that are empty afterwards [since r15591]
+def trim_list(l):
+    if l is not None and isinstance(l, list):
+        return list(filter(None, map(lambda s: s.strip(), l)))
+
 #JOSM_search("...")
 #    true, if JOSM search applies to the object
 def JOSM_search(string):
@@ -439,7 +449,10 @@ def JOSM_search(string):
 #    translate from English to the current language (only for strings in the JOSM user interface) [since 6506]
 def tr(string, *args):
     if string is not None:
-        return T_(string, *args)
+        # Treat '' as ' so JOSM translations work in Osmose too.
+        # A ' is a special character in JOSM, see https://josm.openstreetmap.de/wiki/Translations
+        t = T_(string, *args)
+        return {k: t[k].replace("''", "'") for k in t.keys()}
 
 #regexp_test(regexp, string)
 #    test if string matches pattern regexp [since 5699]
@@ -457,9 +470,10 @@ def regexp_match(regexp, string):
     if regexp is None or string is None:
         return False
     else:
-        a = regexp.findall(string)
-        if a:
-            a = [string] + flatten(a)
+        a = regexp.fullmatch(string)
+        if not a:
+            return None_value
+        a = [string] + list(a.groups())
         return list(map(str_value, a))
 
 #regexp_match(regexp, string, flags)
@@ -493,7 +507,7 @@ def URL_decode(string):
     if string is not None:
         # An URL is an ASCII String
         try:
-            return requests.utils.unquote_unreserved(string)
+            return unquote(string, errors='strict')
         except UnicodeDecodeError:
             pass
 
@@ -517,6 +531,7 @@ def URL_decode(string):
 #    prints a string representation of o to the command line, followed by a new line (for debugging) [since 7237]
 def println(o):
     print(o)
+    return o
 
 #JOSM_pref(key, default)
 #    Get value from the JOSM advanced preferences. This way you can offer certain options to the user and make the style customizable. It works with strings, numbers, colors and boolean values.
@@ -577,18 +592,43 @@ def tag_regex(tags, regex):
 
 #to_short(str)
 #    returns the string argument as a short [since r16110]
+def to_short(string):
+    try:
+        return int(string)
+    except:
+        return None
 
 #to_int(str)
 #    returns the string argument as a int [since r16110]
+def to_int(string):
+    try:
+        return int(string)
+    except:
+        return None
 
 #to_long(str)
 #    returns the string argument as a long [since r16110]
+def to_long(string):
+    try:
+        return int(string)
+    except:
+        return None
 
 #to_float(str)
 #    returns the string argument as a float [since r16110]
+def to_float(string):
+    try:
+        return float(string)
+    except:
+        return None
 
 #to_double(str)
 #    returns the string argument as a double [since r16110]
+def to_double(string):
+    try:
+        return float(string)
+    except:
+        return None
 
 #uniq(str1, str2, str3, ...)
 #    returns a list of strings that only have unique values from an array of strings [since r15323]
@@ -596,8 +636,23 @@ def tag_regex(tags, regex):
 #uniq_list()
 #    returns a list of strings that only have unique values from a list of strings [since r15353]
 def uniq_list(l):
-    return set(l)
+    return list(set(l))
 
+# siunit_length(str)
+#    convert length units to meter (fault tolerant, ignoring white space)
+def siunit_length(string):
+    if not string:
+        return None_value
+    string = string.replace(',', '.', 1).replace(' ', '')
+    try:
+        val = convertToUnit(string, 'm')
+        if val is None:
+            return None_value
+        if not 'e' in str(val): # Not sure how to deal with 10^x numbers, but they're rare. Just leave them as is
+            val = round(val, 5) # Round to avoid Python float precision limitation giving numbers with decimals 0000001 or 999998 or so
+        return str_value(val)
+    except:
+        return None_value
 
 # Other functions
 

@@ -22,13 +22,16 @@
 from modules.OsmoseTranslation import T_
 from plugins.Plugin import Plugin
 from modules.downloader import urlread
+from plugins.modules.wikiReader import read_wiki_table
 import re
 
 
 class TagFix_Postcode(Plugin):
 
+    not_for = ("EG") # Egypt is transitioning to a new format. At 2024-04-15 there were still 2.4M entries in OSM in the old format
+
     def parse_format(self, reline, format):
-        format = format.replace('optionally ', '')
+        format = format.replace('optionally ', '').replace("\n", " ")
         if format[-1] == ')':
             format = map(lambda x: x.strip(), format[:-1].split('('))
         elif ' or ' in format:
@@ -41,7 +44,7 @@ class TagFix_Postcode(Plugin):
         regexs = []
         for f in format:
             if reline.match(f):
-                regexs.append(f.replace(" ", "").replace("-", "").replace(".", "").replace("N", "[0-9]").replace("A", "[A-Z]").replace("CC", "(:?"+self.Country+")?"))
+                regexs.append(f.replace(" ", "").replace("-", "").replace(".", "").replace("N", "[0-9]").replace("A", "[A-Z]").replace("?", "[A-Z0-9]").replace("CC", "(:?"+self.Country+")?"))
 
         if len(regexs) > 1:
             return "^(("+(")|(".join(regexs))+"))$"
@@ -49,16 +52,17 @@ class TagFix_Postcode(Plugin):
             return "^"+regexs[0]+"$"
 
     def list_postcode(self):
-        reline = re.compile("^[-CAN ]+$")
-        # remline = re.compile("^[-CAN ]+ *\([-CAN ]+\)$")
+        reline = re.compile("^[-CAN ?]+$")
         data = urlread(u"https://en.wikipedia.org/wiki/List_of_postal_codes?action=raw", 1)
-        data = filter(lambda t: len(t) > 2 and (t[1] != "- no codes -" or t[2] != ""), map(lambda x: list(map(lambda y: y.strip(), x.split("|")))[5:8], data.split("|-")[1:-1]))
+        data = read_wiki_table(data)
+
         postcode = {}
-        for line in data:
-            iso = line[0][0:2]
-            format_area = line[1]
-            format_street = line[2]
-            # note = line[3]
+        for row in data:
+            iso = row[2]
+            format_area = row[3]
+            format_street = row[4]
+            if (not format_area or "no codes" in format_area.lower()) and not format_street:
+                continue
 
             postcode[iso] = {}
             if format_area != '':
@@ -81,13 +85,13 @@ class TagFix_Postcode(Plugin):
         self.errors[31901] = self.def_class(item = 3190, level = 3, tags = ['postcode', 'fix:chair'],
             title = T_('Invalid postcode'),
             detail = T_(
-'''Check postcode as decribed on
+'''Check the postcode format as described on
 [Wikipedia](https://en.wikipedia.org/wiki/List_of_postal_codes)'''),
             resource = 'https://en.wikipedia.org/wiki/List_of_postal_codes')
 
         self.Country = None
         if self.father.config.options.get("country"):
-            self.Country = self.father.config.options.get("country")
+            self.Country = self.father.config.options.get("country").split("-")[0]
         self.CountryPostcodeArea = None
         self.CountryPostcodeStreet = None
         if not self.Country or self.Country == 'GB': # Specific plugin for GB
@@ -150,7 +154,7 @@ class Test(TestPluginCommon):
     def test_NL(self):
         a = TagFix_Postcode(None)
         class _config:
-            options = {"country": "NL", "project": "openstreetmap"}
+            options = {"country": "NL-GR", "project": "openstreetmap"}
         class father:
             config = _config()
         a.father = father()
@@ -214,6 +218,28 @@ class Test(TestPluginCommon):
         assert not a.node(None, {"addr:postcode":"HM 02"})
         assert a.node(None, {"addr:postcode":"plopplop"})
 
+    def test_SA(self):
+        a = TagFix_Postcode(None)
+        class _config:
+            options = {"country": "SA", "project": "openstreetmap"}
+        class father:
+            config = _config()
+        a.father = father()
+        a.init(None)
+        assert not a.node(None, {"postal_code":"30318"})
+        assert not a.node(None, {"postal_code":"30318-2522"})
+
+    def test_CA(self):
+        a = TagFix_Postcode(None)
+        class _config:
+            options = {"country": "CA", "project": "openstreetmap"}
+        class father:
+            config = _config()
+        a.father = father()
+        a.init(None)
+        assert a.node(None, {"postal_code":"AAA 111"})
+        assert not a.node(None, {"postal_code":"A0B 1C2"})
+
     def test_US(self):
         a = TagFix_Postcode(None)
         class _config:
@@ -222,8 +248,9 @@ class Test(TestPluginCommon):
             config = _config()
         a.father = father()
         a.init(None)
-        assert not a.node(None, {"postal_code":"30318"})
-        assert not a.node(None, {"postal_code":"30318-2522"})
+        assert a.node(None, {"postal_code": "30318-2522"})
+        assert not a.node(None, {"postal_code": "30318"})
+        assert not a.node(None, {"addr:postcode": "30318-2522"})
 
     def test_IE(self):
         a = TagFix_Postcode(None)
@@ -234,3 +261,17 @@ class Test(TestPluginCommon):
         a.father = father()
         a.init(None)
         assert not a.node(None, {"addr:postcode":"Y35 WY93"})
+
+    def test_GH(self):
+        a = TagFix_Postcode(None)
+        class _config:
+            options = {"country": "GH", "project": "openstreetmap"}
+        class father:
+            config = _config()
+        a.father = father()
+        a.init(None)
+        assert a.node(None, {"addr:postcode":"123"})
+        assert a.node(None, {"addr:postcode":"A123"})
+        assert not a.node(None, {"addr:postcode":"AB123"})
+        assert not a.node(None, {"addr:postcode":"AB1234"})
+        assert not a.node(None, {"addr:postcode":"AB12345"})

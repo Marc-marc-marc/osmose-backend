@@ -7,6 +7,10 @@ from plugins.PluginMapCSS import PluginMapCSS
 
 
 class Josm_ru_housenumber(PluginMapCSS):
+    # ------------------------------- IMPORTANT -------------------------------
+    # This file is generated automatically and should not be modified directly.
+    # Instead, modify the source mapcss file and regenerate this Python script.
+    # -------------------------------------------------------------------------
 
     MAPCSS_URL = 'https://github.com/zlant/Josm-HnumbValidator/blob/master/ru-housenumber.validator.mapcss'
 
@@ -32,7 +36,7 @@ class Josm_ru_housenumber(PluginMapCSS):
             match = False
             if not match:
                 capture_tags = {}
-                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'addr:housenumber')) and (not mapcss.regexp_test(mapcss._value_const_capture(capture_tags, 1, self.re_62d22c1b, '^((?:вл)?[0-9]+[А-Я]?(?:\/[0-9]+[А-Я]?)?(?: к[0-9А-Я]+)?(?: с[0-9А-Я]+)?(?: соор[0-9А-Я]+)?(?: лит[0-9А-Я]+)?(?: фл[0-9А-Я]+)?|[0-9]+-[0-9]+|[0-9]+[А-Я]?[\/-][0-9]+[А-Я]?[\/-][0-9]+[А-Я]?|(([0-9]+[А-Я]?[IXV]*)|[IXV]*)[\/-]([0-9]+[А-Я]?|[IXV]*)|ЗЯБ-[0-9]+|С-([0-9]+[А-Я]?(?:\/[0-9]+[А-Я]?)?|[IXV]*)|к[0-9А-Я]+)$'), mapcss._tag_capture(capture_tags, 1, tags, 'addr:housenumber'))))
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'addr:housenumber')) and (not mapcss.regexp_test(mapcss._value_const_capture(capture_tags, 1, self.re_62d22c1b, '^((?:вл)?[0-9]+[А-Я]?(?:\\/[0-9]+[А-Я]?)?(?: к[0-9А-Я]+)?(?: с[0-9А-Я]+)?(?: соор[0-9А-Я]+)?(?: лит[0-9А-Я]+)?(?: фл[0-9А-Я]+)?|[0-9]+-[0-9]+|[0-9]+[А-Я]?[\\/-][0-9]+[А-Я]?[\\/-][0-9]+[А-Я]?|(([0-9]+[А-Я]?[IXV]*)|[IXV]*)[\\/-]([0-9]+[А-Я]?|[IXV]*)|ЗЯБ-[0-9]+|С-([0-9]+[А-Я]?(?:\\/[0-9]+[А-Я]?)?|[IXV]*)|к[0-9А-Я]+)$'), mapcss._tag_capture(capture_tags, 1, tags, 'addr:housenumber'))))
                 except mapcss.RuleAbort: pass
             if match:
                 # throwWarning:tr("Номера домов не соответствующие принятому соглашению")
@@ -51,7 +55,7 @@ class Josm_ru_housenumber(PluginMapCSS):
             match = False
             if not match:
                 capture_tags = {}
-                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'addr:housenumber')) and (not mapcss.regexp_test(mapcss._value_const_capture(capture_tags, 1, self.re_62d22c1b, '^((?:вл)?[0-9]+[А-Я]?(?:\/[0-9]+[А-Я]?)?(?: к[0-9А-Я]+)?(?: с[0-9А-Я]+)?(?: соор[0-9А-Я]+)?(?: лит[0-9А-Я]+)?(?: фл[0-9А-Я]+)?|[0-9]+-[0-9]+|[0-9]+[А-Я]?[\/-][0-9]+[А-Я]?[\/-][0-9]+[А-Я]?|(([0-9]+[А-Я]?[IXV]*)|[IXV]*)[\/-]([0-9]+[А-Я]?|[IXV]*)|ЗЯБ-[0-9]+|С-([0-9]+[А-Я]?(?:\/[0-9]+[А-Я]?)?|[IXV]*)|к[0-9А-Я]+)$'), mapcss._tag_capture(capture_tags, 1, tags, 'addr:housenumber'))))
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'addr:housenumber')) and (not mapcss.regexp_test(mapcss._value_const_capture(capture_tags, 1, self.re_62d22c1b, '^((?:вл)?[0-9]+[А-Я]?(?:\\/[0-9]+[А-Я]?)?(?: к[0-9А-Я]+)?(?: с[0-9А-Я]+)?(?: соор[0-9А-Я]+)?(?: лит[0-9А-Я]+)?(?: фл[0-9А-Я]+)?|[0-9]+-[0-9]+|[0-9]+[А-Я]?[\\/-][0-9]+[А-Я]?[\\/-][0-9]+[А-Я]?|(([0-9]+[А-Я]?[IXV]*)|[IXV]*)[\\/-]([0-9]+[А-Я]?|[IXV]*)|ЗЯБ-[0-9]+|С-([0-9]+[А-Я]?(?:\\/[0-9]+[А-Я]?)?|[IXV]*)|к[0-9А-Я]+)$'), mapcss._tag_capture(capture_tags, 1, tags, 'addr:housenumber'))))
                 except mapcss.RuleAbort: pass
             if match:
                 # throwWarning:tr("Номера домов не соответствующие принятому соглашению")
@@ -70,27 +74,10 @@ class Josm_ru_housenumber(PluginMapCSS):
             match = False
             if not match:
                 capture_tags = {}
-                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'addr:housenumber')) and (not mapcss.regexp_test(mapcss._value_const_capture(capture_tags, 1, self.re_62d22c1b, '^((?:вл)?[0-9]+[А-Я]?(?:\/[0-9]+[А-Я]?)?(?: к[0-9А-Я]+)?(?: с[0-9А-Я]+)?(?: соор[0-9А-Я]+)?(?: лит[0-9А-Я]+)?(?: фл[0-9А-Я]+)?|[0-9]+-[0-9]+|[0-9]+[А-Я]?[\/-][0-9]+[А-Я]?[\/-][0-9]+[А-Я]?|(([0-9]+[А-Я]?[IXV]*)|[IXV]*)[\/-]([0-9]+[А-Я]?|[IXV]*)|ЗЯБ-[0-9]+|С-([0-9]+[А-Я]?(?:\/[0-9]+[А-Я]?)?|[IXV]*)|к[0-9А-Я]+)$'), mapcss._tag_capture(capture_tags, 1, tags, 'addr:housenumber'))))
+                try: match = ((mapcss._tag_capture(capture_tags, 0, tags, 'addr:housenumber')) and (not mapcss.regexp_test(mapcss._value_const_capture(capture_tags, 1, self.re_62d22c1b, '^((?:вл)?[0-9]+[А-Я]?(?:\\/[0-9]+[А-Я]?)?(?: к[0-9А-Я]+)?(?: с[0-9А-Я]+)?(?: соор[0-9А-Я]+)?(?: лит[0-9А-Я]+)?(?: фл[0-9А-Я]+)?|[0-9]+-[0-9]+|[0-9]+[А-Я]?[\\/-][0-9]+[А-Я]?[\\/-][0-9]+[А-Я]?|(([0-9]+[А-Я]?[IXV]*)|[IXV]*)[\\/-]([0-9]+[А-Я]?|[IXV]*)|ЗЯБ-[0-9]+|С-([0-9]+[А-Я]?(?:\\/[0-9]+[А-Я]?)?|[IXV]*)|к[0-9А-Я]+)$'), mapcss._tag_capture(capture_tags, 1, tags, 'addr:housenumber'))))
                 except mapcss.RuleAbort: pass
             if match:
                 # throwWarning:tr("Номера домов не соответствующие принятому соглашению")
                 err.append({'class': 9017001, 'subclass': 774061168, 'text': mapcss.tr('Номера домов не соответствующие принятому соглашению')})
 
         return err
-
-
-from plugins.PluginMapCSS import TestPluginMapcss
-
-
-class Test(TestPluginMapcss):
-    def test(self):
-        n = Josm_ru_housenumber(None)
-        class _config:
-            options = {"country": None, "language": None}
-        class father:
-            config = _config()
-        n.father = father()
-        n.init(None)
-        data = {'id': 0, 'lat': 0, 'lon': 0}
-
-

@@ -35,8 +35,8 @@ class Highway_Lanes(Plugin):
         self.errors[31603] = self.def_class(item = 3160, level = 2, tags = ['highway', 'fix:chair'],
             title = T_('Conflict between usage of *:lanes or *:lanes:(forward|backward|both_ways)'),
             detail = T_(
-'''You can not set at the same time a tag and the variante with this
-prefix `forward`, `backward`, `both_ways`.'''))
+'''You can not simultaneously set a tag and the variants with
+`forward`, `backward` or `both_ways` suffixes.'''))
         self.errors[31604] = self.def_class(item = 3160, level = 2, tags = ['highway', 'fix:chair'],
             title = T_('Conflict between lanes number'))
         self.errors[31605] = self.def_class(item = 3160, level = 2, tags = ['highway', 'fix:chair'],
@@ -52,7 +52,7 @@ prefix `forward`, `backward`, `both_ways`.'''))
             detail = T_(
 '''Right must be on the right and left on the left.'''))
         self.errors[31608] = self.def_class(item = 3160, level = 2, tags = ['highway', 'fix:chair'],
-            title = T_('Conflict between lanes number of same sufix ("", forward, backward or both_ways)'),
+            title = T_('Conflict between lanes number of same suffix ("", forward, backward or both_ways)'),
             detail = T_(
 '''The number of lanes defined by many lane tags are not the same for a
 given direction.'''))
@@ -164,20 +164,37 @@ or right (for `only_left`) side of the lane to which changing is possible.'''),
                             .replace(";", "").split("|")
 
                         # Empty equals a 'none', otherwise sort values within a single lane (as left;right equals right;left)
-                        t = ''.join(map(lambda e: "N" if len(e) == 0 else e[0] if len(e) == 1 else ''.join(sorted(e)), t))
+                        t = list(map(lambda e: "N" if len(e) == 0 else e[0] if len(e) == 1 else ''.join(sorted(e)), t))
 
-                        t = t.replace('-', '') # Ignored values
+                        # Find transitions between normal lanes and "special" lanes. Each can have its own turn lanes.
+                        # Use the hash sign (#) as a temporary indicator of these positions, for splitting later.
+                        for k in ["access", "vehicle", "motor_vehicle", "bus", "bicycle", "psv"]:
+                            tag = tl.replace("turn", k, 1)
+                            if tag in tags:
+                                tagsplit = tags[tag].split("|")
+                                changeindices = [i for i in range(1, len(tagsplit)) if tagsplit[i] != tagsplit[i-1] and (tagsplit[i] == "no" or tagsplit[i-1] == "no")]
+                                for i in changeindices:
+                                    if i < len(t) and not "#" in t[i]:
+                                        t[i] = "#" + t[i]
 
-                        # Ignore single none on the outside lanes: it could be a bus lane
-                        # Treat all other nones as throughs (multiple bus lanes or a dedicated lane in between two turns is unlikely)
-                        if t[0:1] == "N":
-                            t = t[1:]
-                        if t[-1:] == "N":
-                            t = t[0:-1]
-                        t = t.replace('N', throughvalue)
+                        # Replace ignored values; split by access condition sections of the way
+                        t = ''.join(t).replace('-', '').split("#")
 
-                        if t != ''.join(sorted(t)):
-                            err.append({"class": 31607, "subclass": 1 + stablehash64(tl), "text": T_("Bad turn lanes order in \"{0}\"", tl)})
+                        if len(t) == 1 and len(t[0]) > 1:
+                            # No lane access restrictions were present.
+                            # Ignore single none on the outside lanes: it could be a bus lane.
+                            # (It is much less likely that there are traffic-crossing bus lanes in the middle of the road)
+                            if t[0][0] == "N":
+                                t[0] = t[0][1:]
+                            if t[0][-1:] == "N":
+                                t[0] = t[0][0:-1]
+
+                        for k in range(len(t)):
+                            tk = t[k].replace('N', throughvalue) # Treat remaining none as through
+
+                            if tk != ''.join(sorted(tk)):
+                                err.append({"class": 31607, "subclass": 1 + stablehash64(tl), "text": T_("Bad turn lanes order in \"{0}\"", tl)})
+                                break
 
         # Check change:lanes values
         for tag_cl in ["change:lanes", "change:lanes:forward", "change:lanes:backward", "change:lanes:both_ways"]:
@@ -202,6 +219,7 @@ or right (for `only_left`) side of the lane to which changing is possible.'''),
             if o:
                 non_fullwidth_lanes_number[direction] = ilen(filter(lambda i: i == 'designated', o.split('|')))
 
+        # Verify *:lanes tags are not numerical
         for access in ['hgv', 'bus', 'access', 'bicycle', 'psv', 'taxi', 'vehicle', 'motor_vehicle', 'hov', 'motorcycle', 'goods']:
             base = access+':lanes'
             for tag in tags_lanes:
@@ -213,39 +231,40 @@ or right (for `only_left`) side of the lane to which changing is possible.'''),
                         # Ok, should not be an integer
                         pass
 
-        stars = []
-        for tag in tags_lanes:
-            if ":lanes" in tag:
-                star = tag.split(':')[0]
-                if star not in ('source', 'proposed', 'construction', 'note'):
-                    stars.append(star)
-        stars = list(set(stars))
+        # Get all * in *:lanes suffixed keys
+        stars = set(map(lambda tag: tag.split(":lanes")[0], filter(lambda tag: ":lanes" in tag and tag.split(":")[0] not in ('source', 'proposed', 'construction', 'note'), tags_lanes)))
 
+        # Verify *:lanes doesn't co-exist with *:lanes:[direction]
         for star in stars:
-            l = star + '' in tags_lanes
-            lf = star + ':forward' in tags_lanes
-            lb = star + ':backward' in tags_lanes
-            l2 = star + ':both_ways' in tags_lanes
-            if l and (lf or lb or l2):
-                err.append({"class": 31603, "subclass": 0 + stablehash64(star), "text": {"en": star + ":*"}})
+            if star + ':lanes' in tags_lanes:
+                for direction in [':forward', ':backward', ':both_ways']:
+                    if star + ':lanes' + direction in tags_lanes:
+                        err.append({"class": 31603, "subclass": stablehash64(star + "|" + direction), "text": {"en": "`{0}` + `{1}`".format(star + ":lanes", star + ":lanes" + direction)}})
 
         if err != []:
             return err
 
+        # 1. Collects the values of lanes and lanes:[direction] only
+        # 2. Validates all lanes:* to be numerical
         number = {'lanes': {}}
         for tag in tags_lanes:
             if tag == 'lanes' or tag.startswith('lanes:'):
                 try:
-                    n = int(tags_lanes[tag])
+                    if tag.endswith(':conditional'):
+                        n = int(tags_lanes[tag].split('@', 1)[0].rstrip())
+                    else:
+                        n = int(tags_lanes[tag])
+                    if n < 0:
+                        err.append({"class": 31601, "subclass": 1 + stablehash64(tag), "text": T_("{0}={1} is not a positive integer", tag, tags_lanes[tag])})
                     parts = tag.split(':')
-                    direction = ''
                     if len(parts) == 1:
                         number['lanes'][''] = n
                     elif len(parts) == 2 and parts[1] in ['forward', 'backward', 'both_ways']:
                         number['lanes'][':'+parts[1]] = n
                 except ValueError:
-                    err.append({"class": 31601, "subclass": 0 + stablehash64(tag), "text": T_("lanes={0} is not an integer", tags_lanes[tag])})
+                    err.append({"class": 31601, "subclass": 0 + stablehash64(tag), "text": T_("{0}={1} is not a positive integer", tag, tags_lanes[tag])})
 
+        # Count the number of lanes in *:lanes tags
         for star in stars:
             number[star] = {}
             for direction in ['', ':forward', ':backward', ':both_ways']:
@@ -253,23 +272,28 @@ or right (for `only_left`) side of the lane to which changing is possible.'''),
                 if o:
                     number[star][direction] = len(o.split('|'))
 
+        # Check if the number of lanes matches within tags of the same direction
         n_lanes = {}
         for direction in ['', ':forward', ':backward', ':both_ways']:
             tag = None
             for star in sorted(number.keys()):
                 non_fullwidth_lanes_number_star = ((non_fullwidth_lanes_number.get(direction) or 0) if star != 'lanes' else 0)
-                non_fullwidth_lanes_number_tag = ((non_fullwidth_lanes_number.get(direction) or 0) if tag != 'lanes:lanes'+direction else 0)
+                non_fullwidth_lanes_number_tag = ((non_fullwidth_lanes_number.get(direction) or 0) if tag != 'lanes' + direction else 0)
                 if n_lanes.get(direction) is not None and number[star].get(direction) is not None and \
-                        number[star][direction] - non_fullwidth_lanes_number_star != \
-                        n_lanes[direction] - non_fullwidth_lanes_number_tag:
+                        (number[star][direction] - non_fullwidth_lanes_number_star > n_lanes[direction] or
+                        n_lanes[direction] - non_fullwidth_lanes_number_tag > number[star][direction]):
                     err.append({"class": 31608, "subclass": 0 + stablehash64(direction + '|' + star), "text": {
                         "en": "(lanes({0})={1}) - (non fullwidth={2}) != (lanes({3})={4}) - (non fullwidth={5})".format(
-                            star+":*"+direction, number[star][direction], non_fullwidth_lanes_number_star,
-                            tag, n_lanes[direction], non_fullwidth_lanes_number_tag) }})
+                            star + ":lanes" + direction if star != "lanes" else star + direction,
+                            number[star][direction],
+                            non_fullwidth_lanes_number_star,
+                            tag,
+                            n_lanes[direction],
+                            non_fullwidth_lanes_number_tag) }})
                 elif n_lanes.get(direction) is None and number[star].get(direction) is not None:
-                    # Fist loop, pick the star as tag and the number of lanes to compare to the others
+                    # First loop, pick the star as tag and the number of lanes to compare to the others
                     n_lanes[direction] = number[star][direction]
-                    tag = star+":lanes"+direction
+                    tag = star + ":lanes" + direction if star != "lanes" else star + direction
 
         if err != []:
             return err
@@ -304,7 +328,7 @@ or right (for `only_left`) side of the lane to which changing is possible.'''),
             elif nlb is not None or nl2 is not None:
                 err.append({"class": 31605, "subclass": 0})
         else:
-            if nl is not None and nlf is not None and nlb is not None and nl != nlf + nlb + (nl2 or 0) - nfw_nl - nfw_nlf - nfw_nlb - nfw_nl2:
+            if nl is not None and nlf is not None and nlb is not None and (nl < nlf + nlb + (nl2 or 0) - nfw_nl - nfw_nlf - nfw_nlb - nfw_nl2 or nl > nlf + nlb + (nl2 or 0)):
                 err.append({"class": 31604, "subclass": 0, "text": T_("on two way, (lanes={0}) != (lanes:forward={1}) + (lanes:backward={2}) + (lanes:both_ways={3}) - (non fullwidth={4}) - (non fullwidth forward={5}) - (non fullwidth backward={6}) - (non fullwidth both_ways={7})", nl, nlf, nlb, nl2, nfw_nl, nfw_nlf, nfw_nlb, nfw_nl2)})
             elif nl is not None and nlf is not None and nl <= nlf - nfw_nlf:
                 err.append({"class": 31604, "subclass": 0, "text": T_("on two way, (lanes={0}) <= (lanes:forward={1}) - (non fullwidth forward={2})", nl, nlf, nfw_nlf)})
@@ -336,9 +360,11 @@ class Test(TestPluginCommon):
         a = Highway_Lanes(None)
         a.init(None)
 
-        for t in [{"highway": "residential", "lanes": "2", "destination:lanes": "*", "destination:lanes:backward": "*"},
+        for t in [{"highway": "residential", "destination:lanes": "x|y", "destination:lanes:backward": "y"},
+                  {"highway": "residential", "lanes": "2", "destination:lanes": "*"},
                   {"highway": "residential", "hgv:lanes": "2"},
                   {"highway": "residential", "lanes": "r"},
+                  {"highway": "residential", "lanes:forward": "-1"},
                   {"highway": "residential", "lanes:hgv": "r"},
                   {"highway": "another", "lanes": "1", "destination:lanes": "a|b"},
                   {"highway": "another", "lanes": "1", "destination:lanes:backward": "a", "oneway": "yes"},
@@ -348,6 +374,8 @@ class Test(TestPluginCommon):
                   {"highway": "motorway", "turn:lanes": "none|none|merge_to_left", "destination:lanes": "A|B"},
                   {"highway": "residential", "lanes": "2", "lanes:backward": "2"},
                   {"highway": "residential", "lanes": "3", "lanes:backward": "2", "lanes:forward": "2"},
+                  {"highway": "another", "oneway": "yes", "vehicle:lanes": "yes|yes|yes|no|no|no|no", "bicycle:lanes": "designated|designated", "turn:lanes": "||||"},
+                  {"highway": "another", "oneway": "yes", "destination:lanes": "A|B", "destination:color:lanes": "A|B|C"},
                  ]:
             self.check_err(a.way(None, t, None), t)
 
@@ -369,8 +397,12 @@ class Test(TestPluginCommon):
                   {"highway": "residential", "lanes": "3", "lanes:forward": "2", "lanes:psv:backward": "1", "oneway": "yes", "oneway:psv": "no"},
                   {"highway": "motorway", "lanes": "3", "lanes:backward": "2", "lanes:forward": "1", "oneway": "no"},
                   {"highway": "secondary", "lanes": "3", "lanes:both_ways": "1"},
+                  {"highway": "secondary", "lanes": "3", "lanes:bus:conditional": "1 @ (Mo-Fr 07:00-19:00)", "bus:lanes:conditional": "||designated @ (Mo-Fr 07:00-19:00)"},
                   {"highway": "secondary", "lanes": "2", "change:lanes": "no|no|no|no", "bicycle:lanes": "|designated||designated", "cycleway": "lane"},
                   {"highway": "secondary", "lanes": "1", "width:lanes": "3|1.5|1.5", "access:lanes": "yes|no|no", "bicycle:lanes": "yes|designated|designated"},
+                  {"highway": "tertiary", "lanes": "6", "lanes:forward": "4", "lanes:backward": "2", "bus:lanes:backward": "yes|designated", "bicycle:lanes:backward": "yes|designated", "cycleway": "opposite_share_busway"},
+                  {"highway": "tertiary", "lanes": "3", "bus:lanes": "||designated", "bicycle:lanes": "no|designated|designated", "turn:lanes": "through|through|right"},
+                  {"highway": "residential", "destination:lanes:both_ways": "x|y", "destination:lanes:backward": "y"},
                  ]:
             assert not a.way(None, t, None), a.way(None, t, None)
 
@@ -387,8 +419,14 @@ class Test(TestPluginCommon):
                   {"highway": "another", "turn:lanes": "merge_to_right|none"},
                   {"highway": "another", "turn:lanes": "through|merge_to_right|through"},
                   {"highway": "another", "turn:lanes": "reverse|left|left;through||"},
+                  {"highway": "another", "lanes:forward": "2", "lanes:backward": "1", "turn:lanes:forward": "reverse|reverse", "turn:lanes:backward": "reverse"},
+                  {"highway": "another", "lanes": "2", "turn:lanes": "reverse|none", "bus:lanes": "|designated", "vehicle:lanes": "designated|no"},
                   {"highway": "another", "lanes": "3", "source:lanes": "usgs_imagery_2007;survey;image", "source_ref:lanes": "AM909_DSCS7435"},
                   {"highway": "another", "lanes": "1", "lanes:both_ways": "1"},
+                  {"highway": "another", "oneway": "yes", "lanes": "3", "vehicle:lanes": "no|yes|yes|no", "bicycle:lanes": "no|no|no|designated", "bus:lanes": "designated|yes|yes|no", "turn:lanes": "|left;through|right|through;right"},
+                  {"highway": "another", "vehicle:lanes:forward": "no|yes|yes|no", "bicycle:lanes:forward": "no|no|no|designated", "bus:lanes:forward": "designated|yes|yes|no", "turn:lanes:forward": "|left;through|right|through;right"},
+                  {"highway": "another", "oneway": "yes", "lanes": "3", "vehicle:lanes": "yes|yes|yes|no|no", "bicycle:lanes": "no|no|no|designated|designated", "turn:lanes": "left|through|right|left|through;right"},
+                  {"highway": "another", "oneway": "yes", "lanes": "3", "vehicle:lanes": "||no|", "bicycle:lanes": "no|no|designated|", "turn:lanes": "left|through|through;left|right"},
                  ]:
             assert not a.way(None, t, None), a.way(None, t, None)
 
@@ -405,6 +443,8 @@ class Test(TestPluginCommon):
                   {"highway": "another", "turn:lanes": "through|right;left|through"},
                   {"highway": "another", "turn:lanes": "left;right|left;right"},
                   {"highway": "another", "turn:lanes": "left|sharp_left|through"},
+                  {"highway": "another", "oneway": "yes", "lanes": "3", "vehicle:lanes": "yes|yes|yes|no|no", "bicycle:lanes": "no|no|no|designated|designated", "turn:lanes": "left|through|left|left|through;right"},
+                  {"highway": "another", "oneway": "yes", "lanes": "3", "vehicle:lanes": "yes|yes|yes|no|no", "bicycle:lanes": "no|no|no|designated|designated", "turn:lanes": "left|through|right|left;right|through"},
                  ]:
             assert a.way(None, t, None), a.way(None, t, None)
 
