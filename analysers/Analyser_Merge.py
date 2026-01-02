@@ -523,7 +523,16 @@ class SourceDataFair(Source):
     def get_millesime(self) -> datetime.datetime:
         response = downloader.request_get(self.url_base + "/data-files")
         response.raise_for_status()
-        return datetime.datetime.fromisoformat(next(filter(lambda f: f["name"] == self.file_name, response.json()))["updatedAt"][0:10])
+        files = response.json()
+        matching_file = next(filter(lambda f: f["name"] == self.file_name, files), None)
+
+        if matching_file is None:
+            available_files = list(map(lambda f: f["name"], files))
+            raise FileNotFoundError(
+                f"File '{self.file_name}' not found at {self.url_base}/data-files. "
+                f"Available files: {', '.join(available_files) if available_files else 'none'}")
+
+        return datetime.datetime.fromisoformat(matching_file["updatedAt"][0:10])
 
 class SourceHttpLastModified(Source):
     """Get URL from Last-Modified HTTP headers"""
