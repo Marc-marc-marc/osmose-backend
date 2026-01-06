@@ -37,6 +37,15 @@ class Analyser_Merge_Charging_station_FR(Analyser_Merge_Point):
         "TotalEnergies Charging Services": "Q154037",
         "Last Mile Solutions": "Q109733858",
         "Izivia": "Q86671322",
+        "Shell Recharge": "Q105883058",
+        "Freshmile": "Q111209120",
+        "E.Leclerc": "Q1273376",
+        "GreenFlux": "Q126728390",
+        "Avia": "Q300147",
+        "Izivia": "Q86671322",
+        "Sorégies": "Q3491321",
+        "Bouygues Energies & Services": "Q3046208",
+        "Electra": "Q128592938",
     }
 
     @staticmethod
