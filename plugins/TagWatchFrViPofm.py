@@ -39,11 +39,11 @@ class TagWatchFrViPofm(Plugin):
     def follow_wiki_redirect(self, url, max_redirects=5):
         """
         Follow wiki redirects and return the final page content.
-        
+
         Args:
             url: The initial wiki URL to fetch
             max_redirects: Maximum number of redirects to follow
-            
+
         Returns:
             The content of the final page after following redirects
         """
@@ -68,7 +68,7 @@ class TagWatchFrViPofm(Plugin):
 
         # If we've exceeded max redirects, raise an error
         raise Exception(f"Maximum redirects ({max_redirects}) exceeded")
-        
+
     def init(self, logger):
         Plugin.init(self, logger)
 
