@@ -30,6 +30,27 @@ from modules import OsmoseLog
 from modules import OsmReader
 from modules import SourceVersion
 
+# === DEBUG: timezone (start) ===
+import warnings
+from dateutil.parser import UnknownTimezoneWarning
+import traceback
+
+def custom_warning_handler(message, category, filename, lineno, file=None, line=None):
+    if category == UnknownTimezoneWarning:
+        print(f"\n{'='*70}")
+        print(f"TIMEZONE WARNING DETECTED")
+        print(f"{'='*70}")
+        print(f"Message: {message}")
+        print(f"File: {filename}:{lineno}")
+        print("\nStack trace:")
+        traceback.print_stack()
+        print(f"{'='*70}\n")
+    # also show classic warning
+    old_showwarning(message, category, filename, lineno, file, line)
+
+old_showwarning = warnings.showwarning
+warnings.showwarning = custom_warning_handler
+# === DEBUG: timezone (end) ===
 
 class Analyser_Sax(Analyser):
 
