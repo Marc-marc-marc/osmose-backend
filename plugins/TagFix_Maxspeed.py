@@ -40,7 +40,7 @@ class TagFix_Maxspeed(Plugin):
         'at:trunk': ['100'],
         'ar:urban': ['40', '60'],
         'ar:rural': ['110', '120'],
-        'ar:motorway': ['100', '130'], 
+        'ar:motorway': ['100', '130'],
         'be-bru:rural': ['70'],
         'be-bru:urban': ['30'],
         'be:motorway': ['120'],
