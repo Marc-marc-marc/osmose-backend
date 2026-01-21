@@ -24,6 +24,7 @@
 
 import wikitextparser
 import re
+from modules import OsmoseLog
 from typing import Union, Optional
 
 # Get a list of lists containing all cells of a table.
@@ -41,7 +42,7 @@ def read_wiki_table(wikitext: str, tab_index: int = 0, keep_markup: bool = False
     # Check for wiki redirect and follow it automatically
     redirect_pattern = re.compile(r'^\s*#REDIRECT\s*\[\[([^\]]+)\]\]', re.IGNORECASE | re.MULTILINE)
     max_redirects = 5
-    
+
     for i in range(max_redirects):
         match = redirect_pattern.match(wikitext.strip())
         if match:
