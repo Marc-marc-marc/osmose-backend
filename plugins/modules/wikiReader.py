@@ -38,6 +38,26 @@ from typing import Union, Optional
 # Throws:
 #   If the table at the specified index isn't found
 def read_wiki_table(wikitext: str, tab_index: int = 0, keep_markup: bool = False, skip_headers: bool = True) -> list[list[Optional[str]]]:
+    # Check for wiki redirect and follow it automatically
+    redirect_pattern = re.compile(r'^\s*#REDIRECT\s*\[\[([^\]]+)\]\]', re.IGNORECASE | re.MULTILINE)
+    max_redirects = 5
+    
+    for i in range(max_redirects):
+        match = redirect_pattern.match(wikitext.strip())
+        if match:
+            from modules.downloader import urlread
+            redirect_target = match.group(1)
+            logging.warning(f"Wiki redirect detected: following to '{redirect_target}'")
+            page_name = redirect_target.replace(' ', '_')
+            url = f"https://wiki.openstreetmap.org/index.php?title={page_name}&action=raw"
+            wikitext = urlread(url, 1)
+        else:
+            # No redirect, continue with normal processing
+            break
+    else:
+        # Exceeded max redirects
+        raise Exception(f"Maximum wiki redirects ({max_redirects}) exceeded")
+
     # Drops all markup, such as italics, hyperlinks, ...
     if not keep_markup:
         wikitext = wikitextparser.remove_markup(wikitext, replace_tables=False, replace_templates=False)
