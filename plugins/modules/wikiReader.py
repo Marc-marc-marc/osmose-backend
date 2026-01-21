@@ -48,7 +48,7 @@ def read_wiki_table(wikitext: str, tab_index: int = 0, keep_markup: bool = False
         if match:
             from modules.downloader import urlread
             redirect_target = match.group(1)
-            logging.warning(f"Wiki redirect detected: following to '{redirect_target}'")
+            logger.warning(f"Wiki redirect detected: following to '{redirect_target}'")
             page_name = redirect_target.replace(' ', '_')
             url = f"https://wiki.openstreetmap.org/index.php?title={page_name}&action=raw"
             wikitext = urlread(url, 1)
