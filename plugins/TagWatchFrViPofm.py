@@ -36,39 +36,6 @@ class TagWatchFrViPofm(Plugin):
     def quoted2re(self, string):
         return re.compile(u"^"+string[1:-1]+u"$")
 
-    def follow_wiki_redirect(self, url, max_redirects=5):
-        """
-        Follow wiki redirects and return the final page content.
-
-        Args:
-            url: The initial wiki URL to fetch
-            max_redirects: Maximum number of redirects to follow
-
-        Returns:
-            The content of the final page after following redirects
-        """
-        redirect_pattern = re.compile(r'^\s*#REDIRECT\s*\[\[([^\]]+)\]\]', re.IGNORECASE | re.MULTILINE)
-
-        for i in range(max_redirects):
-            data = urlread(url, 1)
-
-            # Check if this is a redirect
-            match = redirect_pattern.match(data.strip())
-            if match:
-                redirect_target = match.group(1)
-                self.logger.log(f"Redirect detected: following to '{redirect_target}'")
-
-                # Build the new URL
-                # Replace spaces with underscores for the wiki URL
-                page_name = redirect_target.replace(' ', '_')
-                url = f"https://wiki.openstreetmap.org/index.php?title={page_name}&action=raw"
-            else:
-                # No redirect found, return the content
-                return data
-
-        # If we've exceeded max redirects, raise an error
-        raise Exception(f"Maximum redirects ({max_redirects}) exceeded")
-
     def init(self, logger):
         Plugin.init(self, logger)
 
@@ -87,10 +54,7 @@ class TagWatchFrViPofm(Plugin):
         self._update_kr_vr = defaultdict(dict)
 
         # Obtain the info from https://wiki.openstreetmap.org/wiki/Dubious_tags
-        # Now with redirect support
-        initial_url = u"https://wiki.openstreetmap.org/index.php?title=Dubious_tags&action=raw"
-        data = self.follow_wiki_redirect(initial_url)
-
+        data = urlread(u"https://wiki.openstreetmap.org/w/index.php?title=Dubious_tags&action=raw", 1)
         data = read_wiki_table(data, skip_headers = False)[1:] # Headers in the middle of the table, not supported yet in read_wiki_table
 
         for row in data:
