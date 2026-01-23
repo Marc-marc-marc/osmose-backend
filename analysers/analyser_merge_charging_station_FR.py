@@ -46,6 +46,7 @@ class Analyser_Merge_Charging_station_FR(Analyser_Merge_Point):
         "Sorégies": "Q3491321",
         "Bouygues Energies & Services": "Q3046208",
         "Electra": "Q128592938",
+        "eborn": "Q126000881",
     }
 
     @staticmethod
