@@ -41,11 +41,6 @@ jobs:
         # compile osm pbf parser
         cd modules/osm_pbf_parser && make && cd ../../
 
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5
-      with:
-        python-version: ${{ matrix.python-version }}
-
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
@@ -107,11 +102,6 @@ jobs:
         chown $USER /data/work/$USER /data/work/$USER/cache
         # compile osm pbf parser
         cd modules/osm_pbf_parser && make && cd ../../
-
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5
-      with:
-        python-version: ${{ matrix.python-version }}
 
     - name: Install dependencies
       run: |
@@ -184,11 +174,6 @@ jobs:
         chown $USER /data/work/$USER /data/work/$USER/cache
         # compile osm pbf parser
         cd modules/osm_pbf_parser && make && cd ../../
-
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5
-      with:
-        python-version: ${{ matrix.python-version }}
 
     - name: Install dependencies
       run: |
