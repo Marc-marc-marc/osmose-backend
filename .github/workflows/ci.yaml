@@ -49,14 +49,14 @@ jobs:
     - name: Debug setuptools
       run: |
         python - << 'PY'
-import setuptools
-print("setuptools:", setuptools.__version__)
-try:
-    import pkg_resources
-    print("pkg_resources OK")
-except Exception as e:
-    print("pkg_resources ERROR:", e)
-PY
+        import setuptools
+        print("setuptools:", setuptools.__version__)
+        try:
+          import pkg_resources
+          print("pkg_resources OK")
+        except Exception as e:
+          print("pkg_resources ERROR:", e)
+        PY
 
     - name: Lint
       run: |
