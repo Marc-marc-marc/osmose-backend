@@ -41,15 +41,22 @@ jobs:
         # compile osm pbf parser
         cd modules/osm_pbf_parser && make && cd ../../
 
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5
-      with:
-        python-version: ${{ matrix.python-version }}
-
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r requirements.txt
+        python -m pip install -r requirements.txt
+
+    - name: Debug setuptools
+      run: |
+        python - << 'PY'
+        import setuptools
+        print("setuptools:", setuptools.__version__)
+        try:
+          import pkg_resources
+          print("pkg_resources OK")
+        except Exception as e:
+          print("pkg_resources ERROR:", e)
+        PY
 
     - name: Lint
       run: |
@@ -108,15 +115,10 @@ jobs:
         # compile osm pbf parser
         cd modules/osm_pbf_parser && make && cd ../../
 
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5
-      with:
-        python-version: ${{ matrix.python-version }}
-
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r requirements.txt
+        python -m pip install -r requirements.txt
 
     - name: Init Postgres
       run: |
@@ -185,15 +187,10 @@ jobs:
         # compile osm pbf parser
         cd modules/osm_pbf_parser && make && cd ../../
 
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5
-      with:
-        python-version: ${{ matrix.python-version }}
-
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r requirements.txt
+        python -m pip install -r requirements.txt
 
     - name: Init Postgres
       run: |
